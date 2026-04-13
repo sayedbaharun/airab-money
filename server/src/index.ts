@@ -95,7 +95,8 @@ app.post('/api/articles', async (req, res) => {
 });
 
 // --- Serve the Vite frontend production build ---
-const distPath = path.resolve(__dirname, '../../dist');
+// cwd is /app/server (since we cd server before starting), so ../dist = /app/dist
+const distPath = path.resolve(process.cwd(), '../dist');
 app.use(express.static(distPath));
 
 // SPA fallback: any non-API route serves index.html for client-side routing

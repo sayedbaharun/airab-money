@@ -1,0 +1,18 @@
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+
+[phases.install]
+cmds = [
+  "npm install",
+  "cd server && npm install"
+]
+
+[phases.build]
+cmds = [
+  "cd server && npx prisma generate",
+  "npx tsc -b",
+  "npx vite build"
+]
+
+[start]
+cmd = "cd server && npx tsx src/index.ts"
