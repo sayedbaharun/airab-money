@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Article {
+  id                  String   @id @default(uuid())
+  headline            String
+  content             String   @db.Text
+  summary             String   @db.Text
+  image_url           String?
+  image_prompt        String?  @db.Text
+  hero_image_url      String?
+  inline_image_url    String?
+  hero_image_prompt   String?  @db.Text
+  inline_image_prompt String?  @db.Text
+  source_url          String?
+  source_name         String?
+  article_url         String?
+  category            String
+  tags                String[]
+  status              String   @default("draft")
+  published_at        DateTime?
+  created_at          DateTime @default(now())
+}
+
+model PodcastEpisode {
+  id                 String   @id @default(uuid())
+  title              String
+  description        String   @db.Text
+  episode_number     Int
+  season_number      Int
+  show_type          String
+  duration_minutes   Int
+  audio_url          String
+  transcript_url     String?
+  featured_image_url String?
+  thumbnail_url      String?
+  publish_date       DateTime
+  status             String   @default("draft")
+  guest_name         String?
+  guest_bio          String?  @db.Text
+  topics             String[]
+  categories         String[]
+  featured           Boolean  @default(false)
+  play_count         Int      @default(0)
+  download_count     Int      @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
+
+model BlogPost {
+  id                  String   @id @default(uuid())
+  title               String
+  slug                String   @unique
+  content             String   @db.Text
+  excerpt             String   @db.Text
+  featured_image_url  String?
+  author_name         String
+  category            String
+  tags                String[]
+  status              String   @default("draft")
+  featured            Boolean  @default(false)
+  view_count          Int      @default(0)
+  estimated_read_time Int
+  meta_description    String?  @db.Text
+  published_at        DateTime?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id                  String   @id @default(uuid())
+  email               String   @unique
+  name                String?
+  subscription_status String   @default("active")
+  subscription_date   DateTime @default(now())
+  preferences         Json     @default("{}")
+  unsubscribe_token   String   @unique
+  last_email_sent     DateTime?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+}
+
+model ContactMessage {
+  id           String   @id @default(uuid())
+  name         String
+  email        String
+  subject      String
+  message      String   @db.Text
+  message_type String
+  status       String   @default("unread")
+  responded_at DateTime?
+  created_at   DateTime @default(now())
+}
+
+model GuestApplication {
+  id              String   @id @default(uuid())
+  name            String
+  email           String
+  company         String?
+  position        String?
+  bio             String   @db.Text
+  expertise_areas String[]
+  linkedin_url    String?
+  website_url     String?
+  proposed_topics String[]
+  status          String   @default("pending")
+  notes           String?  @db.Text
+  interview_date  DateTime?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
