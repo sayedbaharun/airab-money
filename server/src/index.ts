@@ -1,13 +1,20 @@
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
+
+const connectionString = process.env.DATABASE_URL || "postgresql://mock:mock@localhost:5432/mock";
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.use(cors());
