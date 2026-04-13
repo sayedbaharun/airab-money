@@ -81,6 +81,21 @@ export const supabase = {
         return deleteBuilder;
       }
     };
+  },
+  functions: {
+    invoke: async (functionName: string, options?: any) => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/functions/${functionName}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(options?.body || {})
+        });
+        const result = await response.json();
+        return { data: result.data || result, error: null };
+      } catch (error) {
+        return { data: null, error };
+      }
+    }
   }
 };
 

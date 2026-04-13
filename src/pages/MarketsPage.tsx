@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabase'
 
 interface MarketData {
   symbol: string
@@ -10,11 +10,6 @@ interface MarketData {
   changePercent: number
   type: 'stock' | 'crypto' | 'commodity' | 'gcc' | 'index' | 'middleeast'
 }
-
-// Initialize Supabase client
-const supabaseUrl = "https://legcfikbspvftdqpdvxg.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const MarketsPage: React.FC = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en')
