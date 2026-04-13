@@ -15,8 +15,6 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 app.use(cors());
 app.use(express.json());
 
@@ -43,6 +41,12 @@ app.post('/api/generate-article', async (req, res) => {
   try {
     const { topic, word_count, style } = req.body;
     
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OpenAI API key is missing. Please configure OPENAI_API_KEY in your environment.' });
+    }
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
     if (!topic || !word_count || !style) {
       return res.status(400).json({ error: 'Missing required parameters (topic, word_count, style)'});
     }
