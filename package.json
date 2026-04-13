@@ -9,7 +9,7 @@
     "build:prod": "npm install && rm -rf node_modules/.vite-temp && tsc -b && BUILD_MODE=prod vite build",
     "lint": "npm install && eslint .",
     "preview": "vite preview",
-    "start": "vite preview --port $PORT --host 0.0.0.0"
+    "start": "vite preview"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.4",

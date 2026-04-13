@@ -5,6 +5,15 @@ import sourceIdentifierPlugin from 'vite-plugin-source-info'
 
 const isProd = process.env.BUILD_MODE === 'prod'
 export default defineConfig({
+  server: {
+    port: process.env.PORT ? parseInt(process.env.PORT) : 5173,
+    host: true
+  },
+  preview: {
+    port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
+    host: true,
+    allowedHosts: true
+  },
   plugins: [
     react(), 
     sourceIdentifierPlugin({
