@@ -1,116 +1,88 @@
-import { createClient } from '@supabase/supabase-js'
+import { apiFetch } from './api';
 
-const supabaseUrl = 'https://legcfikbspvftdqpdvxg.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI'
+// Create a mock Supabase client that translates requests to our new API
+export const supabase = {
+  from: (table: string) => {
+    return {
+      select: (query?: string) => {
+        let builder: any = {
+          eq: () => builder,
+          order: () => builder,
+          limit: () => builder,
+          single: () => builder,
+        };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+        builder.then = async (resolve: any, reject: any) => {
+          try {
+            // Translate the table to our endpoint
+            let endpoint = '';
+            if (table === 'articles') endpoint = '/articles';
+            else if (table === 'podcast_episodes') endpoint = '/episodes';
+            else if (table === 'blog_posts') endpoint = '/blogs';
+            else if (table === 'contact_messages') endpoint = '/contact';
+            else if (table === 'guest_applications') endpoint = '/applications';
+            else {
+              return resolve({ data: [], error: null });
+            }
 
-// Types
-export interface Article {
-  id: string
-  headline: string
-  content: string
-  summary: string
-  image_url?: string
-  image_prompt?: string
-  hero_image_url?: string
-  inline_image_url?: string
-  hero_image_prompt?: string
-  inline_image_prompt?: string
-  source_url?: string
-  source_name?: string
-  article_url?: string
-  category: string
-  tags: string[]
-  status: string
-  published_at: string
-  created_at: string
-}
+            // Attempt to hit the new Railway Express backend
+            const response = await fetch(`http://localhost:3001/api${endpoint}`);
+            if (!response.ok) throw new Error('API Error');
+            const result = await response.json();
+            resolve({ data: result.data || [], error: null });
+          } catch (error) {
+            // If it fails, return error so the fallback data logic triggers
+            resolve({ data: null, error });
+          }
+        };
 
-export interface PodcastEpisode {
-  id: string
-  title: string
-  description: string
-  episode_number: number
-  season_number: number
-  show_type: string
-  duration_minutes: number
-  audio_url: string
-  transcript_url?: string
-  featured_image_url?: string
-  thumbnail_url?: string
-  publish_date: string
-  status: string
-  guest_name?: string
-  guest_bio?: string
-  topics: string[]
-  categories: string[]
-  featured: boolean
-  play_count: number
-  download_count: number
-  created_at: string
-  updated_at: string
-}
+        return builder;
+      },
+      insert: (data: any) => {
+        let insertBuilder: any = {
+          select: () => insertBuilder,
+        };
+        insertBuilder.then = async (resolve: any) => {
+          try {
+            let endpoint = '';
+            if (table === 'articles') endpoint = '/articles';
+            if (!endpoint) return resolve({ data: [data], error: null });
 
-export interface BlogPost {
-  id: string
-  title: string
-  slug: string
-  content: string
-  excerpt: string
-  featured_image_url?: string
-  author_name: string
-  category: string
-  tags: string[]
-  status: string
-  featured: boolean
-  view_count: number
-  estimated_read_time: number
-  meta_description?: string
-  published_at: string
-  created_at: string
-  updated_at: string
-}
+            const response = await fetch(`http://localhost:3001/api${endpoint}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(Array.isArray(data) ? data[0] : data)
+            });
+            const result = await response.json();
+            resolve({ data: [result.data], error: null });
+          } catch (error) {
+            resolve({ data: null, error });
+          }
+        };
+        return insertBuilder;
+      },
+      update: (data: any) => {
+        let updateBuilder: any = {
+          eq: () => updateBuilder,
+          select: () => updateBuilder,
+        };
+        updateBuilder.then = async (resolve: any) => {
+            resolve({ data: [data], error: null });
+        };
+        return updateBuilder;
+      },
+      delete: () => {
+        let deleteBuilder: any = {
+          eq: () => deleteBuilder,
+        };
+        deleteBuilder.then = async (resolve: any) => {
+            resolve({ data: [], error: null });
+        };
+        return deleteBuilder;
+      }
+    };
+  }
+};
 
-export interface NewsletterSubscriber {
-  id: string
-  email: string
-  name?: string
-  subscription_status: string
-  subscription_date: string
-  preferences: Record<string, any>
-  unsubscribe_token: string
-  last_email_sent?: string
-  created_at: string
-  updated_at: string
-}
-
-export interface ContactMessage {
-  id: string
-  name: string
-  email: string
-  subject: string
-  message: string
-  message_type: string
-  status: string
-  responded_at?: string
-  created_at: string
-}
-
-export interface GuestApplication {
-  id: string
-  name: string
-  email: string
-  company?: string
-  position?: string
-  bio: string
-  expertise_areas: string[]
-  linkedin_url?: string
-  website_url?: string
-  proposed_topics: string[]
-  status: string
-  notes?: string
-  interview_date?: string
-  created_at: string
-  updated_at: string
-}
+// Re-export the types
+export * from './api';
