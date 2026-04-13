@@ -3,8 +3,8 @@ nixPkgs = ["nodejs_22"]
 
 [phases.install]
 cmds = [
-  "npm install",
-  "cd server && npm install"
+  "npm ci",
+  "cd server && npm ci"
 ]
 
 [phases.build]
