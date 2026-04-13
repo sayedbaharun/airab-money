@@ -26,7 +26,7 @@ export const supabase = {
             }
 
             // Attempt to hit the new Railway Express backend
-            const response = await fetch(`http://localhost:3001/api${endpoint}`);
+            const response = await fetch(`/api${endpoint}`);
             if (!response.ok) throw new Error('API Error');
             const result = await response.json();
             resolve({ data: result.data || [], error: null });
@@ -48,7 +48,7 @@ export const supabase = {
             if (table === 'articles') endpoint = '/articles';
             if (!endpoint) return resolve({ data: [data], error: null });
 
-            const response = await fetch(`http://localhost:3001/api${endpoint}`, {
+            const response = await fetch(`/api${endpoint}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(Array.isArray(data) ? data[0] : data)
@@ -85,7 +85,7 @@ export const supabase = {
   functions: {
     invoke: async (functionName: string, options?: any) => {
       try {
-        const response = await fetch(`http://localhost:3001/api/functions/${functionName}`, {
+        const response = await fetch(`/api/functions/${functionName}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(options?.body || {})

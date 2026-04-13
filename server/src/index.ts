@@ -5,8 +5,13 @@ import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -89,7 +94,17 @@ app.post('/api/articles', async (req, res) => {
   }
 });
 
+// --- Serve the Vite frontend production build ---
+const distPath = path.resolve(__dirname, '../../dist');
+app.use(express.static(distPath));
+
+// SPA fallback: any non-API route serves index.html for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Serving static files from: ${distPath}`);
 });

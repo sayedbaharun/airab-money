@@ -7,7 +7,13 @@ const isProd = process.env.BUILD_MODE === 'prod'
 export default defineConfig({
   server: {
     port: process.env.PORT ? parseInt(process.env.PORT) : 5173,
-    host: true
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
