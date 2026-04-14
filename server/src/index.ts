@@ -590,7 +590,7 @@ app.post('/api/generate-article-image', async (req, res) => {
       output_format: 'png',
     })
 
-    const firstImage = image.data[0]
+    const firstImage = image.data?.[0]
     const imageUrl = firstImage?.b64_json
       ? `data:image/png;base64,${firstImage.b64_json}`
       : firstImage?.url || buildPlaceholderImage(prompt, imageType)
@@ -620,8 +620,39 @@ app.get('{*path}', (_req, res) => {
   res.sendFile(path.join(distPath, 'index.html'))
 })
 
-const PORT = process.env.PORT || 3001
-app.listen(Number(PORT), '0.0.0.0', () => {
-  console.log(`Server is running on 0.0.0.0:${PORT}`)
-  console.log(`Serving static files from: ${distPath}`)
+const PORT = Number(process.env.PORT || 3001)
+const HOST = '0.0.0.0'
+const FALLBACK_PORTS = [3000].filter((port) => port !== PORT)
+
+const startServer = (port: number, { optional = false }: { optional?: boolean } = {}) => {
+  const server = app.listen(port, HOST, () => {
+    const address = server.address()
+    const bind =
+      address && typeof address === 'object'
+        ? `${address.address}:${address.port}`
+        : String(address)
+
+    console.log(`Server is running on ${bind}`)
+    console.log(`Serving static files from: ${distPath}`)
+  })
+
+  server.on('error', (error: NodeJS.ErrnoException) => {
+    if (optional && error.code === 'EADDRINUSE') {
+      console.warn(`Skipping fallback port ${port}; already in use`)
+      return
+    }
+
+    console.error(`Failed to bind server on port ${port}`, error)
+
+    if (!optional) {
+      process.exit(1)
+    }
+  })
+
+  return server
+}
+
+startServer(PORT)
+FALLBACK_PORTS.forEach((port) => {
+  startServer(port, { optional: true })
 })
