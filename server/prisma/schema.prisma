@@ -76,13 +76,32 @@ model NewsletterSubscriber {
   id                  String   @id @default(uuid())
   email               String   @unique
   name                String?
-  subscription_status String   @default("active")
+  subscription_status String   @default("pending")
   subscription_date   DateTime @default(now())
   preferences         Json     @default("{}")
+  confirmation_token  String?  @unique
+  confirmed_at        DateTime?
   unsubscribe_token   String   @unique
   last_email_sent     DateTime?
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
+}
+
+model Presenter {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  role         String
+  bio          String   @db.Text
+  photo_url    String?
+  show_types   String[]
+  linkedin_url String?
+  twitter_url  String?
+  website_url  String?
+  featured     Boolean  @default(false)
+  display_order Int     @default(0)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model ContactMessage {

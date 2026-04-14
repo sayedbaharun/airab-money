@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Play, Download, Filter, Search, Calendar, Clock, User, Tag } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Play, Filter, Search, Calendar, Clock, User } from 'lucide-react'
 import { PodcastEpisode, getEpisodes } from '../lib/api'
+import AudioPlayer from '../components/AudioPlayer'
+
+const PAGE_SIZE = 12
 
 const EpisodesPage = () => {
   const [episodes, setEpisodes] = useState<PodcastEpisode[]>([])
@@ -9,16 +13,25 @@ const EpisodesPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedShowType, setSelectedShowType] = useState('all')
+  const [activeAudioId, setActiveAudioId] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
 
   const categories = ['all', 'Investment', 'Technology', 'Government', 'Startups', 'Research']
   const showTypes = ['all', 'Money Moves', 'Wisdom Wednesday', 'Future Friday']
 
   useEffect(() => {
+    setPage(1)
+  }, [selectedCategory, selectedShowType, searchTerm])
+
+  useEffect(() => {
+    let cancelled = false
     async function fetchEpisodes() {
       try {
-        const data = await getEpisodes({ status: 'published' })
-
-        let filteredData = data || []
+        const response = await getEpisodes({ status: 'published', page, pageSize: PAGE_SIZE })
+        if (cancelled) return
+        let filteredData = response.data || []
+        setTotal(response.pagination?.total || filteredData.length)
 
         if (selectedCategory !== 'all') {
           filteredData = filteredData.filter((episode) => episode.categories.includes(selectedCategory))
@@ -36,16 +49,19 @@ const EpisodesPage = () => {
           )
         }
         
-        setEpisodes(filteredData)
+        setEpisodes((prev) => (page === 1 ? filteredData : [...prev, ...filteredData]))
       } catch (error) {
         console.error('Error fetching episodes:', error)
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
     fetchEpisodes()
-  }, [selectedCategory, selectedShowType, searchTerm])
+    return () => {
+      cancelled = true
+    }
+  }, [selectedCategory, selectedShowType, searchTerm, page])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -230,20 +246,23 @@ const EpisodesPage = () => {
                     )}
                     
                     {/* Actions */}
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <button className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center">
-                        <Play className="w-4 h-4 mr-1" />
-                        Listen Now
-                      </button>
-                      <div className="flex space-x-2">
-                        <button className="text-gray-500 hover:text-gray-700 p-1">
-                          <Download className="w-4 h-4" />
+                    {activeAudioId === episode.id ? (
+                      <AudioPlayer src={episode.audio_url} title={episode.title} />
+                    ) : (
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <button
+                          onClick={() => setActiveAudioId(episode.id)}
+                          disabled={!episode.audio_url}
+                          className="text-blue-600 hover:text-blue-800 disabled:text-gray-300 font-medium text-sm flex items-center"
+                        >
+                          <Play className="w-4 h-4 mr-1" />
+                          {episode.audio_url ? 'Listen Now' : 'Coming soon'}
                         </button>
-                        <button className="text-gray-500 hover:text-gray-700 p-1">
-                          <Tag className="w-4 h-4" />
-                        </button>
+                        <Link to={`/episode/${episode.id}`} className="text-sm text-gray-500 hover:text-gray-700">
+                          Details →
+                        </Link>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -258,7 +277,7 @@ const EpisodesPage = () => {
                     ? 'Try adjusting your search criteria or filters.'
                     : 'New episodes coming soon! Subscribe to our newsletter to be notified.'}
                 </p>
-                <button 
+                <button
                   onClick={() => {
                     setSearchTerm('')
                     setSelectedCategory('all')
@@ -269,6 +288,18 @@ const EpisodesPage = () => {
                   Clear Filters
                 </button>
               </div>
+            </div>
+          )}
+
+          {episodes.length > 0 && episodes.length < total && (
+            <div className="text-center mt-12">
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={loading}
+                className="btn-primary"
+              >
+                {loading ? 'Loading…' : 'Load more episodes'}
+              </button>
             </div>
           )}
         </div>

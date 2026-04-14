@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { 
-  FileText, Settings, Plus, Save, Trash2, Edit, 
+import {
+  FileText, Settings, Plus, Save, Trash2, Edit,
   Copy, Download, RefreshCw, CheckCircle, AlertCircle,
-  ChevronDown, ChevronUp, BookOpen, Image, Check, X
+  ChevronDown, ChevronUp, BookOpen, Image, Check, X,
+  Mic, Users, Inbox, PenSquare,
 } from 'lucide-react'
 import {
   createArticle,
@@ -17,6 +18,10 @@ import {
   updateArticle,
   verifyAdminPassword,
 } from '../lib/api'
+import EpisodesManager from './admin/EpisodesManager'
+import BlogsManager from './admin/BlogsManager'
+import PresentersManager from './admin/PresentersManager'
+import InboxManager from './admin/InboxManager'
 
 // Types
 interface PromptTemplate {
@@ -102,7 +107,9 @@ const AdminPage: React.FC = () => {
   const articleSaveRequestRef = useRef<Promise<string> | null>(null)
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'generator' | 'templates' | 'articles'>('generator')
+  const [activeTab, setActiveTab] = useState<
+    'generator' | 'templates' | 'articles' | 'episodes' | 'blogs' | 'presenters' | 'inbox'
+  >('generator')
 
   // Auth handler
   const handleAuth = async (e: React.FormEvent) => {
@@ -126,12 +133,12 @@ const AdminPage: React.FC = () => {
   // Fetch articles
   const fetchArticles = async () => {
     try {
-      const data = await getArticles({
+      const response = await getArticles({
         sort: 'created_at',
         order: 'desc',
         limit: 50,
       })
-      setArticles(data || [])
+      setArticles(response.data || [])
     } catch (error) {
       console.error('Error fetching articles:', error)
     } finally {
@@ -704,7 +711,56 @@ const AdminPage: React.FC = () => {
             <FileText className="w-5 h-5 inline-block mr-2" />
             Articles
           </button>
+          <button
+            onClick={() => setActiveTab('episodes')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'episodes'
+                ? 'bg-gradient-to-r from-purple to-cyan text-white'
+                : 'bg-navy-light text-gray-400 hover:text-white'
+            }`}
+          >
+            <Mic className="w-5 h-5 inline-block mr-2" />
+            Episodes
+          </button>
+          <button
+            onClick={() => setActiveTab('blogs')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'blogs'
+                ? 'bg-gradient-to-r from-purple to-cyan text-white'
+                : 'bg-navy-light text-gray-400 hover:text-white'
+            }`}
+          >
+            <PenSquare className="w-5 h-5 inline-block mr-2" />
+            Blog
+          </button>
+          <button
+            onClick={() => setActiveTab('presenters')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'presenters'
+                ? 'bg-gradient-to-r from-purple to-cyan text-white'
+                : 'bg-navy-light text-gray-400 hover:text-white'
+            }`}
+          >
+            <Users className="w-5 h-5 inline-block mr-2" />
+            Presenters
+          </button>
+          <button
+            onClick={() => setActiveTab('inbox')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'inbox'
+                ? 'bg-gradient-to-r from-purple to-cyan text-white'
+                : 'bg-navy-light text-gray-400 hover:text-white'
+            }`}
+          >
+            <Inbox className="w-5 h-5 inline-block mr-2" />
+            Inbox
+          </button>
         </div>
+
+        {activeTab === 'episodes' && <EpisodesManager />}
+        {activeTab === 'blogs' && <BlogsManager />}
+        {activeTab === 'presenters' && <PresentersManager />}
+        {activeTab === 'inbox' && <InboxManager />}
 
         {/* Article Generator Tab */}
         {activeTab === 'generator' && (

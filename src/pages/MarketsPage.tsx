@@ -9,11 +9,13 @@ const MarketsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
 
   const [marketData, setMarketData] = useState<MarketData[]>([])
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
+  const [source, setSource] = useState<'finnhub' | 'fallback' | null>(null)
 
   const fetchMarketData = useCallback(async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const data = await getMarketData()
 
@@ -22,9 +24,11 @@ const MarketsPage: React.FC = () => {
       }
 
       const fetchedData = data.data as MarketData[]
-      
+
       if (fetchedData && fetchedData.length > 0) {
         setMarketData(fetchedData)
+        setUpdatedAt(data.updatedAt)
+        setSource(data.source || 'fallback')
       } else {
         throw new Error('No market data received')
       }
@@ -108,10 +112,17 @@ const MarketsPage: React.FC = () => {
           
           <div className="relative max-w-6xl mx-auto text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-sm text-green-500 font-medium">
-                {language === 'en' ? 'Live Data' : 'بيانات حية'}
+              <span className={`w-3 h-3 rounded-full ${source === 'finnhub' ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`}></span>
+              <span className={`text-sm font-medium ${source === 'finnhub' ? 'text-green-500' : 'text-amber-500'}`}>
+                {source === 'finnhub'
+                  ? language === 'en' ? 'Live Data' : 'بيانات حية'
+                  : language === 'en' ? 'Indicative / Snapshot' : 'بيانات إرشادية'}
               </span>
+              {updatedAt && (
+                <span className="text-xs text-muted-foreground ml-2">
+                  {language === 'en' ? 'Updated' : 'محدَّث'} {new Date(updatedAt).toLocaleTimeString()}
+                </span>
+              )}
             </div>
             
             <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6">

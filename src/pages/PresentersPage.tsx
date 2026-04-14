@@ -1,181 +1,111 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
-
-interface Presenter {
-  id: string
-  name: string
-  nameAr: string
-  role: string
-  roleAr: string
-  description: string
-  descriptionAr: string
-  image: string
-  voice: string
-  personality: string
-}
-
-const presenters: Presenter[] = [
-  {
-    id: 'ahmad',
-    name: 'Ahmad',
-    nameAr: 'أحمد',
-    role: 'Lead Presenter',
-    roleAr: 'المضيف الرئيسي',
-    description: 'Emirati financial expert with 15 years of experience in GCC markets. Specializes in stocks, commodities, and economic analysis.',
-    descriptionAr: 'خبير مالي إماراتي يتمتع بخبرة 15 عامًا في أسواق دول الخليج. متخصص في الأسهم والسلع والتحليل الاقتصادي.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    voice: ' Ahmad - Deep, authoritative voice with Emirati accent',
-    personality: 'Professional, insightful, and engaging'
-  },
-  {
-    id: 'aria',
-    name: 'ARIA',
-    nameAr: 'آريا',
-    role: 'AI Co-Host',
-    roleAr: 'مضيف ذكاء اصطناعي',
-    description: 'Advanced AI presenter specializing in crypto markets, blockchain technology, and emerging financial trends.',
-    descriptionAr: 'مقدمة ذكاء اصطناعي متقدمة متخصصة في أسواق العملات المشفرة وتقنية البلوكتشين والاتجاهات المالية الناشئة.',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-    voice: 'ARIA - Modern, friendly voice with neutral accent',
-    personality: 'Innovative, tech-savvy, and approachable'
-  },
-  {
-    id: 'khaled',
-    name: 'Khaled',
-    nameAr: 'خالد',
-    role: 'Market Analyst',
-    roleAr: 'محلل السوق',
-    description: 'Saudi financial analyst with deep expertise in oil markets, petrochemicals, and Saudi Vision 2030 investments.',
-    descriptionAr: 'محلل مالي سعودي يتمتع بخبرة عميقة في أسواق النفط والبتروكيماويات واستثمارات رؤية السعودية 2030.',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop',
-    voice: 'Khaled - Clear, analytical voice with Saudi accent',
-    personality: 'Analytical, detailed, and methodical'
-  },
-  {
-    id: 'fatima',
-    name: 'Fatima',
-    nameAr: 'فاطمة',
-    role: 'Tech & Crypto Expert',
-    roleAr: 'خبيرة التقنية والعملات المشفرة',
-    description: 'UAE-based tech analyst covering cryptocurrency, fintech innovations, and digital transformation in the Gulf.',
-    descriptionAr: 'محللة تقنية مقرها الإمارات تغطي العملات المشفرة والابتكارات المالية والتحول الرقمي في الخليج.',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
-    voice: 'Fatima - Energetic, modern voice with UAE accent',
-    personality: 'Dynamic, forward-thinking, and enthusiastic'
-  }
-]
+import { Linkedin, Twitter, Globe } from 'lucide-react'
+import { getPresenters, Presenter } from '../lib/api'
 
 const PresentersPage: React.FC = () => {
-  const [selectedPresenter, setSelectedPresenter] = useState<Presenter | null>(null)
-  const [language, setLanguage] = useState<'en' | 'ar'>('en')
+  const [presenters, setPresenters] = useState<Presenter[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    async function run() {
+      try {
+        const data = await getPresenters()
+        if (!cancelled) setPresenters(data || [])
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load presenters')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    run()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <>
       <Helmet>
-        <title>AI Presenters - AIRAB Money 2026</title>
-        <meta name="description" content="Meet our AI-powered financial presenters" />
+        <title>Presenters - AIRAB Money</title>
+        <meta name="description" content="Meet the presenters behind AIRAB Money's AI-focused shows for the Arab world and GCC region." />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <section className="relative py-20 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/10"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(102,126,234,0.15),transparent_70%)]"></div>
-          
-          <div className="relative max-w-6xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6">
-              {language === 'en' ? 'AI Presenters' : 'مضيفو الذكاء الاصطناعي'}
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              {language === 'en' 
-                ? 'Meet our revolutionary AI-powered financial presenters. Powered by advanced language models and voice synthesis.'
-                : 'قابلوا مضيفينا الماليين الثوريين المدعومين بالذكاء الاصطناعي. مدعومين بنماذج لغوية متقدمة وتركيب الصوت.'
-              }
-            </p>
-            
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-6 py-2 rounded-full transition-all ${language === 'en' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}
-              >
-                English
-              </button>
-              <button
-                onClick={() => setLanguage('ar')}
-                className={`px-6 py-2 rounded-full transition-all ${language === 'ar' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}
-              >
-                العربية
-              </button>
-            </div>
-          </div>
-        </section>
+      <section className="py-16 bg-gradient-brand text-white">
+        <div className="container-custom text-center max-w-4xl mx-auto">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4">Our Presenters</h1>
+          <p className="text-xl text-blue-100 leading-relaxed">
+            The voices behind Money Moves, Wisdom Wednesday, and Future Friday.
+          </p>
+        </div>
+      </section>
 
-        {/* Presenters Grid */}
-        <section className="py-16 px-4">
-          <div className="max-w-7xl mx-auto">
+      <section className="py-16">
+        <div className="container-custom">
+          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {presenters.map((presenter) => (
-                <div
-                  key={presenter.id}
-                  className="glass-card rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform"
-                  onClick={() => setSelectedPresenter(presenter)}
-                >
-                  <div className="relative mb-4">
-                    <img
-                      src={presenter.image}
-                      alt={presenter.name}
-                      className="w-full h-48 object-cover rounded-xl"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent rounded-xl"></div>
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-foreground mb-1">
-                    {language === 'en' ? presenter.name : presenter.nameAr}
-                  </h3>
-                  <p className="text-primary text-sm mb-2">
-                    {language === 'en' ? presenter.role : presenter.roleAr}
-                  </p>
-                  <p className="text-muted-foreground text-sm line-clamp-2">
-                    {language === 'en' ? presenter.description : presenter.descriptionAr}
-                  </p>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="card p-6 animate-pulse">
+                  <div className="aspect-square bg-gray-200 rounded-xl mb-4" />
+                  <div className="h-4 bg-gray-200 rounded mb-2" />
+                  <div className="h-3 bg-gray-200 rounded w-2/3" />
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Voice Demo Section - ONLY section kept */}
-        <section className="py-16 px-4 bg-card/50">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
+          ) : error ? (
+            <div className="text-center py-16 text-gray-600">{error}</div>
+          ) : presenters.length === 0 ? (
+            <div className="text-center py-16 text-gray-600">
+              Presenter profiles coming soon.
             </div>
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              {language === 'en' ? 'Try Voice Demo' : 'جرب تجربة الصوت'}
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              {language === 'en'
-                ? 'Experience our text-to-speech technology with different presenter voices'
-                : 'جرب تقنية تحويل النص إلى كلام مع أصوات مقدمين مختلفة'
-              }
-            </p>
-            
-            <Link
-              to="/demo"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-accent text-accent-foreground rounded-full font-semibold hover:opacity-90 transition-opacity"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {language === 'en' ? 'Go to Voice Demo Studio' : 'انتقل إلى استوديو الصوت'}
-            </Link>
-          </div>
-        </section>
-      </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {presenters.map((p) => (
+                <div key={p.id} className="card p-6 hover:shadow-xl transition-shadow">
+                  {p.photo_url ? (
+                    <img src={p.photo_url} alt={p.name} className="w-full aspect-square object-cover rounded-xl mb-4" />
+                  ) : (
+                    <div className="w-full aspect-square rounded-xl mb-4 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                      {p.name.charAt(0)}
+                    </div>
+                  )}
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">{p.name}</h3>
+                  <p className="text-blue-600 text-sm font-medium mb-2">{p.role}</p>
+                  <p className="text-gray-600 text-sm line-clamp-4 mb-3">{p.bio}</p>
+                  {p.show_types?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {p.show_types.map((show) => (
+                        <span key={show} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                          {show}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex gap-3 text-gray-400">
+                    {p.linkedin_url && (
+                      <a href={p.linkedin_url} target="_blank" rel="noreferrer" className="hover:text-gray-700">
+                        <Linkedin className="w-4 h-4" />
+                      </a>
+                    )}
+                    {p.twitter_url && (
+                      <a href={p.twitter_url} target="_blank" rel="noreferrer" className="hover:text-gray-700">
+                        <Twitter className="w-4 h-4" />
+                      </a>
+                    )}
+                    {p.website_url && (
+                      <a href={p.website_url} target="_blank" rel="noreferrer" className="hover:text-gray-700">
+                        <Globe className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
     </>
   )
 }

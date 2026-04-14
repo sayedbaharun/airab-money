@@ -16,33 +16,35 @@ const BlogPage = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const featured = await getBlogPosts({
+        const featuredResp = await getBlogPosts({
           status: 'published',
           featured: true,
           limit: 1,
         })
+        const featured = featuredResp.data || []
 
-        if (featured && featured.length > 0) {
+        if (featured.length > 0) {
           setFeaturedPost(featured[0])
         }
 
-        let filteredData = await getBlogPosts({
+        const listResp = await getBlogPosts({
           status: 'published',
           category: selectedCategory !== 'all' ? selectedCategory : undefined,
         })
-        
+        let filteredData = listResp.data || []
+
         if (searchTerm) {
-          filteredData = filteredData.filter(post => 
+          filteredData = filteredData.filter((post) =>
             post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.author_name.toLowerCase().includes(searchTerm.toLowerCase())
+            post.author_name.toLowerCase().includes(searchTerm.toLowerCase()),
           )
         }
-        
+
         if (featured[0]) {
-          filteredData = filteredData.filter(post => post.id !== featured[0].id)
+          filteredData = filteredData.filter((post) => post.id !== featured[0].id)
         }
-        
+
         setPosts(filteredData)
       } catch (error) {
         console.error('Error fetching posts:', error)

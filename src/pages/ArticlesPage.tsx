@@ -16,79 +16,20 @@ const ArticlesPage = () => {
   useEffect(() => {
     async function fetchArticles() {
       try {
-        const data = await getArticles({
+        const response = await getArticles({
           status: 'published',
           sort: 'published_at',
           order: 'desc',
           limit: 20,
         })
-        
-        if (data && data.length > 0) {
+
+        const data = response.data || []
+        if (data.length > 0) {
           setFeaturedArticle(data[0])
           setArticles(data.slice(1))
         }
       } catch (error) {
         console.error('Error fetching articles:', error)
-        // Fallback data
-        const fallbackArticles: Article[] = [
-          {
-            id: '1',
-            headline: 'Microsoft Launches AI Research Hub in Dubai, Fueling $1 Billion Middle East Investment',
-            content: 'In a strategic move to bolster its presence in the Gulf, Microsoft has unveiled a cutting-edge AI research and development center in Dubai, marking the cornerstone of a sweeping $1 billion investment across the Middle East.',
-            summary: 'Microsoft opens AI research center in Dubai as part of $1B Middle East investment',
-            category: 'AI',
-            tags: ['Microsoft', 'Dubai', 'Investment'],
-            status: 'published',
-            published_at: '2026-03-27',
-            created_at: '2026-03-27'
-          },
-          {
-            id: '2',
-            headline: 'UAE\'s G42 and Microsoft Join Forces with $1 Billion AI Infrastructure Fund',
-            content: 'In a groundbreaking move to transform the Middle East\'s technological landscape, Abu Dhabi-based G42 and Microsoft have announced a strategic partnership to establish a $1 billion AI infrastructure fund.',
-            summary: 'G42 and Microsoft partner on $1B AI infrastructure fund for Middle East',
-            category: 'AI',
-            tags: ['G42', 'Microsoft', 'UAE'],
-            status: 'published',
-            published_at: '2026-03-27',
-            created_at: '2026-03-27'
-          },
-          {
-            id: '3',
-            headline: 'Saudi Arabia Unveils Ambitious $10 Billion AI Initiative to Lead Global AI Innovation',
-            content: 'Saudi Arabia is making a significant stride toward becoming a global leader in artificial intelligence with the launch of a $10 billion AI initiative.',
-            summary: 'Saudi Arabia launches $10B AI initiative through Public Investment Fund',
-            category: 'AI',
-            tags: ['Saudi Arabia', 'AI', 'Vision 2030'],
-            status: 'published',
-            published_at: '2026-03-27',
-            created_at: '2026-03-27'
-          },
-          {
-            id: '4',
-            headline: 'Google Cloud\'s Ambitious AI Skills Program Targets 1 Million Learners in the Middle East',
-            content: 'In a bold move to bolster the Middle East\'s digital economy, Google Cloud has announced a $50 million initiative aimed at training one million residents in AI skills across the region.',
-            summary: 'Google Cloud launches AI skills program for 1 million Middle East residents',
-            category: 'AI',
-            tags: ['Google Cloud', 'Training', 'Skills'],
-            status: 'published',
-            published_at: '2026-03-27',
-            created_at: '2026-03-27'
-          },
-          {
-            id: '5',
-            headline: 'AI Surge: Abu Dhabi\'s Hub71-Backed Startup Secures $50 Million in Series B Funding',
-            content: 'In a significant boost to the Middle East\'s burgeoning tech landscape, an AI startup backed by Abu Dhabi\'s Hub71 has successfully raised $50 million in a Series B funding round.',
-            summary: 'Hub71 Abu Dhabi-backed AI startup raises $50M Series B funding',
-            category: 'AI',
-            tags: ['Hub71', 'Startup', 'Funding'],
-            status: 'published',
-            published_at: '2026-03-27',
-            created_at: '2026-03-27'
-          }
-        ]
-        setFeaturedArticle(fallbackArticles[0])
-        setArticles(fallbackArticles.slice(1))
       } finally {
         setLoading(false)
       }

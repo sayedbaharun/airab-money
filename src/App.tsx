@@ -8,6 +8,7 @@ import ArticlesPage from './pages/ArticlesPage'
 import ArticleDetailPage from './pages/ArticleDetailPage'
 import AboutPage from './pages/AboutPage'
 import EpisodesPage from './pages/EpisodesPage'
+import EpisodeDetailPage from './pages/EpisodeDetailPage'
 import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
 import PresentersPage from './pages/PresentersPage'
@@ -15,7 +16,11 @@ import MarketsPage from './pages/MarketsPage'
 import VoiceDemoPage from './pages/VoiceDemoPage'
 import AdminPage from './pages/AdminPage'
 import GuestApplicationPage from './pages/GuestApplicationPage'
+import NewsletterConfirmPage from './pages/NewsletterConfirmPage'
+import NewsletterUnsubscribePage from './pages/NewsletterUnsubscribePage'
 import './App.css'
+
+const voiceDemoEnabled = import.meta.env.VITE_ENABLE_VOICE_DEMO === 'true'
 
 function App() {
   return (
@@ -34,10 +39,13 @@ function App() {
 
               <Route path="/about" element={<AboutPage />} />
               <Route path="/episodes" element={<EpisodesPage />} />
+              <Route path="/episode/:id" element={<EpisodeDetailPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/guest-application" element={<GuestApplicationPage />} />
-              <Route path="/demo" element={<VoiceDemoPage />} />
+              <Route path="/newsletter/confirm" element={<NewsletterConfirmPage />} />
+              <Route path="/newsletter/unsubscribe" element={<NewsletterUnsubscribePage />} />
+              {voiceDemoEnabled && <Route path="/demo" element={<VoiceDemoPage />} />}
               <Route path="/admin" element={<AdminPage />} />
             </Routes>
           </main>
