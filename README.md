@@ -14,6 +14,7 @@ AIRAB Money is a Vite + React frontend with an Express API backed by Postgres vi
 Copy `.env.example` and provide:
 
 - `DATABASE_URL`: your Railway Postgres connection string
+- `ADMIN_PASSWORD`: required password for the `/admin` panel and admin-only API actions
 - `OPENAI_API_KEY`: optional, enables AI article and image generation
 - `OPENAI_TEXT_MODEL`: optional, defaults to `gpt-4o-mini`
 - `OPENAI_IMAGE_MODEL`: optional, defaults to `gpt-image-1`

@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 import OpenAI from 'openai'
 import path from 'path'
-import { randomUUID } from 'crypto'
+import { randomUUID, timingSafeEqual } from 'crypto'
 import { fileURLToPath } from 'url'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
@@ -22,9 +22,44 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPE
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const distPath = path.resolve(__dirname, '../../dist')
+const ADMIN_PASSWORD_HEADER = 'x-admin-password'
 
 app.use(cors())
 app.use(express.json({ limit: '2mb' }))
+
+const adminPasswordMatches = (candidate: unknown) => {
+  const configuredPassword = process.env.ADMIN_PASSWORD
+
+  if (typeof configuredPassword !== 'string' || configuredPassword.length === 0) {
+    return false
+  }
+
+  if (typeof candidate !== 'string') {
+    return false
+  }
+
+  const configuredPasswordBuffer = Buffer.from(configuredPassword)
+  const candidateBuffer = Buffer.from(candidate)
+
+  return (
+    configuredPasswordBuffer.length === candidateBuffer.length &&
+    timingSafeEqual(configuredPasswordBuffer, candidateBuffer)
+  )
+}
+
+const requireAdminAuth: express.RequestHandler = (req, res, next) => {
+  const configuredPassword = process.env.ADMIN_PASSWORD
+
+  if (typeof configuredPassword !== 'string' || configuredPassword.length === 0) {
+    return res.status(503).json({ error: 'ADMIN_PASSWORD is not configured' })
+  }
+
+  if (!adminPasswordMatches(req.header(ADMIN_PASSWORD_HEADER))) {
+    return res.status(401).json({ error: 'Invalid admin password' })
+  }
+
+  next()
+}
 
 const parseLimit = (value: unknown) => {
   const limit = Number(value)
@@ -43,6 +78,14 @@ const parseDate = (value: unknown) => {
 
   const parsed = new Date(value)
   return Number.isNaN(parsed.getTime()) ? undefined : parsed
+}
+
+const getRouteParam = (value: string | string[] | undefined) => {
+  if (Array.isArray(value)) {
+    return value[0]
+  }
+
+  return value
 }
 
 const normalizeStringArray = (value: unknown) => {
@@ -151,6 +194,24 @@ app.get('/api/health', async (_req, res) => {
   }
 })
 
+app.post('/api/admin/auth', (req, res) => {
+  const configuredPassword = process.env.ADMIN_PASSWORD
+
+  if (typeof configuredPassword !== 'string' || configuredPassword.length === 0) {
+    return res.status(503).json({ error: 'ADMIN_PASSWORD is not configured' })
+  }
+
+  if (!adminPasswordMatches(req.body.password)) {
+    return res.status(401).json({ error: 'Invalid admin password' })
+  }
+
+  res.json({
+    data: {
+      authenticated: true,
+    },
+  })
+})
+
 app.get('/api/articles', async (req, res) => {
   try {
     const status = typeof req.query.status === 'string' ? req.query.status : undefined
@@ -177,8 +238,14 @@ app.get('/api/articles', async (req, res) => {
 
 app.get('/api/articles/:id', async (req, res) => {
   try {
+    const articleId = getRouteParam(req.params.id)
+
+    if (!articleId) {
+      return res.status(400).json({ error: 'Article id is required' })
+    }
+
     const article = await prisma.article.findUnique({
-      where: { id: req.params.id },
+      where: { id: articleId },
     })
 
     if (!article) {
@@ -191,7 +258,7 @@ app.get('/api/articles/:id', async (req, res) => {
   }
 })
 
-app.post('/api/articles', async (req, res) => {
+app.post('/api/articles', requireAdminAuth, async (req, res) => {
   try {
     const {
       headline,
@@ -243,8 +310,14 @@ app.post('/api/articles', async (req, res) => {
   }
 })
 
-app.patch('/api/articles/:id', async (req, res) => {
+app.patch('/api/articles/:id', requireAdminAuth, async (req, res) => {
   try {
+    const articleId = getRouteParam(req.params.id)
+
+    if (!articleId) {
+      return res.status(400).json({ error: 'Article id is required' })
+    }
+
     const data: Prisma.ArticleUpdateInput = {}
 
     if (typeof req.body.headline === 'string') data.headline = req.body.headline
@@ -267,7 +340,7 @@ app.patch('/api/articles/:id', async (req, res) => {
     if (publishedAt !== undefined) data.published_at = publishedAt
 
     const article = await prisma.article.update({
-      where: { id: req.params.id },
+      where: { id: articleId },
       data,
     })
 
@@ -277,10 +350,16 @@ app.patch('/api/articles/:id', async (req, res) => {
   }
 })
 
-app.delete('/api/articles/:id', async (req, res) => {
+app.delete('/api/articles/:id', requireAdminAuth, async (req, res) => {
   try {
+    const articleId = getRouteParam(req.params.id)
+
+    if (!articleId) {
+      return res.status(400).json({ error: 'Article id is required' })
+    }
+
     await prisma.article.delete({
-      where: { id: req.params.id },
+      where: { id: articleId },
     })
 
     res.status(204).send()
@@ -466,7 +545,7 @@ app.get('/api/market-data', (_req, res) => {
   })
 })
 
-app.post('/api/generate-article', async (req, res) => {
+app.post('/api/generate-article', requireAdminAuth, async (req, res) => {
   try {
     const topic = typeof req.body.topic === 'string' ? req.body.topic.trim() : ''
     const wordCount = Number(req.body.word_count) || 750
@@ -523,7 +602,7 @@ app.post('/api/generate-article', async (req, res) => {
   }
 })
 
-app.post('/api/generate-image-prompts', async (req, res) => {
+app.post('/api/generate-image-prompts', requireAdminAuth, async (req, res) => {
   try {
     const headline = typeof req.body.headline === 'string' ? req.body.headline.trim() : ''
     const content = typeof req.body.content === 'string' ? req.body.content.trim() : ''
@@ -565,7 +644,7 @@ app.post('/api/generate-image-prompts', async (req, res) => {
   }
 })
 
-app.post('/api/generate-article-image', async (req, res) => {
+app.post('/api/generate-article-image', requireAdminAuth, async (req, res) => {
   try {
     const prompt = typeof req.body.prompt === 'string' ? req.body.prompt.trim() : ''
     const imageType = req.body.imageType === 'inline' ? 'inline' : 'hero'

@@ -1,4 +1,11 @@
 export const API_BASE_URL = '/api'
+const ADMIN_PASSWORD_STORAGE_KEY = 'airab_admin_password'
+const ADMIN_PASSWORD_HEADER = 'x-admin-password'
+
+type ApiRequestOptions = RequestInit & {
+  adminPassword?: string | null
+  requireAdminAuth?: boolean
+}
 
 interface ApiEnvelope<T> {
   data: T
@@ -179,13 +186,48 @@ export interface ApiMessageResult {
   application_id?: string
 }
 
-export const apiFetch = async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
+export interface AdminAuthResult {
+  authenticated: boolean
+}
+
+export const getAdminPassword = () => {
+  if (typeof window === 'undefined') return null
+  return window.sessionStorage.getItem(ADMIN_PASSWORD_STORAGE_KEY)
+}
+
+export const setAdminPassword = (password: string | null) => {
+  if (typeof window === 'undefined') return
+
+  if (password) {
+    window.sessionStorage.setItem(ADMIN_PASSWORD_STORAGE_KEY, password)
+    return
+  }
+
+  window.sessionStorage.removeItem(ADMIN_PASSWORD_STORAGE_KEY)
+}
+
+const buildHeaders = (headers?: HeadersInit, adminPassword?: string | null) => {
+  const mergedHeaders = new Headers(headers)
+
+  if (!mergedHeaders.has('Content-Type')) {
+    mergedHeaders.set('Content-Type', 'application/json')
+  }
+
+  if (adminPassword) {
+    mergedHeaders.set(ADMIN_PASSWORD_HEADER, adminPassword)
+  }
+
+  return mergedHeaders
+}
+
+export const apiFetch = async <T>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> => {
+  const { adminPassword, headers, requireAdminAuth, ...requestOptions } = options
+  const resolvedAdminPassword =
+    adminPassword !== undefined ? adminPassword : requireAdminAuth ? getAdminPassword() : null
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-    ...options,
+    ...requestOptions,
+    headers: buildHeaders(headers, resolvedAdminPassword),
   })
 
   if (!response.ok) {
@@ -233,6 +275,7 @@ export const createArticle = async (payload: Partial<Article>) => {
   const response = await apiFetch<ApiEnvelope<Article>>('/articles', {
     method: 'POST',
     body: JSON.stringify(payload),
+    requireAdminAuth: true,
   })
   return response.data
 }
@@ -241,6 +284,7 @@ export const updateArticle = async (id: string, payload: Partial<Article>) => {
   const response = await apiFetch<ApiEnvelope<Article>>(`/articles/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
+    requireAdminAuth: true,
   })
   return response.data
 }
@@ -248,6 +292,7 @@ export const updateArticle = async (id: string, payload: Partial<Article>) => {
 export const deleteArticle = async (id: string) => {
   await apiFetch<void>(`/articles/${id}`, {
     method: 'DELETE',
+    requireAdminAuth: true,
   })
 }
 
@@ -306,6 +351,7 @@ export const generateArticle = async (payload: ArticleGenerationInput) => {
   return apiFetch<GeneratedArticle>('/generate-article', {
     method: 'POST',
     body: JSON.stringify(payload),
+    requireAdminAuth: true,
   })
 }
 
@@ -313,6 +359,7 @@ export const generateImagePrompts = async (payload: { content: string; headline:
   const response = await apiFetch<ApiEnvelope<ImagePromptResult>>('/generate-image-prompts', {
     method: 'POST',
     body: JSON.stringify(payload),
+    requireAdminAuth: true,
   })
   return response.data
 }
@@ -321,6 +368,16 @@ export const generateArticleImage = async (payload: { prompt: string; imageType:
   const response = await apiFetch<ApiEnvelope<GeneratedImageResult>>('/generate-article-image', {
     method: 'POST',
     body: JSON.stringify(payload),
+    requireAdminAuth: true,
+  })
+  return response.data
+}
+
+export const verifyAdminPassword = async (password: string) => {
+  const response = await apiFetch<ApiEnvelope<AdminAuthResult>>('/admin/auth', {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+    adminPassword: null,
   })
   return response.data
 }

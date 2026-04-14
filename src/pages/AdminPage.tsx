@@ -10,9 +10,12 @@ import {
   deleteArticle as removeArticle,
   generateArticle as requestArticleGeneration,
   generateArticleImage,
+  getAdminPassword,
   generateImagePrompts as requestImagePrompts,
   getArticles,
+  setAdminPassword,
   updateArticle,
+  verifyAdminPassword,
 } from '../lib/api'
 
 // Types
@@ -41,11 +44,10 @@ interface AdminArticle {
   inline_image_prompt?: string
 }
 
-// Simple admin auth
-const ADMIN_PASSWORD = 'airab_admin_2026'
-
 const AdminPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [checkingStoredAuth, setCheckingStoredAuth] = useState(true)
+  const [authenticating, setAuthenticating] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
 
@@ -99,13 +101,21 @@ const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'generator' | 'templates' | 'articles'>('generator')
 
   // Auth handler
-  const handleAuth = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
+    setAuthenticating(true)
+    setAuthError('')
+
+    try {
+      await verifyAdminPassword(password)
+      setAdminPassword(password)
       setIsAuthenticated(true)
-      setAuthError('')
-    } else {
-      setAuthError('Invalid password')
+    } catch (error) {
+      setAdminPassword(null)
+      setIsAuthenticated(false)
+      setAuthError(error instanceof Error ? error.message : 'Invalid password')
+    } finally {
+      setAuthenticating(false)
     }
   }
 
@@ -471,6 +481,32 @@ const AdminPage: React.FC = () => {
   }
 
   useEffect(() => {
+    const storedPassword = getAdminPassword()
+
+    if (!storedPassword) {
+      setCheckingStoredAuth(false)
+      return
+    }
+
+    const restoreAuth = async () => {
+      try {
+        await verifyAdminPassword(storedPassword)
+        setPassword(storedPassword)
+        setIsAuthenticated(true)
+        setAuthError('')
+      } catch {
+        setAdminPassword(null)
+        setPassword('')
+        setIsAuthenticated(false)
+      } finally {
+        setCheckingStoredAuth(false)
+      }
+    }
+
+    restoreAuth()
+  }, [])
+
+  useEffect(() => {
     if (isAuthenticated) {
       fetchArticles()
       fetchTemplates()
@@ -478,6 +514,23 @@ const AdminPage: React.FC = () => {
   }, [isAuthenticated])
 
   // Auth form
+  if (checkingStoredAuth) {
+    return (
+      <div className="min-h-screen bg-navy flex items-center justify-center p-4">
+        <Helmet>
+          <title>Admin Login - AIRAB Money</title>
+        </Helmet>
+        <div className="bg-navy-light border border-purple/30 rounded-xl p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple to-cyan rounded-full mx-auto mb-4 flex items-center justify-center">
+            <Settings className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-heading font-bold text-white">Admin Access</h1>
+          <p className="text-gray-400 mt-2">Checking saved admin session...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-navy flex items-center justify-center p-4">
@@ -510,9 +563,10 @@ const AdminPage: React.FC = () => {
             )}
             <button
               type="submit"
+              disabled={authenticating}
               className="w-full bg-gradient-to-r from-purple to-cyan text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity"
             >
-              Login
+              {authenticating ? 'Checking...' : 'Login'}
             </button>
           </form>
         </div>
@@ -540,7 +594,12 @@ const AdminPage: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => setIsAuthenticated(false)}
+              onClick={() => {
+                setAdminPassword(null)
+                setIsAuthenticated(false)
+                setPassword('')
+                setAuthError('')
+              }}
               className="text-gray-400 hover:text-white text-sm"
             >
               Logout
