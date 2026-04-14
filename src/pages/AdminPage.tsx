@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { 
   FileText, Settings, Plus, Save, Trash2, Edit, 
@@ -60,6 +60,8 @@ const AdminPage: React.FC = () => {
   const [generating, setGenerating] = useState(false)
   const [generationError, setGenerationError] = useState('')
   const [savedArticleId, setSavedArticleId] = useState<string | null>(null)
+  const [savingArticle, setSavingArticle] = useState(false)
+  const [articleSaveMessage, setArticleSaveMessage] = useState('')
   
   // Image Prompt Generation State
   const [showImagePromptsSection, setShowImagePromptsSection] = useState(false)
@@ -73,6 +75,7 @@ const AdminPage: React.FC = () => {
   const [heroImageApproved, setHeroImageApproved] = useState(false)
   const [inlineImageApproved, setInlineImageApproved] = useState(false)
   const [imageError, setImageError] = useState('')
+  const [savingApprovedImages, setSavingApprovedImages] = useState(false)
   
   // Articles State
   const [articles, setArticles] = useState<AdminArticle[]>([])
@@ -96,6 +99,7 @@ const AdminPage: React.FC = () => {
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [templateName, setTemplateName] = useState('')
   const [editingTemplate, setEditingTemplate] = useState<PromptTemplate | null>(null)
+  const articleSaveRequestRef = useRef<Promise<string> | null>(null)
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'generator' | 'templates' | 'articles'>('generator')
@@ -197,6 +201,8 @@ const AdminPage: React.FC = () => {
     setGeneratedArticle('')
     setGeneratedHeadline('')
     setSavedArticleId(null)
+    articleSaveRequestRef.current = null
+    setArticleSaveMessage('')
     setShowImagePromptsSection(false)
     setHeroPrompt('')
     setInlinePrompt('')
@@ -228,47 +234,94 @@ const AdminPage: React.FC = () => {
     }
   }
 
-  // Save article to database
-  const saveArticle = async () => {
-    if (!generatedArticle.trim()) return
+  const buildGeneratedArticleData = () => ({
+    headline: generatedHeadline || topic.substring(0, 60),
+    content: generatedArticle,
+    summary: generatedArticle.substring(0, 200) + '...',
+    category: 'AI',
+    tags: ['generated', 'airab-money'],
+    status: 'published',
+    published_at: new Date().toISOString(),
+  })
+
+  const persistGeneratedArticle = async () => {
+    if (savedArticleId) {
+      return savedArticleId
+    }
+
+    if (articleSaveRequestRef.current) {
+      return articleSaveRequestRef.current
+    }
+
+    const request = (async () => {
+      const createdArticle = await createArticle(buildGeneratedArticleData())
+      setSavedArticleId(createdArticle.id)
+      fetchArticles()
+      return createdArticle.id
+    })()
+
+    articleSaveRequestRef.current = request
 
     try {
-      const articleData = {
-        headline: generatedHeadline || topic.substring(0, 60),
-        content: generatedArticle,
-        summary: generatedArticle.substring(0, 200) + '...',
-        category: 'AI',
-        tags: ['generated', 'airab-money'],
-        status: 'published',
-        published_at: new Date().toISOString(),
-        created_at: new Date().toISOString()
-      }
+      return await request
+    } finally {
+      articleSaveRequestRef.current = null
+    }
+  }
 
-      const createdArticle = await createArticle(articleData)
+  // Save article to database
+  const saveArticle = async () => {
+    if (!generatedArticle.trim() || savingArticle) return
 
-      if (createdArticle) {
-        setSavedArticleId(createdArticle.id)
-      }
-      
-      // Show image prompts section after saving
+    const alreadySaved = Boolean(savedArticleId)
+    setSavingArticle(true)
+    setGenerationError('')
+    setArticleSaveMessage(alreadySaved ? 'Article already saved.' : 'Saving article...')
+
+    try {
+      await persistGeneratedArticle()
+      setArticleSaveMessage(alreadySaved ? 'Article already saved.' : 'Article saved successfully.')
       setShowImagePromptsSection(true)
     } catch (error) {
       console.error('Error saving article:', error)
       setGenerationError('Failed to save article')
+      setArticleSaveMessage('')
+    } finally {
+      setSavingArticle(false)
+    }
+  }
+
+  const openImageTools = async () => {
+    if (!generatedArticle.trim()) return
+
+    setShowImagePromptsSection(true)
+    setImageError('')
+
+    if (heroPrompt || inlinePrompt || generatingPrompts) {
+      return
+    }
+
+    try {
+      await generateImagePrompts()
+    } catch (error) {
+      console.error('Error opening image tools:', error)
     }
   }
 
   // Generate image prompts from article content
   const generateImagePrompts = async () => {
-    if (!generatedArticle || !generatedHeadline) return
+    const promptHeadline = generatedHeadline || topic.substring(0, 60)
 
+    if (!generatedArticle || !promptHeadline) return
+
+    setShowImagePromptsSection(true)
     setGeneratingPrompts(true)
     setImageError('')
 
     try {
       const data = await requestImagePrompts({
         content: generatedArticle,
-        headline: generatedHeadline,
+        headline: promptHeadline,
       })
       
       if (data) {
@@ -351,9 +404,13 @@ const AdminPage: React.FC = () => {
 
   // Save approved images to article
   const saveImagesToArticle = async () => {
-    if (!savedArticleId) return
+    if (savingApprovedImages) return
+
+    setSavingApprovedImages(true)
+    setImageError('')
 
     try {
+      const articleId = await persistGeneratedArticle()
       const updateData: Record<string, any> = {}
       
       if (heroImageApproved && heroImageUrl) {
@@ -369,12 +426,13 @@ const AdminPage: React.FC = () => {
 
       if (Object.keys(updateData).length === 0) return
 
-      await updateArticle(savedArticleId, updateData)
+      await updateArticle(articleId, updateData)
 
       // Clear form
       setGeneratedArticle('')
       setGeneratedHeadline('')
       setTopic('')
+      setArticleSaveMessage('')
       setShowImagePromptsSection(false)
       setHeroPrompt('')
       setInlinePrompt('')
@@ -390,6 +448,8 @@ const AdminPage: React.FC = () => {
     } catch (error) {
       console.error('Error saving images:', error)
       setImageError('Failed to save images to article')
+    } finally {
+      setSavingApprovedImages(false)
     }
   }
 
@@ -744,7 +804,7 @@ const AdminPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-heading font-bold text-white">Generated Article</h2>
                   {generatedArticle && (
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2 justify-end">
                       <button
                         onClick={() => copyToClipboard(generatedHeadline + '\n\n' + generatedArticle)}
                         className="p-2 bg-navy rounded-lg text-gray-400 hover:text-white transition-colors"
@@ -753,11 +813,40 @@ const AdminPage: React.FC = () => {
                         <Copy className="w-5 h-5" />
                       </button>
                       <button
-                        onClick={saveArticle}
-                        className="p-2 bg-navy rounded-lg text-green-400 hover:text-green-300 transition-colors"
-                        title="Save to database"
+                        onClick={openImageTools}
+                        disabled={generatingPrompts || generatingImages}
+                        className="flex items-center gap-2 px-4 py-2 bg-navy rounded-lg text-cyan hover:text-white transition-colors disabled:opacity-50"
+                        title="Generate images"
                       >
-                        <Save className="w-5 h-5" />
+                        {generatingPrompts ? (
+                          <RefreshCw className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Image className="w-5 h-5" />
+                        )}
+                        Generate Images
+                      </button>
+                      <button
+                        onClick={saveArticle}
+                        disabled={savingArticle || Boolean(savedArticleId)}
+                        className="flex items-center gap-2 px-4 py-2 bg-navy rounded-lg text-green-400 hover:text-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={savedArticleId ? 'Article already saved' : 'Save to database'}
+                      >
+                        {savingArticle ? (
+                          <>
+                            <RefreshCw className="w-5 h-5 animate-spin" />
+                            Saving...
+                          </>
+                        ) : savedArticleId ? (
+                          <>
+                            <CheckCircle className="w-5 h-5" />
+                            Saved
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-5 h-5" />
+                            Save Article
+                          </>
+                        )}
                       </button>
                     </div>
                   )}
@@ -777,6 +866,16 @@ const AdminPage: React.FC = () => {
                       <CheckCircle className="w-5 h-5" />
                       Article generated successfully
                     </div>
+                    {articleSaveMessage && (
+                      <div className="flex items-center gap-2 text-cyan text-sm">
+                        {savingArticle ? (
+                          <RefreshCw className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <CheckCircle className="w-5 h-5" />
+                        )}
+                        {articleSaveMessage}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="bg-navy rounded-lg p-8 text-center">
@@ -788,7 +887,7 @@ const AdminPage: React.FC = () => {
             </div>
 
             {/* Image Prompts Section */}
-            {showImagePromptsSection && generatedArticle && (
+            {generatedArticle && showImagePromptsSection && (
               <div className="bg-navy-light border border-purple/30 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-heading font-bold text-white flex items-center gap-2">
@@ -996,10 +1095,20 @@ const AdminPage: React.FC = () => {
                       <div className="flex justify-end pt-4 border-t border-purple/30">
                         <button
                           onClick={saveImagesToArticle}
-                          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                          disabled={savingApprovedImages}
+                          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Save className="w-5 h-5" />
-                          Save Approved Images
+                          {savingApprovedImages ? (
+                            <>
+                              <RefreshCw className="w-5 h-5 animate-spin" />
+                              Saving Images...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="w-5 h-5" />
+                              Save Approved Images
+                            </>
+                          )}
                         </button>
                       </div>
                     )}
