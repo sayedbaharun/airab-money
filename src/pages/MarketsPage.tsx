@@ -1,15 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { supabase } from '../lib/supabase'
-
-interface MarketData {
-  symbol: string
-  name: string
-  price: number
-  change: number
-  changePercent: number
-  type: 'stock' | 'crypto' | 'commodity' | 'gcc' | 'index' | 'middleeast'
-}
+import { MarketData, getMarketData } from '../lib/api'
 
 const MarketsPage: React.FC = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en')
@@ -24,17 +15,10 @@ const MarketsPage: React.FC = () => {
     setError(null)
     
     try {
-      // Call the Supabase edge function for market data
-      const { data, error: fnError } = await supabase.functions.invoke('market-data', {
-        method: 'GET'
-      });
-
-      if (fnError) {
-        throw new Error(fnError.message)
-      }
+      const data = await getMarketData()
 
       if (!data?.success) {
-        throw new Error(data?.error || 'Failed to fetch market data')
+        throw new Error('Failed to fetch market data')
       }
 
       const fetchedData = data.data as MarketData[]

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { Calendar, Tag, ArrowLeft, Share2, Bookmark } from 'lucide-react'
-import { supabase, Article } from '../lib/supabase'
+import { Article, getArticle } from '../lib/api'
 
 const ArticleDetailPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -19,13 +19,7 @@ const ArticleDetailPage = () => {
       }
 
       try {
-        const { data, error: fetchError } = await supabase
-          .from('articles')
-          .select('*')
-          .eq('id', id)
-          .single()
-
-        if (fetchError) throw fetchError
+        const data = await getArticle(id)
         setArticle(data)
       } catch (err) {
         console.error('Error fetching article:', err)

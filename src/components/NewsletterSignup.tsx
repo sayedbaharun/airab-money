@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { subscribeToNewsletter } from '../lib/api'
 
 interface SubscriptionResponse {
   data?: {
@@ -35,21 +35,15 @@ const NewsletterSignup = () => {
     setMessage('')
 
     try {
-      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
-        body: {
-          email: email.trim(),
-          name: name.trim() || null,
-          preferences: {
-            weekly_newsletter: true,
-            episode_notifications: true,
-            ai_updates: true
-          }
-        }
-      }) as { data: SubscriptionResponse['data'], error: SubscriptionResponse['error'] }
-
-      if (error) {
-        throw new Error(error.message || 'Subscription failed')
-      }
+      const data = await subscribeToNewsletter({
+        email: email.trim(),
+        name: name.trim() || null,
+        preferences: {
+          weekly_newsletter: true,
+          episode_notifications: true,
+          ai_updates: true,
+        },
+      }) as SubscriptionResponse['data']
 
       if (data) {
         setStatus('success')

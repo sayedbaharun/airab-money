@@ -1,50 +1,70 @@
-# React + TypeScript + Vite
+# AIRAB Money
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AIRAB Money is a Vite + React frontend with an Express API backed by Postgres via Prisma. The backend is fully local to this repo and is configured to use a Railway Postgres database through `DATABASE_URL`.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Frontend: React, Vite, TypeScript, Tailwind
+- Backend: Express, TypeScript
+- Database: Railway Postgres via Prisma
+- Hosting: `nixpacks.toml` is configured for Railway single-service deploys
 
-## Expanding the ESLint configuration
+## Environment
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Copy `.env.example` and provide:
 
-- Configure the top-level `parserOptions` property like this:
+- `DATABASE_URL`: your Railway Postgres connection string
+- `OPENAI_API_KEY`: optional, enables AI article and image generation
+- `OPENAI_TEXT_MODEL`: optional, defaults to `gpt-4o-mini`
+- `OPENAI_IMAGE_MODEL`: optional, defaults to `gpt-image-1`
+- `PORT`: optional, defaults to `3001`
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+For local backend development, place the env file in `/Users/sayedbaharun/Downloads/airab-money/server/.env` or export the variables in your shell before starting the server.
+
+## Local Development
+
+Install dependencies:
+
+```sh
+npm install
+cd server && npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Push the Prisma schema to your Railway Postgres database:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+cd server
+npm run db:push
 ```
+
+Run the frontend and backend in separate terminals:
+
+```sh
+npm run dev
+```
+
+```sh
+cd server
+npm run dev
+```
+
+The Vite dev server proxies `/api` requests to `http://localhost:3001`.
+
+## Production Build
+
+```sh
+npm run build
+```
+
+The production server serves the built frontend from `dist/` and the API from the same process.
+
+## Deploying
+
+`nixpacks.toml` is configured for Railway to:
+
+1. install root and server dependencies
+2. run `prisma db push` against `DATABASE_URL`
+3. build the frontend
+4. start the Express server
+
+Before deploying on Railway, make sure the service has the same environment variables defined, especially `DATABASE_URL` from your Railway Postgres instance.

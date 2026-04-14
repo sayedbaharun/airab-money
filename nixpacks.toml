@@ -9,7 +9,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "cd server && npx prisma generate",
+  "cd server && npx prisma db push && npx prisma generate",
   "npx tsc -b",
   "npx vite build"
 ]

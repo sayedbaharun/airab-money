@@ -5,7 +5,15 @@ import {
   Copy, Download, RefreshCw, CheckCircle, AlertCircle,
   ChevronDown, ChevronUp, BookOpen, Image, Check, X
 } from 'lucide-react'
-import { supabase, Article } from '../lib/supabase'
+import {
+  createArticle,
+  deleteArticle as removeArticle,
+  generateArticle as requestArticleGeneration,
+  generateArticleImage,
+  generateImagePrompts as requestImagePrompts,
+  getArticles,
+  updateArticle,
+} from '../lib/api'
 
 // Types
 interface PromptTemplate {
@@ -25,7 +33,7 @@ interface AdminArticle {
   category: string
   tags: string[]
   status: string
-  published_at: string
+  published_at?: string | null
   created_at: string
   hero_image_url?: string
   inline_image_url?: string
@@ -33,7 +41,7 @@ interface AdminArticle {
   inline_image_prompt?: string
 }
 
-// Simple admin auth - in production use proper Supabase Auth
+// Simple admin auth
 const ADMIN_PASSWORD = 'airab_admin_2026'
 
 const AdminPage: React.FC = () => {
@@ -104,13 +112,11 @@ const AdminPage: React.FC = () => {
   // Fetch articles
   const fetchArticles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50)
-      
-      if (error) throw error
+      const data = await getArticles({
+        sort: 'created_at',
+        order: 'desc',
+        limit: 50,
+      })
       setArticles(data || [])
     } catch (error) {
       console.error('Error fetching articles:', error)
@@ -169,7 +175,7 @@ const AdminPage: React.FC = () => {
     setActiveTab('generator')
   }
 
-  // Generate article using Supabase Edge Function
+  // Generate article through the local API
   const generateArticle = async () => {
     if (!topic.trim()) {
       setGenerationError('Please enter a topic or news source')
@@ -190,25 +196,11 @@ const AdminPage: React.FC = () => {
     setInlineImageApproved(false)
 
     try {
-      const response = await fetch('https://legcfikbspvftdqpdvxg.supabase.co/functions/v1/generate-article', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI'
-        },
-        body: JSON.stringify({
-          topic: topic,
-          word_count: wordCount,
-          style: style
-        })
+      const data = await requestArticleGeneration({
+        topic,
+        word_count: wordCount,
+        style,
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to generate article')
-      }
-
-      const data = await response.json()
       
       if (data.headline) {
         setGeneratedHeadline(data.headline)
@@ -242,15 +234,10 @@ const AdminPage: React.FC = () => {
         created_at: new Date().toISOString()
       }
 
-      const { data, error } = await supabase
-        .from('articles')
-        .insert([articleData])
-        .select()
+      const createdArticle = await createArticle(articleData)
 
-      if (error) throw error
-
-      if (data && data[0]) {
-        setSavedArticleId(data[0].id)
+      if (createdArticle) {
+        setSavedArticleId(createdArticle.id)
       }
       
       // Show image prompts section after saving
@@ -269,28 +256,14 @@ const AdminPage: React.FC = () => {
     setImageError('')
 
     try {
-      const response = await fetch('https://legcfikbspvftdqpdvxg.supabase.co/functions/v1/generate-image-prompts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI'
-        },
-        body: JSON.stringify({
-          content: generatedArticle,
-          headline: generatedHeadline
-        })
+      const data = await requestImagePrompts({
+        content: generatedArticle,
+        headline: generatedHeadline,
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to generate image prompts')
-      }
-
-      const data = await response.json()
       
-      if (data.data) {
-        setHeroPrompt(data.data.hero_prompt || '')
-        setInlinePrompt(data.data.inline_prompt || '')
+      if (data) {
+        setHeroPrompt(data.hero_prompt || '')
+        setInlinePrompt(data.inline_prompt || '')
         setPromptsReviewed(false)
         setHeroImageUrl(null)
         setInlineImageUrl(null)
@@ -313,50 +286,20 @@ const AdminPage: React.FC = () => {
     setImageError('')
 
     try {
-      // Generate hero image
-      const heroResponse = await fetch('https://legcfikbspvftdqpdvxg.supabase.co/functions/v1/generate-article-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI'
-        },
-        body: JSON.stringify({
-          prompt: heroPrompt,
-          imageType: 'hero'
-        })
+      const heroData = await generateArticleImage({
+        prompt: heroPrompt,
+        imageType: 'hero',
       })
-
-      if (!heroResponse.ok) {
-        throw new Error('Failed to generate hero image')
+      if (heroData.imageUrl) {
+        setHeroImageUrl(heroData.imageUrl)
       }
 
-      const heroData = await heroResponse.json()
-      if (heroData.data?.imageUrl) {
-        setHeroImageUrl(heroData.data.imageUrl)
-      }
-
-      // Generate inline image
-      const inlineResponse = await fetch('https://legcfikbspvftdqpdvxg.supabase.co/functions/v1/generate-article-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI'
-        },
-        body: JSON.stringify({
-          prompt: inlinePrompt,
-          imageType: 'inline'
-        })
+      const inlineData = await generateArticleImage({
+        prompt: inlinePrompt,
+        imageType: 'inline',
       })
-
-      if (!inlineResponse.ok) {
-        throw new Error('Failed to generate inline image')
-      }
-
-      const inlineData = await inlineResponse.json()
-      if (inlineData.data?.imageUrl) {
-        setInlineImageUrl(inlineData.data.imageUrl)
+      if (inlineData.imageUrl) {
+        setInlineImageUrl(inlineData.imageUrl)
       }
     } catch (error) {
       console.error('Error generating images:', error)
@@ -375,30 +318,16 @@ const AdminPage: React.FC = () => {
     setImageError('')
 
     try {
-      const response = await fetch('https://legcfikbspvftdqpdvxg.supabase.co/functions/v1/generate-article-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2NmaWtic3B2ZnRkcXBkdnhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzA5NDcsImV4cCI6MjA5MDIwNjk0N30.7kWYYWi0H2k1ARA0tK6x7o-KtAKdYhLb3AjV7y3MYDI'
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          imageType: type
-        })
+      const data = await generateArticleImage({
+        prompt,
+        imageType: type,
       })
-
-      if (!response.ok) {
-        throw new Error(`Failed to regenerate ${type} image`)
-      }
-
-      const data = await response.json()
-      if (data.data?.imageUrl) {
+      if (data.imageUrl) {
         if (type === 'hero') {
-          setHeroImageUrl(data.data.imageUrl)
+          setHeroImageUrl(data.imageUrl)
           setHeroImageApproved(false)
         } else {
-          setInlineImageUrl(data.data.imageUrl)
+          setInlineImageUrl(data.imageUrl)
           setInlineImageApproved(false)
         }
       }
@@ -418,6 +347,8 @@ const AdminPage: React.FC = () => {
       const updateData: Record<string, any> = {}
       
       if (heroImageApproved && heroImageUrl) {
+        updateData.image_url = heroImageUrl
+        updateData.image_prompt = heroPrompt
         updateData.hero_image_url = heroImageUrl
         updateData.hero_image_prompt = heroPrompt
       }
@@ -428,12 +359,7 @@ const AdminPage: React.FC = () => {
 
       if (Object.keys(updateData).length === 0) return
 
-      const { error } = await supabase
-        .from('articles')
-        .update(updateData)
-        .eq('id', savedArticleId)
-
-      if (error) throw error
+      await updateArticle(savedArticleId, updateData)
 
       // Clear form
       setGeneratedArticle('')
@@ -462,12 +388,7 @@ const AdminPage: React.FC = () => {
     if (!confirm('Are you sure you want to delete this article?')) return
 
     try {
-      const { error } = await supabase
-        .from('articles')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
+      await removeArticle(id)
       fetchArticles()
     } catch (error) {
       console.error('Error deleting article:', error)
@@ -518,19 +439,13 @@ const AdminPage: React.FC = () => {
         .map(t => t.trim())
         .filter(t => t.length > 0)
 
-      const { error } = await supabase
-        .from('articles')
-        .update({
+      await updateArticle(editingArticleId, {
           headline: editFormData.headline,
           content: editFormData.content,
           summary: editFormData.summary || editFormData.content.substring(0, 200) + '...',
           category: editFormData.category,
           tags: tagsArray,
-          updated_at: new Date().toISOString()
         })
-        .eq('id', editingArticleId)
-
-      if (error) throw error
 
       // Refresh articles and close edit mode
       fetchArticles()

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { User, Briefcase, Globe, Lightbulb, Send, CheckCircle, AlertCircle, Star } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { submitGuestApplication } from '../lib/api'
 
 interface GuestFormData {
   name: string
@@ -127,23 +127,17 @@ const GuestApplicationPage = () => {
     setStatusMessage('')
 
     try {
-      const { data, error } = await supabase.functions.invoke('guest-application', {
-        body: {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          company: formData.company.trim() || null,
-          position: formData.position.trim() || null,
-          bio: formData.bio.trim(),
-          expertiseAreas: formData.expertiseAreas,
-          linkedinUrl: formData.linkedinUrl.trim() || null,
-          websiteUrl: formData.websiteUrl.trim() || null,
-          proposedTopics: formData.proposedTopics
-        }
-      }) as { data: GuestResponse['data'], error: GuestResponse['error'] }
-
-      if (error) {
-        throw new Error(error.message || 'Failed to submit application')
-      }
+      const data = await submitGuestApplication({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        company: formData.company.trim() || null,
+        position: formData.position.trim() || null,
+        bio: formData.bio.trim(),
+        expertiseAreas: formData.expertiseAreas,
+        linkedinUrl: formData.linkedinUrl.trim() || null,
+        websiteUrl: formData.websiteUrl.trim() || null,
+        proposedTopics: formData.proposedTopics,
+      }) as GuestResponse['data']
 
       if (data) {
         setStatus('success')

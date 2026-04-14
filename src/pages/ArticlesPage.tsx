@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { Calendar, Tag, ArrowRight, Search, Filter } from 'lucide-react'
-import { supabase, Article } from '../lib/supabase'
+import { Article, getArticles } from '../lib/api'
 
 const ArticlesPage = () => {
   const [articles, setArticles] = useState<Article[]>([])
@@ -16,14 +16,12 @@ const ArticlesPage = () => {
   useEffect(() => {
     async function fetchArticles() {
       try {
-        const { data, error } = await supabase
-          .from('articles')
-          .select('*')
-          .eq('status', 'published')
-          .order('published_at', { ascending: false })
-          .limit(20)
-        
-        if (error) throw error
+        const data = await getArticles({
+          status: 'published',
+          sort: 'published_at',
+          order: 'desc',
+          limit: 20,
+        })
         
         if (data && data.length > 0) {
           setFeaturedArticle(data[0])

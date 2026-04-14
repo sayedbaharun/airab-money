@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Mail, Phone, MapPin, MessageCircle, Send, CheckCircle, AlertCircle, Clock } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { submitContactForm } from '../lib/api'
 
 interface ContactFormData {
   name: string
@@ -64,19 +64,13 @@ const ContactPage = () => {
     setStatusMessage('')
 
     try {
-      const { data, error } = await supabase.functions.invoke('contact-form', {
-        body: {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          subject: formData.subject.trim() || 'Contact Form Submission',
-          message: formData.message.trim(),
-          messageType: formData.messageType
-        }
-      }) as { data: ContactResponse['data'], error: ContactResponse['error'] }
-
-      if (error) {
-        throw new Error(error.message || 'Failed to send message')
-      }
+      const data = await submitContactForm({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim() || 'Contact Form Submission',
+        message: formData.message.trim(),
+        messageType: formData.messageType,
+      }) as ContactResponse['data']
 
       if (data) {
         setStatus('success')

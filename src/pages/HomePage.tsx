@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { Play, Download, Users, Globe, Lightbulb, TrendingUp, ArrowRight, Mail } from 'lucide-react'
-import { supabase, PodcastEpisode } from '../lib/supabase'
+import { getEpisodes, PodcastEpisode } from '../lib/api'
 import NewsletterSignup from '../components/NewsletterSignup'
 
 const HomePage = () => {
@@ -13,15 +13,12 @@ const HomePage = () => {
   useEffect(() => {
     async function fetchFeaturedEpisodes() {
       try {
-        const { data, error } = await supabase
-          .from('podcast_episodes')
-          .select('*')
-          .eq('status', 'published')
-          .eq('featured', true)
-          .order('publish_date', { ascending: false })
-          .limit(3)
-        
-        if (error) throw error
+        const data = await getEpisodes({
+          status: 'published',
+          featured: true,
+          limit: 3,
+        })
+
         if (data && data.length > 0) {
           setFeaturedEpisodes(data)
         } else {
@@ -38,7 +35,7 @@ const HomePage = () => {
     fetchFeaturedEpisodes()
   }, [])
 
-  // Fallback episodes when Supabase is unavailable
+  // Fallback episodes when the API returns no content
   const fallbackEpisodes: PodcastEpisode[] = [
     {
       id: '1',

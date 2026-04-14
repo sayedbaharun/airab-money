@@ -12,8 +12,9 @@ import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
 import PresentersPage from './pages/PresentersPage'
 import MarketsPage from './pages/MarketsPage'
-
+import VoiceDemoPage from './pages/VoiceDemoPage'
 import AdminPage from './pages/AdminPage'
+import GuestApplicationPage from './pages/GuestApplicationPage'
 import './App.css'
 
 function App() {
@@ -35,6 +36,8 @@ function App() {
               <Route path="/episodes" element={<EpisodesPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/guest-application" element={<GuestApplicationPage />} />
+              <Route path="/demo" element={<VoiceDemoPage />} />
               <Route path="/admin" element={<AdminPage />} />
             </Routes>
           </main>

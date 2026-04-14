@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Play, Download, Filter, Search, Calendar, Clock, User, Tag } from 'lucide-react'
-import { supabase, PodcastEpisode } from '../lib/supabase'
+import { PodcastEpisode, getEpisodes } from '../lib/api'
 
 const EpisodesPage = () => {
   const [episodes, setEpisodes] = useState<PodcastEpisode[]>([])
@@ -16,25 +16,17 @@ const EpisodesPage = () => {
   useEffect(() => {
     async function fetchEpisodes() {
       try {
-        let query = supabase
-          .from('podcast_episodes')
-          .select('*')
-          .eq('status', 'published')
-          .order('publish_date', { ascending: false })
-        
+        const data = await getEpisodes({ status: 'published' })
+
+        let filteredData = data || []
+
         if (selectedCategory !== 'all') {
-          query = query.contains('categories', [selectedCategory])
-        }
-        
-        if (selectedShowType !== 'all') {
-          query = query.eq('show_type', selectedShowType)
+          filteredData = filteredData.filter((episode) => episode.categories.includes(selectedCategory))
         }
 
-        const { data, error } = await query
-        
-        if (error) throw error
-        
-        let filteredData = data || []
+        if (selectedShowType !== 'all') {
+          filteredData = filteredData.filter((episode) => episode.show_type === selectedShowType)
+        }
         
         if (searchTerm) {
           filteredData = filteredData.filter(episode => 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, User, Tag, Search, Filter, ArrowRight, Eye } from 'lucide-react'
-import { supabase, BlogPost } from '../lib/supabase'
+import { BlogPost, getBlogPosts } from '../lib/api'
 
 const BlogPage = () => {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -16,35 +16,20 @@ const BlogPage = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        // First get featured post
-        const { data: featured } = await supabase
-          .from('blog_posts')
-          .select('*')
-          .eq('status', 'published')
-          .eq('featured', true)
-          .order('published_at', { ascending: false })
-          .limit(1)
-        
+        const featured = await getBlogPosts({
+          status: 'published',
+          featured: true,
+          limit: 1,
+        })
+
         if (featured && featured.length > 0) {
           setFeaturedPost(featured[0])
         }
-        
-        // Then get other posts
-        let query = supabase
-          .from('blog_posts')
-          .select('*')
-          .eq('status', 'published')
-          .order('published_at', { ascending: false })
-        
-        if (selectedCategory !== 'all') {
-          query = query.eq('category', selectedCategory)
-        }
 
-        const { data, error } = await query
-        
-        if (error) throw error
-        
-        let filteredData = data || []
+        let filteredData = await getBlogPosts({
+          status: 'published',
+          category: selectedCategory !== 'all' ? selectedCategory : undefined,
+        })
         
         if (searchTerm) {
           filteredData = filteredData.filter(post => 
@@ -54,9 +39,8 @@ const BlogPage = () => {
           )
         }
         
-        // Remove featured post from regular posts
-        if (featuredPost) {
-          filteredData = filteredData.filter(post => post.id !== featuredPost.id)
+        if (featured[0]) {
+          filteredData = filteredData.filter(post => post.id !== featured[0].id)
         }
         
         setPosts(filteredData)
@@ -68,7 +52,7 @@ const BlogPage = () => {
     }
 
     fetchPosts()
-  }, [selectedCategory, searchTerm, featuredPost])
+  }, [selectedCategory, searchTerm])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
