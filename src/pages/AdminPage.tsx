@@ -210,6 +210,7 @@ const AdminPage: React.FC = () => {
     setInlineImageUrl(null)
     setHeroImageApproved(false)
     setInlineImageApproved(false)
+    setImageError('')
 
     try {
       const data = await requestArticleGeneration({
@@ -217,15 +218,14 @@ const AdminPage: React.FC = () => {
         word_count: wordCount,
         style,
       })
-      
-      if (data.headline) {
-        setGeneratedHeadline(data.headline)
-      }
-      if (data.content) {
-        setGeneratedArticle(data.content)
-      } else {
-        setGeneratedArticle(JSON.stringify(data))
-      }
+
+      const nextHeadline = data.headline || topic.substring(0, 60)
+      const nextContent = data.content || JSON.stringify(data)
+
+      setGeneratedHeadline(nextHeadline)
+      setGeneratedArticle(nextContent)
+      setShowImagePromptsSection(true)
+      void generateImagePrompts(nextContent, nextHeadline)
     } catch (error) {
       console.error('Generation error:', error)
       setGenerationError('Failed to generate article. Please try again.')
@@ -309,10 +309,11 @@ const AdminPage: React.FC = () => {
   }
 
   // Generate image prompts from article content
-  const generateImagePrompts = async () => {
-    const promptHeadline = generatedHeadline || topic.substring(0, 60)
+  const generateImagePrompts = async (contentOverride?: string, headlineOverride?: string) => {
+    const articleContent = contentOverride ?? generatedArticle
+    const promptHeadline = headlineOverride ?? generatedHeadline ?? topic.substring(0, 60)
 
-    if (!generatedArticle || !promptHeadline) return
+    if (!articleContent || !promptHeadline) return
 
     setShowImagePromptsSection(true)
     setGeneratingPrompts(true)
@@ -320,7 +321,7 @@ const AdminPage: React.FC = () => {
 
     try {
       const data = await requestImagePrompts({
-        content: generatedArticle,
+        content: articleContent,
         headline: promptHeadline,
       })
       
@@ -573,6 +574,10 @@ const AdminPage: React.FC = () => {
     }
   }, [isAuthenticated])
 
+  const hasImagePrompts = Boolean(heroPrompt || inlinePrompt)
+  const hasGeneratedImages = Boolean(heroImageUrl || inlineImageUrl)
+  const hasApprovedImages = heroImageApproved || inlineImageApproved
+
   // Auth form
   if (checkingStoredAuth) {
     return (
@@ -816,14 +821,14 @@ const AdminPage: React.FC = () => {
                         onClick={openImageTools}
                         disabled={generatingPrompts || generatingImages}
                         className="flex items-center gap-2 px-4 py-2 bg-graphite rounded-lg text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
-                        title="Generate images"
+                        title="Open image pipeline"
                       >
                         {generatingPrompts ? (
                           <RefreshCw className="w-5 h-5 animate-spin" />
                         ) : (
                           <Image className="w-5 h-5" />
                         )}
-                        Generate Images
+                        {showImagePromptsSection ? 'Image Pipeline' : 'Generate Images'}
                       </button>
                       <button
                         onClick={saveArticle}
@@ -876,6 +881,281 @@ const AdminPage: React.FC = () => {
                         {articleSaveMessage}
                       </div>
                     )}
+                    {showImagePromptsSection && (
+                      <div className="rounded-xl border border-white/5 bg-graphite/70 p-5 space-y-5">
+                        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                          <div>
+                            <p className="text-[11px] uppercase tracking-[0.28em] text-dusk-rose/80">
+                              Visual Pipeline
+                            </p>
+                            <h3 className="mt-2 text-lg font-heading font-bold text-off-white">
+                              Article image generation
+                            </h3>
+                            <p className="mt-2 max-w-2xl text-sm text-brushed-silver">
+                              The desk drafts a hero visual and an inline scene from the finished article,
+                              then you review, render, approve, and save them back to the story.
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:min-w-[360px]">
+                            <div className="rounded-lg border border-white/5 bg-charcoal px-3 py-2">
+                              <p className="text-[11px] uppercase tracking-[0.22em] text-brushed-silver/70">
+                                Prompts
+                              </p>
+                              <p className="mt-2 text-sm font-semibold text-off-white">
+                                {generatingPrompts ? 'Generating' : hasImagePrompts ? 'Ready' : 'Queued'}
+                              </p>
+                            </div>
+                            <div className="rounded-lg border border-white/5 bg-charcoal px-3 py-2">
+                              <p className="text-[11px] uppercase tracking-[0.22em] text-brushed-silver/70">
+                                Images
+                              </p>
+                              <p className="mt-2 text-sm font-semibold text-off-white">
+                                {generatingImages ? 'Rendering' : hasGeneratedImages ? 'Ready' : 'Waiting'}
+                              </p>
+                            </div>
+                            <div className="rounded-lg border border-white/5 bg-charcoal px-3 py-2">
+                              <p className="text-[11px] uppercase tracking-[0.22em] text-brushed-silver/70">
+                                Article Link
+                              </p>
+                              <p className="mt-2 text-sm font-semibold text-off-white">
+                                {savedArticleId ? (hasApprovedImages ? 'Ready to save' : 'Saved') : 'Unsaved'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {imageError && (
+                          <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-400 text-sm flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5" />
+                            {imageError}
+                          </div>
+                        )}
+
+                        {!hasImagePrompts && !generatingPrompts && (
+                          <div className="rounded-lg border border-dashed border-white/10 bg-charcoal/80 p-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                              <p className="text-sm font-semibold text-off-white">Prompt drafting is queued.</p>
+                              <p className="mt-1 text-sm text-brushed-silver">
+                                Generate prompts from the current article to start the visual review step.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => generateImagePrompts()}
+                              className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-dusk-rose to-brushed-silver px-4 py-3 text-sm font-semibold text-off-white hover:opacity-90"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                              Generate Prompts
+                            </button>
+                          </div>
+                        )}
+
+                        {generatingPrompts && (
+                          <div className="rounded-lg border border-white/5 bg-charcoal/80 px-4 py-5 text-sm text-brushed-silver flex items-center gap-3">
+                            <RefreshCw className="w-5 h-5 animate-spin" />
+                            Drafting hero and inline image prompts from the article body...
+                          </div>
+                        )}
+
+                        {hasImagePrompts && !generatingPrompts && (
+                          <div className="space-y-5">
+                            <div className="grid gap-4 xl:grid-cols-2">
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-sm font-semibold text-dusk-rose">Hero Image Prompt</label>
+                                  <span className="text-xs uppercase tracking-[0.22em] text-brushed-silver/70">
+                                    Opening frame
+                                  </span>
+                                </div>
+                                <textarea
+                                  value={heroPrompt}
+                                  onChange={(e) => {
+                                    setHeroPrompt(e.target.value)
+                                    setPromptsReviewed(false)
+                                  }}
+                                  className="h-36 w-full resize-none rounded-lg border border-white/5 bg-charcoal px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
+                                  placeholder="Hero image prompt will appear here..."
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-sm font-semibold text-brushed-silver">Inline Image Prompt</label>
+                                  <span className="text-xs uppercase tracking-[0.22em] text-brushed-silver/70">
+                                    Supporting visual
+                                  </span>
+                                </div>
+                                <textarea
+                                  value={inlinePrompt}
+                                  onChange={(e) => {
+                                    setInlinePrompt(e.target.value)
+                                    setPromptsReviewed(false)
+                                  }}
+                                  className="h-36 w-full resize-none rounded-lg border border-white/5 bg-charcoal px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
+                                  placeholder="Inline image prompt will appear here..."
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                              <button
+                                onClick={() => setPromptsReviewed((current) => !current)}
+                                className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                                  promptsReviewed
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-charcoal text-brushed-silver hover:text-off-white'
+                                }`}
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                                {promptsReviewed ? 'Prompts Reviewed' : 'Mark Prompts Reviewed'}
+                              </button>
+                              <button
+                                onClick={generateImages}
+                                disabled={!promptsReviewed || generatingImages}
+                                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-dusk-rose to-brushed-silver px-4 py-2 text-sm font-semibold text-off-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {generatingImages ? (
+                                  <>
+                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                    Generating Images...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Image className="w-4 h-4" />
+                                    Generate Images
+                                  </>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => generateImagePrompts()}
+                                className="inline-flex items-center gap-2 rounded-lg border border-white/5 bg-charcoal px-4 py-2 text-sm text-brushed-silver hover:text-off-white"
+                                title="Refresh prompts"
+                              >
+                                <RefreshCw className="w-4 h-4" />
+                                Refresh Prompts
+                              </button>
+                              <p className="text-xs text-brushed-silver/80">
+                                Editing either prompt clears review. Re-approve before rendering.
+                              </p>
+                            </div>
+
+                            {(hasGeneratedImages || generatingImages) && (
+                              <div className="grid grid-cols-1 gap-6 border-t border-white/5 pt-5 xl:grid-cols-2">
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-semibold text-dusk-rose">Hero Image</h4>
+                                    {heroImageApproved && (
+                                      <span className="rounded bg-green-500/20 px-2 py-1 text-xs text-green-400">
+                                        Approved
+                                      </span>
+                                    )}
+                                  </div>
+                                  {heroImageUrl ? (
+                                    <div className="relative overflow-hidden rounded-lg border border-white/5 bg-charcoal">
+                                      <img
+                                        src={heroImageUrl}
+                                        alt="Hero"
+                                        className="h-56 w-full object-cover"
+                                      />
+                                      <div className="absolute right-3 top-3 flex gap-2">
+                                        <button
+                                          onClick={() => regenerateImage('hero')}
+                                          disabled={generatingImages}
+                                          className="rounded-lg bg-graphite/85 p-2 text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
+                                          title="Regenerate hero image"
+                                        >
+                                          <RefreshCw className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => setHeroImageApproved(!heroImageApproved)}
+                                          className={`rounded-lg p-2 transition-colors ${
+                                            heroImageApproved
+                                              ? 'bg-green-500 text-off-white'
+                                              : 'bg-graphite/85 text-brushed-silver hover:text-off-white'
+                                          }`}
+                                          title={heroImageApproved ? 'Approved' : 'Approve hero image'}
+                                        >
+                                          {heroImageApproved ? <Check className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="flex h-56 items-center justify-center rounded-lg border border-white/5 bg-charcoal text-brushed-silver">
+                                      <RefreshCw className="w-8 h-8 animate-spin" />
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-semibold text-brushed-silver">Inline Image</h4>
+                                    {inlineImageApproved && (
+                                      <span className="rounded bg-green-500/20 px-2 py-1 text-xs text-green-400">
+                                        Approved
+                                      </span>
+                                    )}
+                                  </div>
+                                  {inlineImageUrl ? (
+                                    <div className="relative overflow-hidden rounded-lg border border-white/5 bg-charcoal">
+                                      <img
+                                        src={inlineImageUrl}
+                                        alt="Inline"
+                                        className="h-56 w-full object-cover"
+                                      />
+                                      <div className="absolute right-3 top-3 flex gap-2">
+                                        <button
+                                          onClick={() => regenerateImage('inline')}
+                                          disabled={generatingImages}
+                                          className="rounded-lg bg-graphite/85 p-2 text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
+                                          title="Regenerate inline image"
+                                        >
+                                          <RefreshCw className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => setInlineImageApproved(!inlineImageApproved)}
+                                          className={`rounded-lg p-2 transition-colors ${
+                                            inlineImageApproved
+                                              ? 'bg-green-500 text-off-white'
+                                              : 'bg-graphite/85 text-brushed-silver hover:text-off-white'
+                                          }`}
+                                          title={inlineImageApproved ? 'Approved' : 'Approve inline image'}
+                                        >
+                                          {inlineImageApproved ? <Check className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="flex h-56 items-center justify-center rounded-lg border border-white/5 bg-charcoal text-brushed-silver">
+                                      <RefreshCw className="w-8 h-8 animate-spin" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {hasApprovedImages && (
+                              <div className="flex justify-end border-t border-white/5 pt-4">
+                                <button
+                                  onClick={saveImagesToArticle}
+                                  disabled={savingApprovedImages}
+                                  className="inline-flex items-center gap-2 rounded-lg bg-green-500 px-5 py-3 text-sm font-semibold text-off-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  {savingApprovedImages ? (
+                                    <>
+                                      <RefreshCw className="w-4 h-4 animate-spin" />
+                                      Saving Images...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Save className="w-4 h-4" />
+                                      Save Approved Images
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="bg-graphite rounded-lg p-8 text-center">
@@ -885,237 +1165,6 @@ const AdminPage: React.FC = () => {
                 )}
               </div>
             </div>
-
-            {/* Image Prompts Section */}
-            {generatedArticle && showImagePromptsSection && (
-              <div className="bg-charcoal border border-white/5 rounded-xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-heading font-bold text-off-white flex items-center gap-2">
-                    <Image className="w-6 h-6" />
-                    Generate Images
-                  </h2>
-                  {!heroPrompt && !generatingPrompts && (
-                    <button
-                      onClick={generateImagePrompts}
-                      className="flex items-center gap-2 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white px-4 py-2 rounded-lg hover:opacity-90"
-                    >
-                      <RefreshCw className="w-5 h-5" />
-                      Generate Prompts
-                    </button>
-                  )}
-                </div>
-
-                {generatingPrompts && (
-                  <div className="flex items-center justify-center gap-3 py-8 text-brushed-silver">
-                    <RefreshCw className="w-6 h-6 animate-spin" />
-                    <span>Generating image prompts from article content...</span>
-                  </div>
-                )}
-
-                {heroPrompt && !generatingPrompts && (
-                  <div className="space-y-6">
-                    {/* Hero Prompt */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm font-semibold text-dusk-rose">Hero Image Prompt</label>
-                        <button
-                          onClick={() => setPromptsReviewed(true)}
-                          className={`text-xs px-3 py-1 rounded ${
-                            promptsReviewed 
-                              ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-graphite text-brushed-silver hover:text-off-white'
-                          }`}
-                        >
-                          {promptsReviewed ? 'Reviewed ✓' : 'Mark as Reviewed'}
-                        </button>
-                      </div>
-                      <textarea
-                        value={heroPrompt}
-                        onChange={(e) => {
-                          setHeroPrompt(e.target.value)
-                          setPromptsReviewed(false)
-                        }}
-                        className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose h-32 resize-none"
-                        placeholder="Hero image prompt will appear here..."
-                      />
-                    </div>
-
-                    {/* Inline Prompt */}
-                    <div>
-                      <label className="text-sm font-semibold text-brushed-silver block mb-2">Inline Image Prompt</label>
-                      <textarea
-                        value={inlinePrompt}
-                        onChange={(e) => {
-                          setInlinePrompt(e.target.value)
-                          setPromptsReviewed(false)
-                        }}
-                        className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-cyan h-32 resize-none"
-                        placeholder="Inline image prompt will appear here..."
-                      />
-                    </div>
-
-                    {/* Generate Images Button */}
-                    <div className="flex gap-3">
-                      <button
-                        onClick={generateImages}
-                        disabled={!promptsReviewed || generatingImages}
-                        className="flex-1 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {generatingImages ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <RefreshCw className="w-5 h-5 animate-spin" />
-                            Generating Images...
-                          </span>
-                        ) : (
-                          <span className="flex items-center justify-center gap-2">
-                            <Image className="w-5 h-5" />
-                            Generate Images
-                          </span>
-                        )}
-                      </button>
-                      <button
-                        onClick={generateImagePrompts}
-                        className="px-4 py-3 bg-graphite border border-white/5 rounded-lg text-brushed-silver hover:text-off-white transition-colors"
-                        title="Regenerate prompts"
-                      >
-                        <RefreshCw className="w-5 h-5" />
-                      </button>
-                    </div>
-
-                    {imageError && (
-                      <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-400 text-sm flex items-center gap-2">
-                        <AlertCircle className="w-5 h-5" />
-                        {imageError}
-                      </div>
-                    )}
-
-                    {/* Generated Images */}
-                    {(heroImageUrl || inlineImageUrl) && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
-                        {/* Hero Image */}
-                        <div className="space-y-3">
-                          <h3 className="text-sm font-semibold text-dusk-rose">Hero Image</h3>
-                          {heroImageUrl ? (
-                            <div className="relative">
-                              <img
-                                src={heroImageUrl}
-                                alt="Hero"
-                                className="w-full h-48 object-cover rounded-lg"
-                              />
-                              <div className="absolute top-2 right-2 flex gap-2">
-                                <button
-                                  onClick={() => regenerateImage('hero')}
-                                  disabled={generatingImages}
-                                  className="p-2 bg-graphite/80 rounded-lg text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
-                                  title="Regenerate"
-                                >
-                                  <RefreshCw className="w-4 h-4" />
-                                </button>
-                              </div>
-                              <div className="absolute bottom-2 right-2 flex gap-2">
-                                <button
-                                  onClick={() => setHeroImageApproved(!heroImageApproved)}
-                                  className={`p-2 rounded-lg transition-colors ${
-                                    heroImageApproved 
-                                      ? 'bg-green-500 text-off-white' 
-                                      : 'bg-graphite/80 text-brushed-silver hover:text-off-white'
-                                  }`}
-                                  title={heroImageApproved ? 'Approved' : 'Approve'}
-                                >
-                                  {heroImageApproved ? <Check className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                                </button>
-                              </div>
-                              {heroImageApproved && (
-                                <div className="absolute bottom-2 left-2">
-                                  <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">
-                                    Approved ✓
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="w-full h-48 bg-graphite rounded-lg flex items-center justify-center">
-                              <RefreshCw className="w-8 h-8 text-brushed-silver animate-spin" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Inline Image */}
-                        <div className="space-y-3">
-                          <h3 className="text-sm font-semibold text-brushed-silver">Inline Image</h3>
-                          {inlineImageUrl ? (
-                            <div className="relative">
-                              <img
-                                src={inlineImageUrl}
-                                alt="Inline"
-                                className="w-full h-48 object-cover rounded-lg"
-                              />
-                              <div className="absolute top-2 right-2 flex gap-2">
-                                <button
-                                  onClick={() => regenerateImage('inline')}
-                                  disabled={generatingImages}
-                                  className="p-2 bg-graphite/80 rounded-lg text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
-                                  title="Regenerate"
-                                >
-                                  <RefreshCw className="w-4 h-4" />
-                                </button>
-                              </div>
-                              <div className="absolute bottom-2 right-2 flex gap-2">
-                                <button
-                                  onClick={() => setInlineImageApproved(!inlineImageApproved)}
-                                  className={`p-2 rounded-lg transition-colors ${
-                                    inlineImageApproved 
-                                      ? 'bg-green-500 text-off-white' 
-                                      : 'bg-graphite/80 text-brushed-silver hover:text-off-white'
-                                  }`}
-                                  title={inlineImageApproved ? 'Approved' : 'Approve'}
-                                >
-                                  {inlineImageApproved ? <Check className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                                </button>
-                              </div>
-                              {inlineImageApproved && (
-                                <div className="absolute bottom-2 left-2">
-                                  <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">
-                                    Approved ✓
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="w-full h-48 bg-graphite rounded-lg flex items-center justify-center">
-                              <RefreshCw className="w-8 h-8 text-brushed-silver animate-spin" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Save Images Button */}
-                    {(heroImageApproved || inlineImageApproved) && (
-                      <div className="flex justify-end pt-4 border-t border-white/5">
-                        <button
-                          onClick={saveImagesToArticle}
-                          disabled={savingApprovedImages}
-                          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-off-white font-semibold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {savingApprovedImages ? (
-                            <>
-                              <RefreshCw className="w-5 h-5 animate-spin" />
-                              Saving Images...
-                            </>
-                          ) : (
-                            <>
-                              <Save className="w-5 h-5" />
-                              Save Approved Images
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         )}
 
