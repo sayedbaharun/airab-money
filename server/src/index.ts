@@ -17,12 +17,12 @@ const connectionString = process.env.DATABASE_URL || 'postgresql://mock:mock@loc
 const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const distPath = path.resolve(__dirname, '../../dist')
 const ADMIN_PASSWORD_HEADER = 'x-admin-password'
+const OPENAI_SETTING_KEYS = ['OPENAI_API_KEY', 'OPENAI_TEXT_MODEL', 'OPENAI_IMAGE_MODEL'] as const
 
 app.use(cors())
 app.use(express.json({ limit: '2mb' }))
@@ -93,6 +93,71 @@ const normalizeStringArray = (value: unknown) => {
   return value
     .map((item) => String(item).trim())
     .filter(Boolean)
+}
+
+const maskSecret = (value: string | null) => {
+  if (!value) return null
+  if (value.length <= 10) return `${value.slice(0, 2)}••••`
+  return `${value.slice(0, 7)}…${value.slice(-4)}`
+}
+
+const getAdminSettingsMap = async () => {
+  const settings = await prisma.adminSetting.findMany({
+    where: {
+      key: {
+        in: [...OPENAI_SETTING_KEYS],
+      },
+    },
+  })
+
+  return settings.reduce<Record<string, string>>((accumulator, setting) => {
+    if (typeof setting.value === 'string' && setting.value.trim()) {
+      accumulator[setting.key] = setting.value.trim()
+    }
+
+    return accumulator
+  }, {})
+}
+
+const getAiRuntimeConfig = async () => {
+  const storedSettings = await getAdminSettingsMap()
+  const storedApiKey = storedSettings.OPENAI_API_KEY
+  const envApiKey = process.env.OPENAI_API_KEY?.trim()
+  const apiKey = storedApiKey || envApiKey || null
+
+  return {
+    apiKey,
+    apiKeyMasked: maskSecret(apiKey),
+    apiKeySource: storedApiKey ? 'database' : envApiKey ? 'environment' : 'none',
+    textModel: storedSettings.OPENAI_TEXT_MODEL || process.env.OPENAI_TEXT_MODEL || 'gpt-4o-mini',
+    imageModel: storedSettings.OPENAI_IMAGE_MODEL || process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1',
+  }
+}
+
+const getOpenAIClient = async () => {
+  const config = await getAiRuntimeConfig()
+
+  return {
+    client: config.apiKey ? new OpenAI({ apiKey: config.apiKey }) : null,
+    config,
+  }
+}
+
+const upsertAdminSetting = async (key: (typeof OPENAI_SETTING_KEYS)[number], value: string | null) => {
+  const nextValue = value?.trim() || null
+
+  if (!nextValue) {
+    await prisma.adminSetting.deleteMany({
+      where: { key },
+    })
+    return
+  }
+
+  await prisma.adminSetting.upsert({
+    where: { key },
+    update: { value: nextValue },
+    create: { key, value: nextValue },
+  })
 }
 
 const fallbackImagePrompts = (headline: string) => ({
@@ -210,6 +275,66 @@ app.post('/api/admin/auth', (req, res) => {
       authenticated: true,
     },
   })
+})
+
+app.get('/api/admin/settings', requireAdminAuth, async (_req, res) => {
+  try {
+    const config = await getAiRuntimeConfig()
+
+    res.json({
+      data: {
+        openaiApiKeyConfigured: Boolean(config.apiKey),
+        openaiApiKeyMasked: config.apiKeyMasked,
+        openaiApiKeySource: config.apiKeySource,
+        openaiTextModel: config.textModel,
+        openaiImageModel: config.imageModel,
+      },
+    })
+  } catch (error) {
+    handleError(res, error, 'Failed to fetch admin settings')
+  }
+})
+
+app.put('/api/admin/settings', requireAdminAuth, async (req, res) => {
+  try {
+    if (req.body.openaiApiKey !== undefined) {
+      if (req.body.openaiApiKey !== null && typeof req.body.openaiApiKey !== 'string') {
+        return res.status(400).json({ error: 'openaiApiKey must be a string or null' })
+      }
+
+      await upsertAdminSetting('OPENAI_API_KEY', req.body.openaiApiKey)
+    }
+
+    if (req.body.openaiTextModel !== undefined) {
+      if (req.body.openaiTextModel !== null && typeof req.body.openaiTextModel !== 'string') {
+        return res.status(400).json({ error: 'openaiTextModel must be a string or null' })
+      }
+
+      await upsertAdminSetting('OPENAI_TEXT_MODEL', req.body.openaiTextModel)
+    }
+
+    if (req.body.openaiImageModel !== undefined) {
+      if (req.body.openaiImageModel !== null && typeof req.body.openaiImageModel !== 'string') {
+        return res.status(400).json({ error: 'openaiImageModel must be a string or null' })
+      }
+
+      await upsertAdminSetting('OPENAI_IMAGE_MODEL', req.body.openaiImageModel)
+    }
+
+    const config = await getAiRuntimeConfig()
+
+    res.json({
+      data: {
+        openaiApiKeyConfigured: Boolean(config.apiKey),
+        openaiApiKeyMasked: config.apiKeyMasked,
+        openaiApiKeySource: config.apiKeySource,
+        openaiTextModel: config.textModel,
+        openaiImageModel: config.imageModel,
+      },
+    })
+  } catch (error) {
+    handleError(res, error, 'Failed to update admin settings')
+  }
 })
 
 app.get('/api/articles', async (req, res) => {
@@ -571,6 +696,8 @@ app.post('/api/generate-article', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ error: 'topic is required' })
     }
 
+    const { client: openai, config } = await getOpenAIClient()
+
     if (!openai) {
       const fallback = buildFallbackArticle(topic, wordCount, style)
       return res.json({
@@ -581,7 +708,7 @@ app.post('/api/generate-article', requireAdminAuth, async (req, res) => {
     }
 
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_TEXT_MODEL || 'gpt-4o-mini',
+      model: config.textModel,
       response_format: { type: 'json_object' },
       messages: [
         {
@@ -627,12 +754,14 @@ app.post('/api/generate-image-prompts', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ error: 'headline and content are required' })
     }
 
+    const { client: openai, config } = await getOpenAIClient()
+
     if (!openai) {
       return res.json({ data: fallbackImagePrompts(headline) })
     }
 
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_TEXT_MODEL || 'gpt-4o-mini',
+      model: config.textModel,
       response_format: { type: 'json_object' },
       messages: [
         {
@@ -669,6 +798,8 @@ app.post('/api/generate-article-image', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ error: 'prompt is required' })
     }
 
+    const { client: openai, config } = await getOpenAIClient()
+
     if (!openai) {
       return res.json({
         data: {
@@ -679,7 +810,7 @@ app.post('/api/generate-article-image', requireAdminAuth, async (req, res) => {
     }
 
     const image = await openai.images.generate({
-      model: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1',
+      model: config.imageModel,
       prompt,
       size: imageType === 'hero' ? '1536x1024' : '1024x1024',
       output_format: 'png',

@@ -114,3 +114,10 @@ model GuestApplication {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 }
+
+model AdminSetting {
+  key        String   @id
+  value      String?  @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

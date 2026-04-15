@@ -190,6 +190,14 @@ export interface AdminAuthResult {
   authenticated: boolean
 }
 
+export interface AdminSettings {
+  openaiApiKeyConfigured: boolean
+  openaiApiKeyMasked: string | null
+  openaiApiKeySource: 'database' | 'environment' | 'none'
+  openaiTextModel: string
+  openaiImageModel: string
+}
+
 export const getAdminPassword = () => {
   if (typeof window === 'undefined') return null
   return window.sessionStorage.getItem(ADMIN_PASSWORD_STORAGE_KEY)
@@ -383,6 +391,26 @@ export const verifyAdminPassword = async (password: string) => {
     method: 'POST',
     body: JSON.stringify({ password }),
     adminPassword: null,
+  })
+  return response.data
+}
+
+export const getAdminSettings = async () => {
+  const response = await apiFetch<ApiEnvelope<AdminSettings>>('/admin/settings', {
+    requireAdminAuth: true,
+  })
+  return response.data
+}
+
+export const updateAdminSettings = async (payload: {
+  openaiApiKey?: string | null
+  openaiTextModel?: string | null
+  openaiImageModel?: string | null
+}) => {
+  const response = await apiFetch<ApiEnvelope<AdminSettings>>('/admin/settings', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+    requireAdminAuth: true,
   })
   return response.data
 }

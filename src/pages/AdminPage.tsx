@@ -8,14 +8,17 @@ import {
 import {
   createArticle,
   deleteArticle as removeArticle,
+  getAdminSettings as requestAdminSettings,
   generateArticle as requestArticleGeneration,
   generateArticleImage,
   getAdminPassword,
   generateImagePrompts as requestImagePrompts,
   getArticles,
   setAdminPassword,
+  updateAdminSettings as saveAdminSettings,
   updateArticle,
   verifyAdminPassword,
+  type AdminSettings,
 } from '../lib/api'
 
 // Types
@@ -38,6 +41,8 @@ interface AdminArticle {
   status: string
   published_at?: string | null
   created_at: string
+  image_url?: string
+  image_prompt?: string
   hero_image_url?: string
   inline_image_url?: string
   hero_image_prompt?: string
@@ -99,10 +104,20 @@ const AdminPage: React.FC = () => {
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [templateName, setTemplateName] = useState('')
   const [editingTemplate, setEditingTemplate] = useState<PromptTemplate | null>(null)
+  const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null)
+  const [settingsForm, setSettingsForm] = useState({
+    openaiApiKey: '',
+    openaiTextModel: 'gpt-4o-mini',
+    openaiImageModel: 'gpt-image-1',
+  })
+  const [loadingSettings, setLoadingSettings] = useState(true)
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [settingsError, setSettingsError] = useState('')
+  const [settingsMessage, setSettingsMessage] = useState('')
   const articleSaveRequestRef = useRef<Promise<string> | null>(null)
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'generator' | 'templates' | 'articles'>('generator')
+  const [activeTab, setActiveTab] = useState<'generator' | 'templates' | 'articles' | 'settings'>('generator')
 
   // Auth handler
   const handleAuth = async (e: React.FormEvent) => {
@@ -144,6 +159,26 @@ const AdminPage: React.FC = () => {
     const saved = localStorage.getItem('admin_prompt_templates')
     if (saved) {
       setTemplates(JSON.parse(saved))
+    }
+  }
+
+  const fetchAdminSettings = async () => {
+    setLoadingSettings(true)
+    setSettingsError('')
+
+    try {
+      const settings = await requestAdminSettings()
+      setAdminSettings(settings)
+      setSettingsForm({
+        openaiApiKey: '',
+        openaiTextModel: settings.openaiTextModel,
+        openaiImageModel: settings.openaiImageModel,
+      })
+    } catch (error) {
+      console.error('Error fetching admin settings:', error)
+      setSettingsError('Failed to load admin settings')
+    } finally {
+      setLoadingSettings(false)
     }
   }
 
@@ -200,6 +235,7 @@ const AdminPage: React.FC = () => {
     setGenerationError('')
     setGeneratedArticle('')
     setGeneratedHeadline('')
+    setSelectedArticle(null)
     setSavedArticleId(null)
     articleSaveRequestRef.current = null
     setArticleSaveMessage('')
@@ -326,13 +362,20 @@ const AdminPage: React.FC = () => {
       })
       
       if (data) {
-        setHeroPrompt(data.hero_prompt || '')
-        setInlinePrompt(data.inline_prompt || '')
-        setPromptsReviewed(false)
+        const nextHeroPrompt = data.hero_prompt || ''
+        const nextInlinePrompt = data.inline_prompt || ''
+
+        setHeroPrompt(nextHeroPrompt)
+        setInlinePrompt(nextInlinePrompt)
+        setPromptsReviewed(true)
         setHeroImageUrl(null)
         setInlineImageUrl(null)
         setHeroImageApproved(false)
         setInlineImageApproved(false)
+
+        if (nextHeroPrompt && nextInlinePrompt) {
+          await generateImagesForPrompts(nextHeroPrompt, nextInlinePrompt)
+        }
       }
     } catch (error) {
       console.error('Error generating prompts:', error)
@@ -343,15 +386,13 @@ const AdminPage: React.FC = () => {
   }
 
   // Generate images from prompts
-  const generateImages = async () => {
-    if (!heroPrompt || !inlinePrompt) return
-
+  const generateImagesForPrompts = async (heroPromptValue: string, inlinePromptValue: string) => {
     setGeneratingImages(true)
     setImageError('')
 
     try {
       const heroData = await generateArticleImage({
-        prompt: heroPrompt,
+        prompt: heroPromptValue,
         imageType: 'hero',
       })
       if (heroData.imageUrl) {
@@ -359,7 +400,7 @@ const AdminPage: React.FC = () => {
       }
 
       const inlineData = await generateArticleImage({
-        prompt: inlinePrompt,
+        prompt: inlinePromptValue,
         imageType: 'inline',
       })
       if (inlineData.imageUrl) {
@@ -371,6 +412,12 @@ const AdminPage: React.FC = () => {
     } finally {
       setGeneratingImages(false)
     }
+  }
+
+  const generateImages = async () => {
+    if (!heroPrompt || !inlinePrompt) return
+
+    await generateImagesForPrompts(heroPrompt, inlinePrompt)
   }
 
   // Regenerate single image
@@ -432,6 +479,7 @@ const AdminPage: React.FC = () => {
       // Clear form
       setGeneratedArticle('')
       setGeneratedHeadline('')
+      setSelectedArticle(null)
       setTopic('')
       setArticleSaveMessage('')
       setShowImagePromptsSection(false)
@@ -477,6 +525,30 @@ const AdminPage: React.FC = () => {
       tags: Array.isArray(article.tags) ? article.tags.join(', ') : ''
     })
     setEditError('')
+  }
+
+  const loadArticleIntoImageStudio = (article: AdminArticle) => {
+    const heroPromptValue = article.hero_image_prompt || article.image_prompt || ''
+    const heroImageValue = article.hero_image_url || article.image_url || null
+
+    setSelectedArticle(article)
+    setActiveTab('generator')
+    setTopic(article.headline)
+    setGeneratedHeadline(article.headline)
+    setGeneratedArticle(article.content)
+    setSavedArticleId(article.id)
+    articleSaveRequestRef.current = null
+    setArticleSaveMessage('Loaded article from archive for image work.')
+    setGenerationError('')
+    setImageError('')
+    setShowImagePromptsSection(true)
+    setHeroPrompt(heroPromptValue)
+    setInlinePrompt(article.inline_image_prompt || '')
+    setPromptsReviewed(Boolean(heroPromptValue || article.inline_image_prompt))
+    setHeroImageUrl(heroImageValue)
+    setInlineImageUrl(article.inline_image_url || null)
+    setHeroImageApproved(Boolean(heroImageValue))
+    setInlineImageApproved(Boolean(article.inline_image_url))
   }
 
   // Cancel editing
@@ -536,6 +608,70 @@ const AdminPage: React.FC = () => {
     }
   }
 
+  const saveSettings = async () => {
+    setSavingSettings(true)
+    setSettingsError('')
+    setSettingsMessage('')
+
+    try {
+      const payload: {
+        openaiApiKey?: string | null
+        openaiTextModel?: string | null
+        openaiImageModel?: string | null
+      } = {
+        openaiTextModel: settingsForm.openaiTextModel.trim() || null,
+        openaiImageModel: settingsForm.openaiImageModel.trim() || null,
+      }
+
+      if (settingsForm.openaiApiKey.trim()) {
+        payload.openaiApiKey = settingsForm.openaiApiKey.trim()
+      }
+
+      const settings = await saveAdminSettings(payload)
+      setAdminSettings(settings)
+      setSettingsForm({
+        openaiApiKey: '',
+        openaiTextModel: settings.openaiTextModel,
+        openaiImageModel: settings.openaiImageModel,
+      })
+      setSettingsMessage(
+        payload.openaiApiKey
+          ? 'Settings saved. OpenAI key and model defaults updated.'
+          : 'Settings saved.',
+      )
+    } catch (error) {
+      console.error('Error saving admin settings:', error)
+      setSettingsError('Failed to save admin settings')
+    } finally {
+      setSavingSettings(false)
+    }
+  }
+
+  const clearStoredApiKey = async () => {
+    setSavingSettings(true)
+    setSettingsError('')
+    setSettingsMessage('')
+
+    try {
+      const settings = await saveAdminSettings({ openaiApiKey: null })
+      setAdminSettings(settings)
+      setSettingsForm((current) => ({
+        ...current,
+        openaiApiKey: '',
+      }))
+      setSettingsMessage(
+        settings.openaiApiKeySource === 'environment'
+          ? 'Stored API key cleared. The server is now using the environment key.'
+          : 'Stored API key cleared.',
+      )
+    } catch (error) {
+      console.error('Error clearing stored API key:', error)
+      setSettingsError('Failed to clear stored API key')
+    } finally {
+      setSavingSettings(false)
+    }
+  }
+
   // Copy to clipboard
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -571,6 +707,7 @@ const AdminPage: React.FC = () => {
     if (isAuthenticated) {
       fetchArticles()
       fetchTemplates()
+      fetchAdminSettings()
     }
   }, [isAuthenticated])
 
@@ -709,11 +846,50 @@ const AdminPage: React.FC = () => {
             <FileText className="w-5 h-5 inline-block mr-2" />
             Articles
           </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'settings'
+                ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
+                : 'bg-charcoal text-brushed-silver hover:text-off-white'
+            }`}
+          >
+            <Settings className="w-5 h-5 inline-block mr-2" />
+            Settings
+          </button>
         </div>
 
         {/* Article Generator Tab */}
         {activeTab === 'generator' && (
           <div className="space-y-6">
+            {selectedArticle && (
+              <div className="rounded-xl border border-dusk-rose/30 bg-charcoal p-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-dusk-rose/80">
+                      Archive Image Studio
+                    </p>
+                    <h2 className="mt-2 text-lg font-heading font-bold text-off-white">
+                      Working from a published article
+                    </h2>
+                    <p className="mt-1 text-sm text-brushed-silver">
+                      {selectedArticle.headline}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedArticle(null)
+                      setSavedArticleId(null)
+                      setArticleSaveMessage('')
+                    }}
+                    className="inline-flex items-center gap-2 rounded-lg bg-graphite px-4 py-2 text-sm text-brushed-silver hover:text-off-white"
+                  >
+                    <X className="w-4 h-4" />
+                    Detach Archive Article
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Input Section */}
               <div className="bg-charcoal border border-white/5 rounded-xl p-6">
@@ -1009,7 +1185,7 @@ const AdminPage: React.FC = () => {
                               </button>
                               <button
                                 onClick={generateImages}
-                                disabled={!promptsReviewed || generatingImages}
+                                disabled={!heroPrompt || !inlinePrompt || generatingImages}
                                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-dusk-rose to-brushed-silver px-4 py-2 text-sm font-semibold text-off-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 {generatingImages ? (
@@ -1033,7 +1209,7 @@ const AdminPage: React.FC = () => {
                                 Refresh Prompts
                               </button>
                               <p className="text-xs text-brushed-silver/80">
-                                Editing either prompt clears review. Re-approve before rendering.
+                                Fresh prompts render automatically. Edit either prompt and rerender if needed.
                               </p>
                             </div>
 
@@ -1375,6 +1551,13 @@ const AdminPage: React.FC = () => {
                         </div>
                         <div className="flex gap-2 ml-4">
                           <button
+                            onClick={() => loadArticleIntoImageStudio(article)}
+                            className="p-2 text-brushed-silver hover:text-dusk-rose"
+                            title="Open image studio"
+                          >
+                            <Image className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => startEditArticle(article)}
                             className="p-2 text-brushed-silver hover:text-dusk-rose"
                             title="Edit article"
@@ -1407,6 +1590,196 @@ const AdminPage: React.FC = () => {
                 <p className="text-brushed-silver">No articles found</p>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            <div className="bg-charcoal border border-white/5 rounded-xl p-6">
+              <div className="flex items-start justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-heading font-bold text-off-white">Runtime Settings</h2>
+                  <p className="mt-2 text-sm text-brushed-silver max-w-2xl">
+                    Store OpenAI credentials and model defaults for article, prompt, and image generation.
+                    Changes apply to the admin generator immediately and do not require a redeploy.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchAdminSettings}
+                  className="inline-flex items-center gap-2 rounded-lg bg-graphite px-4 py-2 text-sm text-brushed-silver hover:text-off-white"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Refresh
+                </button>
+              </div>
+
+              {loadingSettings ? (
+                <div className="text-center py-12">
+                  <RefreshCw className="w-8 h-8 text-dusk-rose animate-spin mx-auto mb-4" />
+                  <p className="text-brushed-silver">Loading settings...</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-lg border border-white/5 bg-graphite p-4">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-brushed-silver/70">
+                        API Key
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-off-white">
+                        {adminSettings?.openaiApiKeyConfigured ? 'Configured' : 'Missing'}
+                      </p>
+                      <p className="mt-1 text-xs text-brushed-silver">
+                        {adminSettings?.openaiApiKeyMasked || 'No OpenAI key available'}
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-white/5 bg-graphite p-4">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-brushed-silver/70">
+                        Key Source
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-off-white capitalize">
+                        {adminSettings?.openaiApiKeySource || 'none'}
+                      </p>
+                      <p className="mt-1 text-xs text-brushed-silver">
+                        Database values override environment defaults.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-white/5 bg-graphite p-4">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-brushed-silver/70">
+                        Active Models
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-off-white">
+                        {adminSettings?.openaiTextModel || settingsForm.openaiTextModel}
+                      </p>
+                      <p className="mt-1 text-xs text-brushed-silver">
+                        Images: {adminSettings?.openaiImageModel || settingsForm.openaiImageModel}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-5 lg:grid-cols-2">
+                    <div className="space-y-5">
+                      <div>
+                        <label className="block text-sm text-brushed-silver mb-2">OpenAI API Key</label>
+                        <input
+                          type="password"
+                          value={settingsForm.openaiApiKey}
+                          onChange={(e) =>
+                            setSettingsForm((current) => ({
+                              ...current,
+                              openaiApiKey: e.target.value,
+                            }))
+                          }
+                          className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
+                          placeholder="Paste a new API key to replace the current one"
+                        />
+                        <p className="mt-2 text-xs text-brushed-silver/80">
+                          Leave blank to keep the existing key. Use the clear action below to remove a stored key.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-brushed-silver mb-2">Text Model</label>
+                        <input
+                          type="text"
+                          value={settingsForm.openaiTextModel}
+                          onChange={(e) =>
+                            setSettingsForm((current) => ({
+                              ...current,
+                              openaiTextModel: e.target.value,
+                            }))
+                          }
+                          className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
+                          placeholder="gpt-4o-mini"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-brushed-silver mb-2">Image Model</label>
+                        <input
+                          type="text"
+                          value={settingsForm.openaiImageModel}
+                          onChange={(e) =>
+                            setSettingsForm((current) => ({
+                              ...current,
+                              openaiImageModel: e.target.value,
+                            }))
+                          }
+                          className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
+                          placeholder="gpt-image-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-white/5 bg-graphite/70 p-5 space-y-4">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.28em] text-dusk-rose/80">
+                          Notes
+                        </p>
+                        <h3 className="mt-2 text-lg font-heading font-bold text-off-white">
+                          How this runtime config behaves
+                        </h3>
+                      </div>
+                      <p className="text-sm text-brushed-silver">
+                        Saved settings are stored server-side and only exposed in masked form back to the admin.
+                        If there is no stored key, the app falls back to the Railway environment variable.
+                      </p>
+                      <p className="text-sm text-brushed-silver">
+                        Text model changes affect article generation and prompt generation. Image model changes affect
+                        both new article renders and archived article image work.
+                      </p>
+                      <div className="rounded-lg border border-dashed border-white/10 bg-charcoal/80 p-4">
+                        <p className="text-sm font-semibold text-off-white">Current key source</p>
+                        <p className="mt-1 text-sm text-brushed-silver capitalize">
+                          {adminSettings?.openaiApiKeySource || 'none'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {settingsError && (
+                    <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-400 text-sm flex items-center gap-2">
+                      <AlertCircle className="w-5 h-5" />
+                      {settingsError}
+                    </div>
+                  )}
+
+                  {settingsMessage && (
+                    <div className="p-3 bg-green-500/20 border border-green-500/40 rounded-lg text-green-400 text-sm flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      {settingsMessage}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                      onClick={saveSettings}
+                      disabled={savingSettings}
+                      className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-dusk-rose to-brushed-silver px-5 py-3 text-sm font-semibold text-off-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {savingSettings ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          Save Settings
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={clearStoredApiKey}
+                      disabled={savingSettings}
+                      className="inline-flex items-center gap-2 rounded-lg bg-graphite px-5 py-3 text-sm text-brushed-silver hover:text-off-white disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear Stored API Key
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
