@@ -60,18 +60,18 @@ const EpisodesPage = () => {
         <title>Program Archive | AIRAB Money</title>
         <meta
           name="description"
-          content="Browse the AIRAB Money episode archive for AI, markets, and regional technology conversations across the Arab world."
+          content="Browse AIRAB Money's archive of daily AI-presented briefings, interviews, and program episodes focused on Middle East AI capital and infrastructure."
         />
       </Helmet>
 
       <PageIntro
-        eyebrow="Program archive"
-        title="Conversations, interviews, and briefing-style audio from the AIRAB desk."
-        description="The program archive is built for selective listening. Filter by show, scan by topic, and move directly into audio or transcript links without leaving the editorial system."
+        eyebrow="Briefing archive"
+        title="Daily AI-presented briefings plus selective interviews."
+        description="Each day AIRAB can turn the article file into podcast and YouTube-ready briefings voiced by AI presenters. This archive also holds deeper interview-led programs when the story warrants them."
         metrics={[
-          { label: 'Published episodes', value: String(episodes.length).padStart(2, '0') },
+          { label: 'Published briefings', value: String(episodes.length).padStart(2, '0') },
           { label: 'Show formats', value: String(showTypes.length - 1).padStart(2, '0') },
-          { label: 'Playback mode', value: 'Live' },
+          { label: 'Distribution', value: 'Audio + video' },
         ]}
       />
 
@@ -82,7 +82,7 @@ const EpisodesPage = () => {
               <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brushed-silver/45" />
               <input
                 type="text"
-                placeholder="Search episodes, guests, or topics"
+                placeholder="Search briefings, guests, or capital themes"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 className="field-dark pl-11"
@@ -139,7 +139,7 @@ const EpisodesPage = () => {
                   <div className="flex aspect-[16/9] items-end border-b border-white/5 bg-[linear-gradient(135deg,rgba(166,124,116,0.2),rgba(37,37,37,1))] p-6">
                     <div>
                       <div className="eyebrow">{episode.show_type}</div>
-                      <div className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">AIRAB audio briefing</div>
+                      <div className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">AIRAB daily briefing</div>
                     </div>
                   </div>
                 )}
@@ -183,7 +183,7 @@ const EpisodesPage = () => {
                   <div className="grid gap-3 md:grid-cols-2">
                     <a href={episode.audio_url} target="_blank" rel="noopener noreferrer" className="rose-button">
                       <Headphones size={16} />
-                      Listen now
+                      Listen audio
                     </a>
                     {episode.transcript_url ? (
                       <a href={episode.transcript_url} target="_blank" rel="noopener noreferrer" className="ghost-button">
@@ -204,7 +204,7 @@ const EpisodesPage = () => {
         ) : (
           <div className="editorial-panel mx-auto max-w-2xl p-10 text-center">
             <div className="eyebrow">No match</div>
-            <h2 className="mt-4 font-serif text-4xl tracking-[-0.05em] text-off-white">Nothing surfaced in the archive.</h2>
+            <h2 className="mt-4 font-serif text-4xl tracking-[-0.05em] text-off-white">Nothing surfaced in the briefing archive.</h2>
             <p className="mx-auto mt-4 max-w-xl text-brushed-silver">
               Clear the search or widen the filters to reopen the full program catalog.
             </p>

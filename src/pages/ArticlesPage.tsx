@@ -57,17 +57,17 @@ const ArticlesPage = () => {
         <title>Latest Coverage | AIRAB Money</title>
         <meta
           name="description"
-          content="Browse the AIRAB Money coverage archive for news, policy moves, infrastructure stories, and capital signals shaping AI across the Arab world."
+          content="Browse AIRAB Money's archive of Gulf AI capital deployment, cross-border investment, compute build-out, and policy files across the Middle East."
         />
       </Helmet>
 
       <PageIntro
         eyebrow="Coverage archive"
-        title="The AIRAB newsroom archive."
-        description="Every story in one place, with the lead file pinned at the top. Search by keyword, skim by category, and move straight into the pieces driving the current regional conversation."
+        title="AI capital and infrastructure files from the AIRAB desk."
+        description="Every story in one place, with the lead file pinned at the top. Search for Gulf fund deployment, regional compute build-out, company formation, and policy changes affecting AI execution."
         actions={
           <Link to="/markets" className="ghost-button">
-            Open markets desk
+            Open market tape
           </Link>
         }
         metrics={[
@@ -84,7 +84,7 @@ const ArticlesPage = () => {
               <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brushed-silver/45" />
               <input
                 type="text"
-                placeholder="Search headlines and summaries"
+                placeholder="Search capital, compute, companies, or policy"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 className="field-dark pl-11"

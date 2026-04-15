@@ -25,44 +25,34 @@ interface GuestResponse {
 }
 
 const expertiseOptions = [
-  'Artificial Intelligence',
-  'Machine Learning',
-  'Natural Language Processing',
-  'Computer Vision',
-  'Robotics',
-  'AI Ethics',
-  'Investment and Venture Capital',
-  'Startup Development',
-  'Digital Transformation',
-  'Government Policy',
-  'Healthcare AI',
-  'Fintech',
-  'Smart Cities',
-  'Education Technology',
-  'Cybersecurity',
-  'Data Science',
-  'Cloud Computing',
-  'IoT and Edge Computing',
-  'Blockchain and Web3',
-  'Sustainability Tech',
+  'Sovereign and institutional capital',
+  'Venture and growth investing',
+  'Cross-border AI fund deployment',
+  'AI infrastructure and data centres',
+  'Cloud and hyperscaler strategy',
+  'Semiconductors and supply chain',
+  'Energy and power for AI',
+  'AI company building',
+  'Enterprise AI deployment',
+  'Arabic language models',
+  'Government policy and regulation',
+  'Industrial AI and robotics',
+  'University and research ecosystems',
+  'AI security and governance',
+  'M&A and strategic investment',
 ]
 
 const topicSuggestions = [
-  'AI strategy in GCC markets',
-  'Investment trends in Middle East AI',
-  'Building AI startups in the Arab world',
-  'Government AI initiatives',
-  'AI for social good in MENA',
-  'Women in AI leadership',
-  'AI in traditional industries',
-  'Cross-border AI collaboration',
-  'AI talent development',
-  'Regulatory frameworks for AI',
-  'Arabic language processing',
-  'Smart city implementations',
-  'AI in financial services',
-  'Healthcare innovation with AI',
-  'AI ethics and cultural values',
+  'How Gulf capital is being deployed into global AI',
+  'Financing data centres, compute, and inference capacity in the region',
+  'What makes Middle East AI infrastructure deals actually work',
+  'Cloud, power, and permitting constraints on regional AI build-out',
+  'Cross-border investment patterns from sovereign and private capital',
+  'Where AI company formation in the GCC is accelerating',
+  'Arabic language model economics and distribution',
+  'Policy changes that affect AI ownership and deployment',
+  'Enterprise demand for AI across the Gulf',
+  'Strategic lessons from AI operators and investors in the region',
 ]
 
 const benefits = [
@@ -74,17 +64,17 @@ const benefits = [
   {
     icon: <Globe size={18} className="text-dusk-rose" />,
     title: 'Regional reach',
-    description: 'Connect with a GCC and wider Arab world audience that cares about practical AI execution.',
+    description: 'Connect with a GCC-focused audience following AI capital, infrastructure, and company formation closely.',
   },
   {
     icon: <Lightbulb size={18} className="text-dusk-rose" />,
     title: 'Thought leadership',
-    description: 'Position your work inside an editorial environment designed around signal rather than vanity.',
+    description: 'Position your work inside a desk designed around ownership, funding, and execution rather than vanity.',
   },
   {
     icon: <User size={18} className="text-dusk-rose" />,
     title: 'Network effects',
-    description: 'Appear alongside founders, researchers, policymakers, and investors shaping the region.',
+    description: 'Appear alongside operators, investors, policymakers, and builders shaping the region’s AI balance sheet.',
   },
 ]
 
@@ -188,17 +178,17 @@ const GuestApplicationPage = () => {
         <title>Guest Desk | AIRAB Money</title>
         <meta
           name="description"
-          content="Apply to appear on AIRAB Money and share your perspective on AI, markets, infrastructure, and policy across the Arab world."
+          content="Apply to appear on AIRAB Money and share a sharp perspective on Middle East AI capital, infrastructure, policy, and company formation."
         />
       </Helmet>
 
       <PageIntro
         eyebrow="Guest desk"
-        title="Bring a useful perspective to the AIRAB program."
-        description="We look for guests with operator insight, technical depth, market context, or policy experience that adds signal for the audience. The more specific your angle, the better."
+        title="Bring a sharp angle on AI capital or infrastructure."
+        description="We prioritize guests who can speak concretely about capital deployment, compute build-out, sovereign strategy, company formation, or operating lessons in Middle East AI. The more specific your angle, the better."
         metrics={[
           { label: 'Target audience', value: 'GCC+' },
-          { label: 'Required bio', value: '50+' },
+          { label: 'Output formats', value: 'Audio + video' },
           { label: 'Review mode', value: 'Editorial' },
         ]}
       />
@@ -279,7 +269,7 @@ const GuestApplicationPage = () => {
                     required
                     disabled={loading}
                     className="textarea-dark"
-                    placeholder="Summarize your work, what you operate or research, and why your perspective would be useful to the AIRAB audience."
+                    placeholder="Summarize your work, what capital, infrastructure, policy, or company-building context you can speak to, and why it would be useful to the AIRAB audience."
                   />
                 </div>
               </section>
@@ -384,9 +374,9 @@ const GuestApplicationPage = () => {
             <div className="editorial-panel p-6">
               <div className="stat-kicker mb-3">What the desk values</div>
               <div className="space-y-3 text-sm leading-7 text-brushed-silver">
-                <p>Clear operating experience or real research depth.</p>
-                <p>A perspective that adds specificity rather than general optimism.</p>
-                <p>Topics that matter to regional builders, investors, and decision-makers.</p>
+                <p>Clear operating experience, allocation responsibility, or real research depth.</p>
+                <p>A perspective that adds specificity on capital, compute, ownership, or execution.</p>
+                <p>Topics that matter to regional investors, operators, and decision-makers.</p>
               </div>
             </div>
 

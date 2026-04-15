@@ -13,10 +13,10 @@ const Footer = () => {
           <div className="space-y-5">
             <div className="eyebrow">AIRAB Money</div>
             <h2 className="font-serif text-3xl leading-none tracking-[-0.05em] text-off-white">
-              A dark editorial desk for regional AI and capital intelligence.
+              An AI-native desk for Gulf capital, compute, and infrastructure intelligence.
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-brushed-silver">
-              Built for readers who care about infrastructure, policy, operators, and the market implications of AI across the GCC and broader Arab world.
+              We track how Middle Eastern capital is deployed into AI globally and how AI companies, data centres, and policy stacks are being built across the region.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-brushed-silver">
               <a

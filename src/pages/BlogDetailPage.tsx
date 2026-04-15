@@ -66,7 +66,7 @@ const BlogDetailPage = () => {
     return (
       <div className="editorial-page">
         <div className="editorial-panel mx-auto max-w-2xl p-10 text-center">
-          <div className="eyebrow mb-4">Analysis archive</div>
+          <div className="eyebrow mb-4">Capital notes</div>
           <h1 className="font-serif text-4xl tracking-[-0.04em] text-off-white">Post not found</h1>
           <p className="mx-auto mt-4 max-w-xl text-brushed-silver">
             The analysis note you requested is unavailable. Return to the archive to keep browsing.
@@ -150,9 +150,9 @@ const BlogDetailPage = () => {
             ) : (
               <div className="flex h-[20rem] items-end bg-[linear-gradient(135deg,rgba(166,124,116,0.18),rgba(37,37,37,1))] p-8">
                 <div>
-                  <div className="eyebrow">AIRAB analysis</div>
+                  <div className="eyebrow">AIRAB note</div>
                   <div className="mt-3 max-w-xl font-serif text-3xl tracking-[-0.04em] text-off-white">
-                    Long-form commentary on capital, policy, and platform shifts in the region.
+                    Long-form commentary on Gulf AI capital, compute infrastructure, and strategic positioning.
                   </div>
                 </div>
               </div>
@@ -185,7 +185,7 @@ const BlogDetailPage = () => {
               <div className="editorial-panel p-6">
                 <div className="stat-kicker mb-3">Archive note</div>
                 <p className="text-sm leading-7 text-brushed-silver">
-                  AIRAB analysis pieces are designed as slower, longer reads alongside the faster news desk coverage.
+                  AIRAB notes are designed as slower reads that sit beside the faster capital and infrastructure files on the main desk.
                 </p>
               </div>
             </aside>

@@ -56,7 +56,7 @@ const MarketDataWidget: React.FC<MarketDataWidgetProps> = ({ marketData, updated
         <div>
           <div className="eyebrow">Signal board</div>
           <h2 className="mt-3 font-serif text-3xl tracking-[-0.05em] text-off-white md:text-4xl">
-            Live market context, trimmed for the editorial desk.
+            The market tape behind AI capital deployment.
           </h2>
         </div>
         <div className="space-y-2 text-sm text-brushed-silver">

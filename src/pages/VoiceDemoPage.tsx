@@ -33,16 +33,16 @@ const VoiceDemoPage: React.FC = () => {
   const sampleScripts =
     language === 'en'
       ? [
-          'Welcome to AIRAB Money, your editorial desk for regional AI, capital, and market structure.',
-          'Saudi Arabia is expanding compute capacity while investors watch the operating implications.',
-          'Dubai\'s latest AI governance move suggests the policy stack is now catching up with deployment.',
-          'Oil remains part of the AI story because infrastructure ambitions still ride on energy economics.',
+          'Today on AIRAB: Abu Dhabi capital deepens exposure to US AI compute as Gulf money pushes further into the infrastructure layer.',
+          'Saudi financing for a new Riyadh inference campus suggests local deployment is moving from strategy decks to funded capacity.',
+          'Dubai\'s latest permitting rules matter because grid access and compliance now shape AI data-centre speed to market.',
+          'This briefing maps where Middle Eastern AI capital is moving globally and what it is building across the region.',
         ]
       : [
-          'مرحباً بكم في آيراب موني، المكتب التحريري لأسواق الذكاء الاصطناعي ورأس المال والبنية التحتية في المنطقة.',
-          'توسع السعودية قدراتها الحاسوبية بينما يراقب المستثمرون الآثار التشغيلية لهذه التحركات.',
-          'تشير خطوة دبي الأخيرة في الحوكمة إلى أن الإطار التنظيمي بدأ يواكب مرحلة التطبيق.',
-          'يبقى النفط جزءاً من قصة الذكاء الاصطناعي لأن طموحات البنية التحتية ما زالت مرتبطة باقتصاد الطاقة.',
+          'في آيراب اليوم: يعمق رأس المال القادم من أبوظبي انكشافه على البنية التحتية الحاسوبية للذكاء الاصطناعي في الولايات المتحدة.',
+          'يشير تمويل موقع استدلال جديد في الرياض إلى أن النشر المحلي ينتقل من الخطط إلى السعة الممولة فعلياً.',
+          'أصبحت قواعد الترخيص والوصول إلى الكهرباء في دبي عاملاً مباشراً في سرعة بناء مراكز بيانات الذكاء الاصطناعي.',
+          'تشرح هذه الإحاطة أين يتحرك رأس المال الشرق أوسطي في الذكاء الاصطناعي عالمياً وماذا يبني داخل المنطقة.',
         ]
 
   const handleGenerate = () => {
@@ -58,14 +58,14 @@ const VoiceDemoPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Voice Lab | AIRAB Money</title>
-        <meta name="description" content="Try the AIRAB Money voice lab and preview the platform's AI presenter system." />
+        <title>Briefing Studio | AIRAB Money</title>
+        <meta name="description" content="Preview the AIRAB Money AI presenter system used to turn daily articles into podcast and YouTube-ready briefings." />
       </Helmet>
 
       <PageIntro
-        eyebrow="Voice lab"
-        title="An editorial studio for AIRAB-style voice output."
-        description="The voice lab previews how the AIRAB tone translates into audio. Pick a presenter, paste a script, and hear how the newsroom’s pacing and clarity can sound in spoken form."
+        eyebrow="Briefing studio"
+        title="The AI presenter system behind the daily AIRAB brief."
+        description="This studio turns the daily article file into podcast and YouTube-ready scripts. Pick a presenter, shape the tone, and preview how AIRAB sounds when the desk goes to audio and video."
         actions={
           <div className="flex flex-wrap gap-2">
             {(['en', 'ar'] as const).map((code) => (
@@ -86,8 +86,8 @@ const VoiceDemoPage: React.FC = () => {
         }
         metrics={[
           { label: 'Voices', value: '04' },
-          { label: 'Languages', value: '02' },
-          { label: 'Studio mode', value: 'Demo' },
+          { label: 'Outputs', value: 'Audio + video' },
+          { label: 'Studio mode', value: 'Daily brief' },
         ]}
       />
 
@@ -95,7 +95,7 @@ const VoiceDemoPage: React.FC = () => {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="editorial-panel p-8 md:p-10">
             <div className="eyebrow">Studio controls</div>
-            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Create a short voiceover sample</h2>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Create a daily briefing sample</h2>
 
             <div className="mt-8 space-y-8">
               <section className="space-y-4">
@@ -186,8 +186,8 @@ const VoiceDemoPage: React.FC = () => {
             <div className="editorial-panel p-6">
               <div className="stat-kicker mb-3">Lab notes</div>
               <div className="space-y-3 text-sm leading-7 text-brushed-silver">
-                <p>Write as if you are scripting for a calm editorial presenter rather than a marketing announcer.</p>
-                <p>Shorter sentences generally create cleaner, more confident playback in the current demo flow.</p>
+                <p>Write for a 4-6 minute capital briefing rather than a generic marketing voiceover.</p>
+                <p>Lead with the money move, then the infrastructure, policy, or market consequence.</p>
               </div>
             </div>
           </aside>
@@ -218,7 +218,7 @@ const VoiceDemoPage: React.FC = () => {
                   <div className="h-px bg-dusk-rose" style={{ width: isPlaying ? '48%' : '0%' }} />
                 </div>
                 <p className="mt-4 text-sm leading-7 text-brushed-silver">
-                  Demo playback is simulated in this environment, but the UI structure is ready for a real audio generation hook.
+                  Demo playback is simulated in this environment, but the studio surface is ready for a real TTS and distribution hook.
                 </p>
               </div>
             </div>
@@ -229,10 +229,10 @@ const VoiceDemoPage: React.FC = () => {
       <section className="editorial-page pt-0">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            'Natural editorial pacing rather than synthetic hype.',
+            'Daily podcast and YouTube workflow from the same script.',
             'English and Arabic prompt handling in the same interface.',
-            'Presenter personas aligned to AIRAB tone and rhythm.',
-            'A studio surface designed for future integration work.',
+            'Presenter personas aligned to AIRAB tone and pacing.',
+            'A studio surface designed for future automated publishing.',
           ].map((feature) => (
             <div key={feature} className="editorial-panel p-5 text-sm leading-7 text-brushed-silver">
               {feature}

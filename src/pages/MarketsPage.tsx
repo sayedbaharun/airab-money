@@ -94,14 +94,14 @@ const MarketsPage: React.FC = () => {
         <title>Markets Desk | AIRAB Money</title>
         <meta
           name="description"
-          content="Live financial market context from global and Middle East markets, presented in AIRAB Money's editorial data-desk format."
+          content="Track the market tape behind AI capital deployment, from Gulf exchanges and energy to global AI equities, commodities, and crypto risk."
         />
       </Helmet>
 
       <PageIntro
         eyebrow="Markets desk"
-        title="Live prices, trimmed into editorial signal."
-        description="This desk is designed for readers who want context faster than a terminal but with more density than a marketing dashboard. Track the region, key global indicators, and risk tone in one place."
+        title="The market tape behind AI capital deployment."
+        description="This desk tracks the assets that shape AI financing and infrastructure economics: regional exchanges, energy benchmarks, crypto risk, and the global equities most exposed to the AI trade."
         actions={
           <div className="flex flex-wrap gap-2">
             {(['en', 'ar'] as const).map((code) => (

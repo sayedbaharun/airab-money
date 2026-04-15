@@ -59,21 +59,21 @@ const BlogPage = () => {
   return (
     <>
       <Helmet>
-        <title>Analysis | AIRAB Money</title>
+        <title>Capital Notes | AIRAB Money</title>
         <meta
           name="description"
-          content="Long-form AIRAB Money analysis on markets, infrastructure, policy, and technology trends across the Arab world."
+          content="Long-form AIRAB Money notes on Gulf AI capital, compute infrastructure, outbound investment, and regional policy strategy."
         />
       </Helmet>
 
       <PageIntro
-        eyebrow="Analysis archive"
-        title="Long-form notes from the AIRAB desk."
-        description="Where the newsroom steps back from the feed and writes slower. These pieces connect events to incentives, market structure, and the region’s broader strategic positioning."
+        eyebrow="Capital notes"
+        title="Longer reads on Gulf AI money, compute, and power."
+        description="Where the desk steps back from the daily file flow and writes slower. These pieces connect headlines to fund strategy, infrastructure ownership, energy constraints, and regional positioning."
         metrics={[
           { label: 'Published notes', value: String(posts.length + (featuredPost ? 1 : 0)).padStart(2, '0') },
           { label: 'Categories', value: String(categories.length - 1).padStart(2, '0') },
-          { label: 'Reading mode', value: 'Long' },
+          { label: 'Reading mode', value: 'Deep' },
         ]}
       />
 
@@ -84,7 +84,7 @@ const BlogPage = () => {
               <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brushed-silver/45" />
               <input
                 type="text"
-                placeholder="Search analysis by theme, author, or idea"
+                placeholder="Search notes by capital theme, market, or company"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 className="field-dark pl-11"
@@ -116,8 +116,8 @@ const BlogPage = () => {
                 ) : (
                   <div className="flex h-full min-h-[20rem] items-end bg-[linear-gradient(135deg,rgba(166,124,116,0.2),rgba(37,37,37,1))] p-8">
                     <div>
-                      <div className="eyebrow">Featured analysis</div>
-                      <div className="mt-3 font-serif text-4xl tracking-[-0.05em] text-off-white">Long-form AIRAB commentary</div>
+                      <div className="eyebrow">Featured note</div>
+                      <div className="mt-3 font-serif text-4xl tracking-[-0.05em] text-off-white">Long-form AIRAB notes on AI capital and infrastructure</div>
                     </div>
                   </div>
                 )}
@@ -141,7 +141,7 @@ const BlogPage = () => {
                     {featuredPost.estimated_read_time} min
                   </span>
                 </div>
-                <span className="editorial-link">Read analysis</span>
+                <span className="editorial-link">Read note</span>
               </div>
             </div>
           </Link>
@@ -185,7 +185,7 @@ const BlogPage = () => {
                       {post.view_count}
                     </span>
                   </div>
-                  <span className="editorial-link">Read analysis</span>
+                  <span className="editorial-link">Read note</span>
                 </div>
               </Link>
             ))}
@@ -193,7 +193,7 @@ const BlogPage = () => {
         ) : (
           <div className="editorial-panel mx-auto max-w-2xl p-10 text-center">
             <div className="eyebrow">No match</div>
-            <h2 className="mt-4 font-serif text-4xl tracking-[-0.05em] text-off-white">No analysis surfaced.</h2>
+            <h2 className="mt-4 font-serif text-4xl tracking-[-0.05em] text-off-white">No capital notes surfaced.</h2>
             <p className="mx-auto mt-4 max-w-xl text-brushed-silver">
               Try a broader search or reopen all categories to return to the full archive.
             </p>

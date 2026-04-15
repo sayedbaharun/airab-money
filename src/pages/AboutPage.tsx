@@ -1,51 +1,80 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Globe, Heart, Lightbulb, Target, Users } from 'lucide-react'
+import { Globe, Lightbulb, Mic2, Target, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageIntro from '../components/PageIntro'
 
 const coreValues = [
   {
     icon: <Lightbulb size={18} className="text-dusk-rose" />,
-    title: 'Infrastructure over hype',
-    description: 'We focus on systems, incentives, and deployment realities rather than novelty cycles.',
+    title: 'Capital-aware coverage',
+    description: 'We treat ownership, funding, and deployment as the center of the AI story rather than background detail.',
   },
   {
     icon: <Globe size={18} className="text-dusk-rose" />,
-    title: 'Regional fluency',
-    description: 'The desk is tuned to GCC and Arab world context, not just imported narratives.',
-  },
-  {
-    icon: <Heart size={18} className="text-dusk-rose" />,
-    title: 'Clear editorial judgment',
-    description: 'We aim for authority without bluster and for signal without flattening nuance.',
-  },
-  {
-    icon: <Users size={18} className="text-dusk-rose" />,
-    title: 'Operator perspective',
-    description: 'AIRAB is built for founders, investors, policy teams, and executives who need useful context.',
+    title: 'Regional first',
+    description: 'The desk starts from Gulf and Middle Eastern incentives, not imported narratives about the region.',
   },
   {
     icon: <Target size={18} className="text-dusk-rose" />,
-    title: 'Future-facing but grounded',
-    description: 'We care about what is becoming operational now, not just what is theoretically possible.',
+    title: 'Infrastructure over hype',
+    description: 'Compute, power, cloud, semiconductors, and regulation matter more than generic AI boosterism.',
+  },
+  {
+    icon: <Users size={18} className="text-dusk-rose" />,
+    title: 'Operator usefulness',
+    description: 'AIRAB is built for investors, founders, policymakers, and executives who need signal they can act on.',
+  },
+  {
+    icon: <Mic2 size={18} className="text-dusk-rose" />,
+    title: 'AI-native publishing',
+    description: 'The product is designed for AI-generated articles and daily AI-presented briefings across audio and video.',
   },
 ]
 
-const hosts = [
+const workflowSteps = [
   {
-    name: 'Nora Al-Mansouri',
-    title: 'AI Investment Expert and Former McKinsey Consultant',
-    bio: 'UAE national with a Harvard MBA and MIT AI certification. Nora translates venture, capital allocation, and market strategy into language that business operators can act on.',
-    expertise: ['Investment analysis', 'Market strategy', 'Business intelligence', 'Startup ecosystems'],
-    image: '/images/avatars/nora/nora_professional_formal.png',
+    step: '01',
+    title: 'Source intake',
+    description: 'Track fund deployment, company rounds, infrastructure announcements, policy changes, and market signals tied to AI.',
   },
   {
-    name: 'Omar Al-Rashid',
-    title: 'AI Research Pioneer and Serial Entrepreneur',
-    bio: 'Former Google AI researcher from Saudi Arabia with a Stanford computer science PhD. Omar sits at the intersection of technical depth, operating experience, and regional deployment reality.',
-    expertise: ['AI research', 'Machine learning', 'Entrepreneurship', 'Applied innovation'],
-    image: '/images/avatars/omar/omar_tech_executive.png',
+    step: '02',
+    title: 'AI article generation',
+    description: 'Turn structured inputs into first-pass articles focused on capital flows, ownership, and operating consequences.',
+  },
+  {
+    step: '03',
+    title: 'Editorial QA',
+    description: 'Check framing, sourcing, tags, and strategic relevance before the file hits the public desk.',
+  },
+  {
+    step: '04',
+    title: 'Daily AI briefing',
+    description: 'Convert the day\'s file stack into podcast and YouTube-ready scripts delivered by AI presenters.',
+  },
+]
+
+const presenterStack = [
+  {
+    name: 'Ahmad',
+    role: 'Anchor voice',
+    description: 'Used for calm, authoritative daily briefings on capital deployment and infrastructure financing.',
+  },
+  {
+    name: 'ARIA',
+    role: 'Fast file voice',
+    description: 'Designed for concise market and company updates when the desk needs tighter turnaround.',
+  },
+  {
+    name: 'Khaled',
+    role: 'Saudi lens',
+    description: 'Best suited to policy, industrial AI, compute, and capital formation stories anchored in Saudi Arabia.',
+  },
+  {
+    name: 'Fatima',
+    role: 'Distribution voice',
+    description: 'Optimized for energetic recaps, YouTube cuts, and shorter formats without losing AIRAB tone.',
   },
 ]
 
@@ -56,14 +85,14 @@ const AboutPage = () => {
         <title>About AIRAB Money</title>
         <meta
           name="description"
-          content="Learn about AIRAB Money's mission, editorial point of view, and the AI-powered hosts behind the desk."
+          content="Learn AIRAB Money's editorial thesis, AI-native production workflow, and presenter system for Middle East AI capital coverage."
         />
       </Helmet>
 
       <PageIntro
         eyebrow="About the desk"
-        title="An editorial data brand built for the region’s AI economy."
-        description="AIRAB Money exists to cover what happens when AI becomes infrastructure, policy, and capital allocation rather than just a talking point. The desk sits between journalism, market intelligence, and regional context."
+        title="An AI-native intelligence desk for Middle East AI capital."
+        description="AIRAB tracks where Gulf and wider Middle Eastern capital is being deployed into AI globally, and how regional AI companies, compute clusters, and infrastructure are being financed at home."
         actions={
           <Link to="/contact" className="rose-button">
             Talk to the desk
@@ -71,8 +100,8 @@ const AboutPage = () => {
         }
         metrics={[
           { label: 'Publishing languages', value: '02' },
-          { label: 'Core hosts', value: '02' },
-          { label: 'Regional focus', value: 'GCC+' },
+          { label: 'AI presenters', value: '04' },
+          { label: 'Briefing cadence', value: 'Daily' },
         ]}
       />
 
@@ -80,17 +109,17 @@ const AboutPage = () => {
         <div className="grid gap-6 xl:grid-cols-2">
           <div className="editorial-panel p-8">
             <div className="eyebrow">Mission</div>
-            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Translate the AI economy into a readable regional signal.</h2>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Track the balance sheet behind regional AI.</h2>
             <p className="mt-5 text-base leading-8 text-brushed-silver">
-              We cover capital flows, regulation, infrastructure, and operator strategy so decision-makers in the Arab world can see the system beneath the headlines.
+              We focus on outbound capital, inbound investment, infrastructure financing, and the policy moves that change how AI gets funded and deployed across the Middle East.
             </p>
           </div>
 
           <div className="editorial-panel p-8">
             <div className="eyebrow">Editorial thesis</div>
-            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">AI is no longer a technology beat alone.</h2>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">If capital moves, it belongs on the desk.</h2>
             <p className="mt-5 text-base leading-8 text-brushed-silver">
-              It is a market structure story, a policy story, and an industrial capacity story. AIRAB is designed around that broader frame and around the region’s specific strategic posture.
+              The center of the AIRAB story is ownership, compute, energy, regulation, and execution. We care less about generic AI commentary and more about who is funding what, where, and why.
             </p>
           </div>
         </div>
@@ -102,21 +131,21 @@ const AboutPage = () => {
           <div className="mt-5 grid gap-8 xl:grid-cols-[minmax(0,1.1fr)_0.9fr]">
             <div className="space-y-5 text-base leading-8 text-brushed-silver">
               <p>
-                AIRAB Money was built around a simple observation: the Arab world’s AI story is often discussed through outside narratives, while the region’s own operating logic gets under-covered.
+                Gulf capital is no longer only financing local technology stories. It is becoming a meaningful shareholder in the global AI stack, from compute and data centres to model tooling and strategic equity positions.
               </p>
               <p>
-                From sovereign compute bets to startup financing, from Arabic-language tooling to industrial deployment, the most important developments are often not the loudest ones.
+                At the same time, the region is financing its own AI build-out across data centres, inference capacity, industrial deployments, cloud partnerships, and national policy frameworks.
               </p>
               <p>
-                The desk exists to map that terrain clearly and consistently, with enough editorial restraint that the information remains useful after the headline cycle has moved on.
+                AIRAB exists to map those two movements together: where Middle Eastern money goes internationally, and what is being built with AI capital inside the region itself.
               </p>
             </div>
 
             <div className="space-y-4">
               {[
-                'State-backed infrastructure is becoming a decisive competitive layer.',
-                'Regional regulation now shapes execution as much as raw model capability.',
-                'Capital, language, and energy all matter more than generic AI boosterism.',
+                'Gulf capital is becoming a global AI shareholder.',
+                'Regional AI build-out depends on compute, power, cloud, and permitting.',
+                'A daily AI-native briefing format can compress this signal faster than legacy media.',
               ].map((point) => (
                 <div key={point} className="border border-white/5 bg-white/[0.02] p-5 text-sm leading-7 text-brushed-silver">
                   {point}
@@ -148,33 +177,36 @@ const AboutPage = () => {
 
       <section className="editorial-page pt-0">
         <div className="mb-6">
-          <div className="eyebrow">Hosts</div>
-          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">The AIRAB voices behind the desk</h2>
+          <div className="eyebrow">Publishing workflow</div>
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">How AIRAB turns signal into output</h2>
         </div>
 
-        <div className="space-y-6">
-          {hosts.map((host) => (
-            <div key={host.name} className="editorial-panel overflow-hidden">
-              <div className="grid xl:grid-cols-[18rem_minmax(0,1fr)]">
-                <div className="border-b border-white/5 xl:border-b-0 xl:border-r">
-                  <img src={host.image} alt={host.name} className="h-full w-full object-cover grayscale" />
-                </div>
-                <div className="space-y-5 p-8 md:p-10">
-                  <div className="eyebrow">Host profile</div>
-                  <div>
-                    <h3 className="font-serif text-3xl tracking-[-0.04em] text-off-white">{host.name}</h3>
-                    <p className="mt-2 text-sm uppercase tracking-[0.18em] text-dusk-rose">{host.title}</p>
-                  </div>
-                  <p className="max-w-3xl text-base leading-8 text-brushed-silver">{host.bio}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {host.expertise.map((skill) => (
-                      <span key={skill} className="data-pill">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {workflowSteps.map((step) => (
+            <div key={step.step} className="editorial-panel p-6">
+              <div className="font-serif text-4xl tracking-[-0.05em] text-dusk-rose">{step.step}</div>
+              <h3 className="mt-4 font-serif text-2xl tracking-[-0.04em] text-off-white">{step.title}</h3>
+              <p className="mt-4 text-sm leading-7 text-brushed-silver">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="editorial-page pt-0">
+        <div className="mb-6">
+          <div className="eyebrow">Presenter system</div>
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">The AI voices used for daily briefings</h2>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {presenterStack.map((presenter) => (
+            <div key={presenter.name} className="editorial-panel p-6">
+              <div className="flex h-12 w-12 items-center justify-center border border-dusk-rose/40 bg-dusk-rose/10 font-serif text-xl text-off-white">
+                {presenter.name[0]}
               </div>
+              <h3 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">{presenter.name}</h3>
+              <div className="mt-2 text-sm uppercase tracking-[0.18em] text-dusk-rose">{presenter.role}</div>
+              <p className="mt-4 text-sm leading-7 text-brushed-silver">{presenter.description}</p>
             </div>
           ))}
         </div>

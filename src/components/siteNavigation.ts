@@ -23,37 +23,37 @@ export const primaryNavigation: NavigationItem[] = [
     href: '/',
     icon: Home,
     label: 'Home',
-    description: 'Front page',
+    description: 'Capital front page',
   },
   {
     href: '/articles',
     icon: Newspaper,
-    label: 'News',
-    description: 'Latest coverage',
+    label: 'Coverage',
+    description: 'AI capital files',
   },
   {
     href: '/markets',
     icon: BarChart3,
     label: 'Markets',
-    description: 'Live data desk',
+    description: 'AI risk tape',
   },
   {
     href: '/episodes',
     icon: Headphones,
-    label: 'Episodes',
-    description: 'Program archive',
+    label: 'Briefings',
+    description: 'Daily audio/video',
   },
   {
     href: '/about',
     icon: Info,
     label: 'About',
-    description: 'Mission and hosts',
+    description: 'Thesis and workflow',
   },
   {
     href: '/contact',
     icon: Mail,
     label: 'Contact',
-    description: 'Press and partnerships',
+    description: 'Leads and partnerships',
   },
 ]
 
@@ -62,24 +62,24 @@ export const platformNavigation: NavigationItem[] = [
     href: '/blog',
     icon: BookOpenText,
     label: 'Analysis',
-    description: 'Long-form notes',
+    description: 'Capital notes',
   },
   {
     href: '/guest-application',
     icon: UserRoundPlus,
     label: 'Guest Desk',
-    description: 'Apply to appear',
+    description: 'Pitch a briefing',
   },
   {
     href: '/demo',
     icon: Mic2,
-    label: 'Voice Lab',
-    description: 'Studio demo',
+    label: 'Studio',
+    description: 'AI presenter demo',
   },
 ]
 
 export const coverageSignals = [
-  'Capital flows across GCC AI and fintech.',
-  'Policy moves shaping regional adoption.',
-  'Founder, operator, and market intelligence.',
+  'Gulf capital deploying into global AI platforms, funds, and infrastructure.',
+  'Regional build-out across compute, data centres, chips, power, and cloud.',
+  'Policy, company formation, and operator signals shaping AI execution.',
 ]

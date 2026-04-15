@@ -30,7 +30,7 @@ const HeroFeatureCard: React.FC<HeroFeatureCardProps> = ({
               <div>
                 <div className="eyebrow">Lead story</div>
                 <div className="mt-4 max-w-lg font-serif text-4xl leading-none tracking-[-0.05em] text-off-white">
-                  The stories where market structure meets regional ambition.
+                  Where Gulf capital meets compute, policy, and company formation.
                 </div>
               </div>
             </div>

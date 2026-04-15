@@ -185,7 +185,7 @@ const ArticleDetailPage = () => {
                 <div>
                   <div className="eyebrow">AIRAB coverage</div>
                   <div className="mt-3 max-w-2xl font-serif text-4xl tracking-[-0.05em] text-off-white">
-                    Reporting designed to bridge fast headlines with slower regional context.
+                    Coverage designed to connect AI headlines to capital flows, compute build-out, and regional strategy.
                   </div>
                 </div>
               </div>
@@ -220,7 +220,7 @@ const ArticleDetailPage = () => {
               <div className="editorial-panel p-6">
                 <div className="stat-kicker mb-3">Why this piece matters</div>
                 <p className="text-sm leading-7 text-brushed-silver">
-                  AIRAB stories are written to connect headline developments to capital allocation, regional strategy, and operating consequences.
+                  AIRAB stories are written to connect AI developments to capital allocation, infrastructure ownership, and the operating consequences for the Middle East.
                 </p>
               </div>
             </aside>

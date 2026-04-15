@@ -3,19 +3,46 @@ import { Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { coverageSignals, platformNavigation, primaryNavigation } from './siteNavigation'
 
+const clockZones = [
+  {
+    id: 'dubai',
+    label: 'Dubai',
+    cities: 'Dubai',
+    timeZone: 'Asia/Dubai',
+    offset: 'UTC+4',
+  },
+  {
+    id: 'gcc',
+    label: 'GCC core',
+    cities: 'Doha / Riyadh / Manama',
+    timeZone: 'Asia/Riyadh',
+    offset: 'UTC+3',
+  },
+] as const
+
 const Sidebar = () => {
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
-  const [dubaiTime, setDubaiTime] = useState('')
+  const [regionalTimes, setRegionalTimes] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    const formatter = new Intl.DateTimeFormat('en-GB', {
-      timeZone: 'Asia/Dubai',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+    const formatters = clockZones.reduce<Record<string, Intl.DateTimeFormat>>((accumulator, zone) => {
+      accumulator[zone.id] = new Intl.DateTimeFormat('en-GB', {
+        timeZone: zone.timeZone,
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      return accumulator
+    }, {})
 
-    const tick = () => setDubaiTime(formatter.format(new Date()))
+    const tick = () =>
+      setRegionalTimes(
+        clockZones.reduce<Record<string, string>>((accumulator, zone) => {
+          accumulator[zone.id] = formatters[zone.id].format(new Date())
+          return accumulator
+        }, {}),
+      )
+
     tick()
 
     const intervalId = window.setInterval(tick, 60_000)
@@ -80,22 +107,37 @@ const Sidebar = () => {
             </div>
           </div>
           <p className="max-w-xs text-sm leading-6 text-brushed-silver">
-            Intelligence on markets, policy, and regional AI infrastructure for the Arab world.
+            Intelligence on Gulf AI capital, compute infrastructure, and deployment signals at home and abroad.
           </p>
         </Link>
       </div>
 
       <div className="flex-1 space-y-8 overflow-y-auto px-6 py-6">
         <div className="editorial-panel p-4">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-4">
             <div>
-              <div className="stat-kicker">Dubai live</div>
-              <div className="mt-2 font-serif text-3xl tracking-[-0.05em] text-off-white">{dubaiTime || '--:--'}</div>
+              <div className="stat-kicker">Regional clocks</div>
+              <div className="mt-2 font-serif text-2xl tracking-[-0.05em] text-off-white">Market hours context</div>
             </div>
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-dusk-rose">
               <span className="h-2 w-2 rounded-full bg-dusk-rose" />
-              GST
+              Live
             </div>
+          </div>
+
+          <div className="mt-4 space-y-4">
+            {clockZones.map((zone) => (
+              <div key={zone.id} className="flex items-start justify-between gap-4 border-b border-white/5 pb-4 last:border-b-0 last:pb-0">
+                <div>
+                  <div className="text-xs uppercase tracking-[0.22em] text-brushed-silver/55">{zone.label}</div>
+                  <div className="mt-2 text-sm leading-6 text-brushed-silver">{zone.cities}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-serif text-3xl tracking-[-0.05em] text-off-white">{regionalTimes[zone.id] || '--:--'}</div>
+                  <div className="mt-2 text-[11px] uppercase tracking-[0.22em] text-dusk-rose">{zone.offset}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

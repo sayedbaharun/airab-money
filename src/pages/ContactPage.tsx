@@ -27,15 +27,15 @@ const ContactPage = () => {
     email: '',
     subject: '',
     message: '',
-    messageType: 'general',
+    messageType: 'editorial_lead',
   })
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [statusMessage, setStatusMessage] = useState('')
 
   const messageTypes = [
-    { value: 'general', label: 'General inquiry' },
-    { value: 'media', label: 'Media and press' },
+    { value: 'editorial_lead', label: 'Editorial lead' },
+    { value: 'capital_signal', label: 'Capital deployment tip' },
     { value: 'partnership', label: 'Partnership' },
     { value: 'guest', label: 'Guest appearance' },
     { value: 'sponsorship', label: 'Sponsorship' },
@@ -46,9 +46,9 @@ const ContactPage = () => {
   const contactInfo = [
     {
       icon: <Mail size={18} className="text-dusk-rose" />,
-      title: 'Editorial and partnerships',
+      title: 'Editorial and deal flow',
       content: 'hello@airabmoney.com',
-      description: 'For press requests, collaboration conversations, and general desk enquiries.',
+      description: 'For story leads, capital deployment tips, guest pitches, and partnership conversations.',
     },
     {
       icon: <Phone size={18} className="text-dusk-rose" />,
@@ -66,7 +66,7 @@ const ContactPage = () => {
       icon: <Clock size={18} className="text-dusk-rose" />,
       title: 'Response window',
       content: 'Within 24 hours',
-      description: 'Faster for live editorial matters and scheduled appearances.',
+      description: 'Faster for active news files, scheduled appearances, and live partnerships.',
     },
   ]
 
@@ -105,7 +105,7 @@ const ContactPage = () => {
           email: '',
           subject: '',
           message: '',
-          messageType: 'general',
+          messageType: 'editorial_lead',
         })
       }
     } catch (submitError: unknown) {
@@ -122,14 +122,14 @@ const ContactPage = () => {
         <title>Contact the Desk | AIRAB Money</title>
         <meta
           name="description"
-          content="Get in touch with AIRAB Money for editorial enquiries, partnerships, guest appearances, or sponsorship conversations."
+          content="Get in touch with AIRAB Money for AI capital story leads, infrastructure tips, guest appearances, partnerships, or sponsorship conversations."
         />
       </Helmet>
 
       <PageIntro
         eyebrow="Contact the desk"
-        title="Editorial, partnerships, guest requests, and everything in between."
-        description="Use the desk form for press enquiries, collaboration ideas, sponsorship discussions, or story leads. If you want to appear on the program, you can also go directly to the guest desk."
+        title="Story leads, capital signals, guest requests, and partnerships."
+        description="Use the desk form for AI fund deployment leads, infrastructure announcements, guest requests, partnerships, or sponsorship conversations. If you already want to appear on the program, go straight to the guest desk."
         actions={
           <Link to="/guest-application" className="ghost-button">
             Open guest desk
@@ -297,10 +297,10 @@ const ContactPage = () => {
             <div className="editorial-panel p-6">
               <div className="stat-kicker mb-3">Best use cases</div>
               <div className="space-y-3 text-sm leading-7 text-brushed-silver">
-                <p>Press requests and executive commentary.</p>
-                <p>Brand, content, and event partnerships.</p>
+                <p>Fund deployment tips and investment trail markers.</p>
+                <p>Regional compute, data centre, cloud, or policy leads.</p>
                 <p>Guest appearances, sponsorships, and speaker invites.</p>
-                <p>Story leads and regional market tips.</p>
+                <p>Brand, content, and event partnerships tied to the AIRAB desk.</p>
               </div>
             </div>
 
@@ -323,14 +323,19 @@ const ContactPage = () => {
         <div className="grid gap-4 md:grid-cols-2">
           {[
             {
-              question: 'How do I become a guest on the podcast?',
+              question: 'How do I pitch a capital deployment or infrastructure story?',
+              answer:
+                'Use the contact form and include the company, fund, geography, transaction context, and why the move matters for regional AI.',
+            },
+            {
+              question: 'How do I become a guest on the program?',
               answer:
                 'Use the guest desk application so the editorial team can review your background, topics, and availability in one place.',
             },
             {
               question: 'Do you accept story suggestions or market leads?',
               answer:
-                'Yes. The newsroom actively reviews leads, especially on policy, infrastructure, capital, and regional operating trends.',
+                'Yes. The newsroom actively reviews leads, especially on AI capital, compute infrastructure, policy, and regional operating trends.',
             },
             {
               question: 'Can AIRAB Money support events or panels?',
