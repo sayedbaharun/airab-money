@@ -26,7 +26,7 @@ const OPENAI_SETTING_KEYS = ['OPENAI_API_KEY', 'OPENAI_TEXT_MODEL', 'OPENAI_IMAG
 let adminSettingsTableReady = false
 
 app.use(cors())
-app.use(express.json({ limit: '2mb' }))
+app.use(express.json({ limit: '15mb' }))
 
 const adminPasswordMatches = (candidate: unknown) => {
   const configuredPassword = process.env.ADMIN_PASSWORD

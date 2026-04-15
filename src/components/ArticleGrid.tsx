@@ -10,6 +10,7 @@ interface Article {
   published_at?: string | null
   author?: string
   image_url?: string
+  hero_image_url?: string
 }
 
 interface ArticleGridProps {
@@ -19,12 +20,15 @@ interface ArticleGridProps {
 const ArticleGrid: React.FC<ArticleGridProps> = ({ articles }) => {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      {articles.map((article, index) => (
+      {articles.map((article, index) => {
+        const coverImage = article.hero_image_url || article.image_url
+
+        return (
         <Link key={article.id} to={`/article/${article.id}`} className="group editorial-panel overflow-hidden transition-colors hover:border-dusk-rose/30">
-          {article.image_url ? (
+          {coverImage ? (
             <div className="aspect-[16/10] overflow-hidden border-b border-white/5">
               <img
-                src={article.image_url}
+                src={coverImage}
                 alt={article.headline}
                 className="h-full w-full object-cover grayscale transition duration-300 group-hover:scale-[1.02]"
               />
@@ -67,7 +71,8 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ articles }) => {
             </div>
           </div>
         </Link>
-      ))}
+        )
+      })}
     </div>
   )
 }

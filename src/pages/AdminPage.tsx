@@ -374,7 +374,7 @@ const AdminPage: React.FC = () => {
         setInlineImageApproved(false)
 
         if (nextHeroPrompt && nextInlinePrompt) {
-          await generateImagesForPrompts(nextHeroPrompt, nextInlinePrompt)
+          void generateImagesForPrompts(nextHeroPrompt, nextInlinePrompt)
         }
       }
     } catch (error) {
@@ -462,8 +462,6 @@ const AdminPage: React.FC = () => {
       const updateData: Record<string, any> = {}
       
       if (heroImageApproved && heroImageUrl) {
-        updateData.image_url = heroImageUrl
-        updateData.image_prompt = heroPrompt
         updateData.hero_image_url = heroImageUrl
         updateData.hero_image_prompt = heroPrompt
       }
