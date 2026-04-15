@@ -8,12 +8,11 @@ const Navbar = () => {
 
   const navigation = [
     { name: 'Home', nameAr: 'الرئيسية', href: '/' },
+    { name: 'About', nameAr: 'من نحن', href: '/about' },
     { name: 'News', nameAr: 'الأخبار', href: '/articles' },
-    { name: 'Presenters', nameAr: 'المضيفون', href: '/presenters' },
     { name: 'Markets', nameAr: 'الأسواق', href: '/markets' },
-    { name: 'Content', nameAr: 'المحتوى', href: '/content' },
-
-    { name: 'About', nameAr: 'من نحن', href: '/about' }
+    { name: 'Presenters', nameAr: 'المضيفون', href: '/presenters' },
+    { name: 'Contact Us', nameAr: 'اتصل بنا', href: '/contact' }
   ]
 
   const isActive = (path: string) => location.pathname === path

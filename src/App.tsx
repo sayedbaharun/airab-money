@@ -26,16 +26,14 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/articles" element={<ArticlesPage />} />
-              <Route path="/article/:id" element={<ArticleDetailPage />} />
-              <Route path="/presenters" element={<PresentersPage />} />
-              <Route path="/markets" element={<MarketsPage />} />
-              <Route path="/content" element={<EpisodesPage />} />
-
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/articles" element={<ArticlesPage />} />
+              <Route path="/markets" element={<MarketsPage />} />
+              <Route path="/presenters" element={<PresentersPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+
               <Route path="/episodes" element={<EpisodesPage />} />
               <Route path="/blog" element={<BlogPage />} />
-              <Route path="/contact" element={<ContactPage />} />
               <Route path="/guest-application" element={<GuestApplicationPage />} />
               <Route path="/demo" element={<VoiceDemoPage />} />
               <Route path="/admin" element={<AdminPage />} />
