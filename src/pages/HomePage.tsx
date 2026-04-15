@@ -151,7 +151,7 @@ const HomePage = () => {
             status: 'published',
             sort: 'published_at',
             order: 'desc',
-            limit: 6,
+            limit: 12,
           }).catch(() => fallbackArticles),
           getEpisodes({
             status: 'published',
@@ -161,8 +161,19 @@ const HomePage = () => {
         ])
 
         const resolvedArticles = articleData.length > 0 ? articleData : fallbackArticles
-        setFeaturedArticle(resolvedArticles[0])
-        setSecondaryArticles(resolvedArticles.slice(1))
+        const leadArticle = resolvedArticles[0] || null
+        const secondaryPool = resolvedArticles
+          .filter((article) => article.id !== leadArticle?.id)
+          .sort((left, right) => {
+            const leftHasImage = Boolean(left.hero_image_url || left.image_url)
+            const rightHasImage = Boolean(right.hero_image_url || right.image_url)
+
+            if (leftHasImage === rightHasImage) return 0
+            return leftHasImage ? -1 : 1
+          })
+
+        setFeaturedArticle(leadArticle)
+        setSecondaryArticles(secondaryPool.slice(0, 4))
         setEpisodes(episodeData)
 
         if (marketResponse?.success) {

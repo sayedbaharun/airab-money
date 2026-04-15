@@ -17,11 +17,50 @@ interface ArticleGridProps {
   articles: Article[]
 }
 
+const fallbackPalettes = [
+  ['#6c4b44', '#1b1b1b'],
+  ['#8d6a57', '#1f1f1f'],
+  ['#5b6d75', '#161616'],
+  ['#7b5c72', '#181818'],
+]
+
+const buildFallbackCover = (headline: string, category?: string) => {
+  const seed = `${headline}${category || ''}`
+  const palette = fallbackPalettes[
+    Array.from(seed).reduce((total, char) => total + char.charCodeAt(0), 0) % fallbackPalettes.length
+  ]
+  const title = headline.length > 74 ? `${headline.slice(0, 71)}...` : headline
+  const label = (category || 'AI capital file').toUpperCase()
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${palette[0]}" />
+          <stop offset="100%" stop-color="${palette[1]}" />
+        </linearGradient>
+        <linearGradient id="fade" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(0,0,0,0.08)" />
+          <stop offset="100%" stop-color="rgba(0,0,0,0.72)" />
+        </linearGradient>
+      </defs>
+      <rect width="1600" height="1000" fill="url(#bg)" />
+      <circle cx="1260" cy="210" r="230" fill="rgba(255,255,255,0.08)" />
+      <circle cx="310" cy="120" r="160" fill="rgba(255,255,255,0.05)" />
+      <rect x="0" y="0" width="1600" height="1000" fill="url(#fade)" />
+      <rect x="84" y="84" width="190" height="40" rx="20" fill="rgba(255,255,255,0.14)" />
+      <text x="112" y="110" fill="#f4efe8" font-family="Georgia, serif" font-size="24" letter-spacing="4">${label}</text>
+      <text x="90" y="760" fill="#f4efe8" font-family="Georgia, serif" font-size="74">${title}</text>
+      <text x="90" y="900" fill="rgba(244,239,232,0.72)" font-family="Arial, sans-serif" font-size="28" letter-spacing="6">AIRAB MONEY</text>
+    </svg>
+  `)}`
+}
+
 const ArticleGrid: React.FC<ArticleGridProps> = ({ articles }) => {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {articles.map((article, index) => {
-        const coverImage = article.hero_image_url || article.image_url
+        const coverImage = article.hero_image_url || article.image_url || buildFallbackCover(article.headline, article.category)
 
         return (
         <Link key={article.id} to={`/article/${article.id}`} className="group editorial-panel overflow-hidden transition-colors hover:border-dusk-rose/30">
