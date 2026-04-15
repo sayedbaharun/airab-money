@@ -9,9 +9,8 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm --prefix server run db:push",
   "npm run build"
 ]
 
 [start]
-cmd = "node server/dist/index.js"
+cmd = "npm run start"
