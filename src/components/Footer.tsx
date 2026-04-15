@@ -21,16 +21,16 @@ const Footer = () => {
               The definitive AI-powered financial media platform for the Arab world and GCC region.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
+              <a href="https://twitter.com/airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                 <Twitter size={18} />
               </a>
-              <a href="#" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
+              <a href="https://linkedin.com/company/airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                 <Linkedin size={18} />
               </a>
-              <a href="#" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
+              <a href="https://instagram.com/airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
+              <a href="https://youtube.com/@airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                 <Youtube size={18} />
               </a>
             </div>
@@ -41,10 +41,9 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-foreground mb-4">Navigation</h3>
             <ul className="space-y-3">
               <li><Link to="/" className="text-muted-foreground hover:text-primary transition-colors">Home</Link></li>
-              <li><Link to="/articles" className="text-muted-foreground hover:text-primary transition-colors">Articles</Link></li>
-              <li><Link to="/markets" className="text-muted-foreground hover:text-primary transition-colors">Markets</Link></li>
-              <li><Link to="/presenters" className="text-muted-foreground hover:text-primary transition-colors">Presenters</Link></li>
               <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">About</Link></li>
+              <li><Link to="/articles" className="text-muted-foreground hover:text-primary transition-colors">News</Link></li>
+              <li><Link to="/markets" className="text-muted-foreground hover:text-primary transition-colors">Markets</Link></li>
               <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
             </ul>
           </div>

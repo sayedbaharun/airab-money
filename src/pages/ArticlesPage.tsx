@@ -176,7 +176,7 @@ const ArticlesPage = () => {
               </span>
             </div>
             <div className="max-w-4xl mx-auto">
-              <a href={`/article/${featuredArticle.id}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <Link to={`/article/${featuredArticle.id}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="aspect-video md:aspect-auto bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center overflow-hidden">
                     {featuredArticle.image_url ? (
@@ -216,7 +216,7 @@ const ArticlesPage = () => {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
           </div>
         </section>

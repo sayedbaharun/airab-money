@@ -11,7 +11,6 @@ const Navbar = () => {
     { name: 'About', nameAr: 'من نحن', href: '/about' },
     { name: 'News', nameAr: 'الأخبار', href: '/articles' },
     { name: 'Markets', nameAr: 'الأسواق', href: '/markets' },
-    { name: 'Presenters', nameAr: 'المضيفون', href: '/presenters' },
     { name: 'Contact Us', nameAr: 'اتصل بنا', href: '/contact' }
   ]
 

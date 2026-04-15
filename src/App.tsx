@@ -10,7 +10,7 @@ import AboutPage from './pages/AboutPage'
 import EpisodesPage from './pages/EpisodesPage'
 import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
-import PresentersPage from './pages/PresentersPage'
+
 import MarketsPage from './pages/MarketsPage'
 import VoiceDemoPage from './pages/VoiceDemoPage'
 import AdminPage from './pages/AdminPage'
@@ -28,8 +28,8 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/articles" element={<ArticlesPage />} />
+              <Route path="/article/:id" element={<ArticleDetailPage />} />
               <Route path="/markets" element={<MarketsPage />} />
-              <Route path="/presenters" element={<PresentersPage />} />
               <Route path="/contact" element={<ContactPage />} />
 
               <Route path="/episodes" element={<EpisodesPage />} />
