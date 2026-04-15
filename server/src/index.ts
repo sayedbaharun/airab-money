@@ -23,6 +23,7 @@ const __dirname = path.dirname(__filename)
 const distPath = path.resolve(__dirname, '../../dist')
 const ADMIN_PASSWORD_HEADER = 'x-admin-password'
 const OPENAI_SETTING_KEYS = ['OPENAI_API_KEY', 'OPENAI_TEXT_MODEL', 'OPENAI_IMAGE_MODEL'] as const
+let adminSettingsTableReady = false
 
 app.use(cors())
 app.use(express.json({ limit: '2mb' }))
@@ -95,6 +96,29 @@ const normalizeStringArray = (value: unknown) => {
     .filter(Boolean)
 }
 
+const ensureAdminSettingsTable = async () => {
+  if (adminSettingsTableReady) {
+    return true
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "AdminSetting" (
+        "key" TEXT PRIMARY KEY,
+        "value" TEXT,
+        "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `)
+
+    adminSettingsTableReady = true
+    return true
+  } catch (error) {
+    console.error('Failed to ensure AdminSetting table exists:', error)
+    return false
+  }
+}
+
 const maskSecret = (value: string | null) => {
   if (!value) return null
   if (value.length <= 10) return `${value.slice(0, 2)}••••`
@@ -102,6 +126,12 @@ const maskSecret = (value: string | null) => {
 }
 
 const getAdminSettingsMap = async () => {
+  const hasTable = await ensureAdminSettingsTable()
+
+  if (!hasTable) {
+    return {}
+  }
+
   const settings = await prisma.adminSetting.findMany({
     where: {
       key: {
@@ -144,6 +174,12 @@ const getOpenAIClient = async () => {
 }
 
 const upsertAdminSetting = async (key: (typeof OPENAI_SETTING_KEYS)[number], value: string | null) => {
+  const hasTable = await ensureAdminSettingsTable()
+
+  if (!hasTable) {
+    throw new Error('Admin settings storage is unavailable')
+  }
+
   const nextValue = value?.trim() || null
 
   if (!nextValue) {

@@ -9,6 +9,7 @@ cmds = [
 
 [phases.build]
 cmds = [
+  "npm --prefix server run db:push",
   "npm run build"
 ]
 
