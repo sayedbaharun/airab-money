@@ -293,7 +293,7 @@ const HomePage = () => {
                       {featuredArticle.summary}
                     </p>
 
-                    <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <div className="border border-white/10 bg-black/20 p-4 backdrop-blur-sm">
                         <div className="stat-kicker">Source</div>
                         <div className="mt-2 text-sm leading-6 text-off-white">{featuredSourceLabel}</div>
@@ -303,10 +303,6 @@ const HomePage = () => {
                         <div className="mt-2 text-sm leading-6 text-off-white">
                           {featuredPublishedAt ? formatLongDate(featuredPublishedAt) : 'Awaiting publish'}
                         </div>
-                      </div>
-                      <div className="border border-white/10 bg-black/20 p-4 backdrop-blur-sm">
-                        <div className="stat-kicker">Process</div>
-                        <div className="mt-2 text-sm leading-6 text-off-white">AI-generated draft, desk reviewed</div>
                       </div>
                     </div>
 
