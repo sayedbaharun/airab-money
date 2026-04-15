@@ -17,60 +17,14 @@ module.exports = {
 		},
 		extend: {
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: '#667eea',
-					foreground: '#ffffff',
-				},
-				secondary: {
-					DEFAULT: '#764ba2',
-					foreground: '#ffffff',
-				},
-				accent: {
-					DEFAULT: '#00d9ff',
-					foreground: '#0a0a1a',
-				},
-				destructive: {
-					DEFAULT: '#ef4444',
-					foreground: '#ffffff',
-				},
-				success: {
-					DEFAULT: '#10b981',
-				},
-				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))',
-				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))',
-				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))',
-				},
-				navy: {
-					DEFAULT: '#0a0a1a',
-					light: '#1a1a2e',
-					lighter: '#252542',
-				},
-				purple: {
-					DEFAULT: '#667eea',
-					dark: '#5a67d8',
-				},
-				cyan: {
-					DEFAULT: '#00d9ff',
-					dark: '#00b8d9',
-				},
+				graphite: '#1E1E1E',
+				'dusk-rose': '#A67C74',
+				'brushed-silver': '#C0C0C0',
+				'off-white': '#F5F5F5',
 			},
 			fontFamily: {
-				heading: ['Outfit', 'sans-serif'],
-				body: ['DM Sans', 'sans-serif'],
-				arabic: ['Cairo', 'sans-serif'],
+				sans: ['Inter', 'sans-serif'],
+				serif: ['Playfair Display', 'serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -46,11 +48,11 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* Removed border-border class as we changed color scheme */
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-graphite text-off-white;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
@@ -84,7 +86,7 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-dusk-rose via-brushed-silver to-dusk-rose bg-clip-text text-transparent;
   }
 
   .gradient-border {
@@ -93,7 +95,7 @@
 
   .gradient-border::before {
     content: '';
-    @apply absolute inset-0 rounded-inherit bg-gradient-to-r from-primary via-secondary to-accent -z-10;
+    @apply absolute inset-0 rounded-inherit bg-gradient-to-r from-dusk-rose via-brushed-silver to-dusk-rose -z-10;
     padding: 2px;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -119,6 +121,16 @@
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-primary;
+  }
+}
+
+/* Line clamp utilities */
+@layer utilities {
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 

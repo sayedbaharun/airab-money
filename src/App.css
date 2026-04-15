@@ -14,7 +14,7 @@
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
-    @apply bg-background text-foreground;
+    @apply bg-graphite text-off-white;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -24,35 +24,35 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+    @apply bg-dusk-rose hover:opacity-90 text-off-white font-semibold py-3 px-6 rounded-none transition-all duration-200;
   }
-  
+
   .btn-secondary {
-    @apply bg-secondary hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+    @apply bg-brushed-silver hover:opacity-90 text-graphite font-semibold py-3 px-6 rounded-none transition-all duration-200;
   }
-  
+
   .btn-accent {
-    @apply bg-accent text-accent-foreground hover:opacity-90 font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+    @apply bg-dusk-rose text-off-white hover:opacity-90 font-semibold py-3 px-6 rounded-none transition-all duration-200;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+    @apply border-2 border-dusk-rose text-dusk-rose hover:bg-dusk-rose hover:text-off-white font-semibold py-3 px-6 rounded-none transition-all duration-200;
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-dusk-rose via-brushed-silver to-dusk-rose bg-clip-text text-transparent;
   }
-  
+
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-dusk-rose via-brushed-silver to-dusk-rose bg-clip-text text-transparent;
   }
-  
+
   .bg-gradient-brand {
-    @apply bg-gradient-to-br from-primary via-secondary to-accent;
+    @apply bg-gradient-to-br from-dusk-rose via-brushed-silver to-dusk-rose;
   }
   
   .card {
-    @apply bg-card rounded-xl shadow-lg border border-border;
+    @apply bg-graphite rounded-none shadow-none border border-white/5;
   }
   
   .glass-card {

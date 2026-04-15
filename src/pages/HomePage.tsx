@@ -1,349 +1,174 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
-import { Play, Download, Users, Globe, Lightbulb, TrendingUp, ArrowRight, Mail } from 'lucide-react'
-import { getEpisodes, PodcastEpisode } from '../lib/api'
-import NewsletterSignup from '../components/NewsletterSignup'
+import Sidebar from '../components/Sidebar'
+import HeroFeatureCard from '../components/HeroFeatureCard'
+import ArticleGrid from '../components/ArticleGrid'
+import MarketDataWidget from '../components/MarketDataWidget'
+import { getArticles, Article } from '../lib/api'
 
 const HomePage = () => {
-  const [featuredEpisodes, setFeaturedEpisodes] = useState<PodcastEpisode[]>([])
+  const [featuredArticle, setFeaturedArticle] = useState<Article | null>(null)
+  const [secondaryArticles, setSecondaryArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
-  const [useFallback, setUseFallback] = useState(false)
 
   useEffect(() => {
-    async function fetchFeaturedEpisodes() {
+    async function fetchContent() {
       try {
-        const data = await getEpisodes({
+        const data = await getArticles({
           status: 'published',
-          featured: true,
-          limit: 3,
+          sort: 'published_at',
+          order: 'desc',
+          limit: 7, // 1 featured + 6 grid articles
         })
 
         if (data && data.length > 0) {
-          setFeaturedEpisodes(data)
+          setFeaturedArticle(data[0])
+          setSecondaryArticles(data.slice(1))
         } else {
-          setUseFallback(true)
+          // Fallback content
+          const fallbackArticle: Article = {
+            id: 'featured-1',
+            headline: 'NEOM Unveils $500 Billion AI Infrastructure Initiative',
+            content: 'Saudi Arabia\'s futuristic city NEOM announces the largest AI infrastructure investment in Middle East history, positioning the region as a global AI hub.',
+            summary: 'NEOM launches unprecedented $500B AI infrastructure program, transforming the Middle East\'s technological landscape.',
+            category: 'AI',
+            tags: ['NEOM', 'Saudi Arabia', 'Investment', 'AI Infrastructure'],
+            status: 'published',
+            published_at: '2026-04-15',
+            created_at: '2026-04-15'
+          }
+
+          const fallbackSecondary: Article[] = [
+            {
+              id: 'sec-1',
+              headline: 'UAE AI Regulation Framework Approved',
+              content: 'Dubai introduces comprehensive AI governance framework...',
+              summary: 'Dubai\'s new AI regulation framework sets global standards for responsible AI development.',
+              category: 'Regulation',
+              tags: ['UAE', 'AI Regulation', 'Dubai'],
+              status: 'published',
+              published_at: '2026-04-14',
+              created_at: '2026-04-14'
+            },
+            {
+              id: 'sec-2',
+              headline: 'G42 Secures $2B Investment for AI Research',
+              content: 'Abu Dhabi-based G42 receives major investment...',
+              summary: 'G42\'s $2B funding round accelerates AI research initiatives across healthcare and finance.',
+              category: 'Investment',
+              tags: ['G42', 'Abu Dhabi', 'Investment', 'AI Research'],
+              status: 'published',
+              published_at: '2026-04-13',
+              created_at: '2026-04-13'
+            },
+            {
+              id: 'sec-3',
+              headline: 'Saudi Aramco AI Integration Complete',
+              content: 'Aramco successfully deploys AI across operations...',
+              summary: 'Saudi Aramco completes largest AI integration in energy sector, boosting efficiency by 40%.',
+              category: 'Energy',
+              tags: ['Aramco', 'Saudi Arabia', 'AI', 'Energy'],
+              status: 'published',
+              published_at: '2026-04-12',
+              created_at: '2026-04-12'
+            },
+            {
+              id: 'sec-4',
+              headline: 'Middle East AI Talent Pool Expands',
+              content: 'Regional universities graduate record number of AI specialists...',
+              summary: 'Middle East universities produce 50% more AI graduates, strengthening regional tech workforce.',
+              category: 'Education',
+              tags: ['Education', 'AI', 'Middle East', 'Talent'],
+              status: 'published',
+              published_at: '2026-04-11',
+              created_at: '2026-04-11'
+            }
+          ]
+
+          setFeaturedArticle(fallbackArticle)
+          setSecondaryArticles(fallbackSecondary)
+
+          setFeaturedArticle(fallbackArticle)
+          setSecondaryArticles(fallbackSecondary)
         }
       } catch (error) {
-        console.error('Error fetching featured episodes:', error)
-        setUseFallback(true)
+        console.error('Error fetching content:', error)
+        // Use fallback content on error
+        setFeaturedArticle({
+          id: 'featured-1',
+          headline: 'NEOM Unveils $500 Billion AI Infrastructure Initiative',
+          content: 'Saudi Arabia\'s futuristic city NEOM announces the largest AI infrastructure investment in Middle East history.',
+          summary: 'NEOM launches unprecedented $500B AI infrastructure program, transforming the Middle East\'s technological landscape.',
+          category: 'AI',
+          tags: ['NEOM', 'Saudi Arabia', 'Investment', 'AI Infrastructure'],
+          status: 'published',
+          published_at: '2026-04-15',
+          created_at: '2026-04-15'
+        })
+        setSecondaryArticles([])
       } finally {
         setLoading(false)
       }
     }
 
-    fetchFeaturedEpisodes()
+    fetchContent()
   }, [])
 
-  // Fallback episodes when the API returns no content
-  const fallbackEpisodes: PodcastEpisode[] = [
-    {
-      id: '1',
-      title: 'GCC Markets Outlook 2026',
-      description: 'A deep dive into the financial outlook for Gulf Cooperation Council markets in 2026',
-      thumbnail_url: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop',
-      audio_url: '',
-      duration_minutes: 35,
-      publish_date: '2026-03-20',
-      status: 'published',
-      featured: true,
-      episode_number: 1,
-      season_number: 1,
-      show_type: 'podcast',
-      topics: ['Markets', 'GCC'],
-      categories: ['Markets'],
-      play_count: 0,
-      download_count: 0,
-      created_at: '2026-03-20',
-      updated_at: '2026-03-20'
-    },
-    {
-      id: '2',
-      title: 'Crypto Market Analysis',
-      description: 'Comprehensive analysis of cryptocurrency trends and their impact on GCC investors',
-      thumbnail_url: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&h=300&fit=crop',
-      audio_url: '',
-      duration_minutes: 28,
-      publish_date: '2026-03-18',
-      status: 'published',
-      featured: true,
-      episode_number: 2,
-      season_number: 1,
-      show_type: 'podcast',
-      topics: ['Crypto', 'Blockchain'],
-      categories: ['Crypto'],
-      play_count: 0,
-      download_count: 0,
-      created_at: '2026-03-18',
-      updated_at: '2026-03-18'
-    },
-    {
-      id: '3',
-      title: 'AI in Financial Services',
-      description: 'How artificial intelligence is revolutionizing banking and finance in the Arab world',
-      thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
-      audio_url: '',
-      duration_minutes: 42,
-      publish_date: '2026-03-15',
-      status: 'published',
-      featured: true,
-      episode_number: 3,
-      season_number: 1,
-      show_type: 'podcast',
-      topics: ['AI', 'Fintech'],
-      categories: ['Technology'],
-      play_count: 0,
-      download_count: 0,
-      created_at: '2026-03-15',
-      updated_at: '2026-03-15'
-    }
-  ]
-
-  const displayEpisodes = useFallback ? fallbackEpisodes : featuredEpisodes
-
-  const valuePropositions = [
-    {
-      icon: <Lightbulb className="w-8 h-8 text-amber-500" />,
-      title: "AI-Native Content",
-      description: "Produced using cutting-edge AI technology with human expertise for unparalleled insights"
-    },
-    {
-      icon: <Globe className="w-8 h-8 text-emerald-600" />,
-      title: "Regional Focus",
-      description: "Deep insights into GCC and Arab world AI developments with local market expertise"
-    },
-    {
-      icon: <Users className="w-8 h-8 text-blue-600" />,
-      title: "Expert Access",
-      description: "Exclusive interviews with industry leaders, researchers, and innovators shaping the future"
-    },
-    {
-      icon: <TrendingUp className="w-8 h-8 text-purple-600" />,
-      title: "Actionable Intelligence",
-      description: "Practical insights for business leaders, investors, and decision-makers in AI space"
-    }
-  ]
-
-  const scheduleItems = [
-    {
-      day: "Monday",
-      title: "Money Moves",
-      duration_minutes: "30-40 min",
-      description: "AI investments, funding rounds, and market analysis",
-      color: "bg-blue-600"
-    },
-    {
-      day: "Wednesday", 
-      title: "Wisdom Wednesday",
-      duration_minutes: "60-75 min",
-      description: "Long-form interviews with industry leaders and visionaries",
-      color: "bg-emerald-600"
-    },
-    {
-      day: "Friday",
-      title: "Future Friday", 
-      duration_minutes: "45-50 min",
-      description: "Emerging technologies, research breakthroughs, and trend analysis",
-      color: "bg-amber-500"
-    }
-  ]
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-graphite flex items-center justify-center">
+        <div className="text-brushed-silver">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <>
       <Helmet>
-        <title>AIRAB Money - Where AI Meets Arabia | AI Intelligence Podcast</title>
-        <meta name="description" content="The definitive podcast for AI intelligence across the Arab world and GCC region. Featuring expert insights, cutting-edge analysis, and exclusive interviews with industry leaders." />
-        <meta name="keywords" content="AI, artificial intelligence, Arab world, GCC, podcast, technology, innovation, Middle East" />
+        <title>Deep Tech Home - AIRAB Money</title>
+        <meta name="description" content="AI-powered financial media platform covering Middle East and GCC markets" />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-brand text-white overflow-hidden">
-        <div className="absolute inset-0 geometric-pattern opacity-10"></div>
-        <div className="relative container-custom py-24 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                  Where AI Meets{' '}
-                  <span className="text-amber-300">Arabia</span>
-                </h1>
-                <p className="text-xl lg:text-2xl text-blue-100 leading-relaxed">
-                  The definitive podcast for AI intelligence across the Arab world and GCC region
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/episodes" className="btn-secondary inline-flex items-center justify-center">
-                  <Play className="w-5 h-5 mr-2" />
-                  Listen to Latest Episode
-                </Link>
-                <Link to="#newsletter" className="btn-outline bg-transparent border-white text-white hover:bg-white hover:text-blue-800 inline-flex items-center justify-center">
-                  <Mail className="w-5 h-5 mr-2" />
-                  Subscribe Now
-                </Link>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <img 
-                    src="/images/avatars/nora/nora_professional_formal.png" 
-                    alt="Nora Al-Mansouri - AI Investment Expert" 
-                    className="w-full rounded-2xl shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration_minutes-300"
-                  />
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                    <h3 className="font-semibold text-lg">Nora Al-Mansouri</h3>
-                    <p className="text-blue-100 text-sm">AI Investment Expert</p>
-                  </div>
-                </div>
-                <div className="space-y-4 mt-8">
-                  <img 
-                    src="/images/avatars/omar/omar_tech_executive.png" 
-                    alt="Omar Al-Rashid - AI Research Pioneer" 
-                    className="w-full rounded-2xl shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration_minutes-300"
-                  />
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                    <h3 className="font-semibold text-lg">Omar Al-Rashid</h3>
-                    <p className="text-blue-100 text-sm">AI Research Pioneer</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="flex min-h-screen bg-graphite font-sans text-off-white">
+        {/* Sidebar */}
+        <Sidebar />
 
-      {/* Value Propositions */}
-      <section className="py-20 bg-gray-50">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why AIRAB Money?</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We bridge the gap between global AI innovations and regional implementation
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {valuePropositions.map((prop, index) => (
-              <div key={index} className="card p-8 text-center hover:shadow-xl transition-shadow duration_minutes-300">
-                <div className="flex justify-center mb-4">
-                  {prop.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">{prop.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{prop.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        {/* Main Content */}
+        <main className="ml-64 p-10 w-full">
+          {/* Header */}
+          <header className="flex justify-between items-center mb-12">
+            <h1 className="text-3xl font-serif text-brushed-silver">Deep Tech Home</h1>
+            <div className="text-sm text-brushed-silver">LIVE • {new Date().toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+              timeZone: 'Asia/Dubai'
+            })} GST</div>
+          </header>
 
-      {/* Featured Episodes */}
-      <section className="py-20">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Episodes</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover our most popular and insightful conversations with AI leaders
-            </p>
-          </div>
-          
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="card p-6 animate-pulse">
-                  <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
-                  <div className="space-y-3">
-                    <div className="bg-gray-200 h-4 rounded"></div>
-                    <div className="bg-gray-200 h-4 rounded w-3/4"></div>
-                    <div className="bg-gray-200 h-3 rounded w-1/2"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {displayEpisodes.length > 0 ? (
-                displayEpisodes.map((episode) => (
-                  <div key={episode.id} className="card p-6 hover:shadow-xl transition-shadow duration_minutes-300">
-                    {episode.thumbnail_url ? (
-                      <img 
-                        src={episode.thumbnail_url} 
-                        alt={episode.title}
-                        className="aspect-video object-cover rounded-lg mb-4"
-                      />
-                    ) : (
-                      <div className="aspect-video bg-gradient-to-br from-primary to-secondary rounded-lg mb-4 flex items-center justify-center">
-                        <Play className="w-12 h-12 text-white" />
-                      </div>
-                    )}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>{episode.categories?.[0] || 'Financial'}</span>
-                        <span>{episode.duration_minutes || 30} min</span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-foreground line-clamp-2">{episode.title}</h3>
-                      <p className="text-muted-foreground text-sm line-clamp-3">{episode.description}</p>
-                      <div className="flex items-center justify-between pt-2">
-                        <button className="text-primary hover:text-primary/80 font-medium text-sm flex items-center">
-                          <Play className="w-4 h-4 mr-1" />
-                          Listen Now
-                        </button>
-                        <button className="text-muted-foreground hover:text-foreground">
-                          <Download className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-muted-foreground text-lg">Featured episodes coming soon!</p>
-                </div>
-              )}
+          {/* Hero Feature Card */}
+          {featuredArticle && (
+            <HeroFeatureCard
+              headline={featuredArticle.headline}
+              summary={featuredArticle.summary}
+              imageUrl={featuredArticle.image_url}
+              articleId={featuredArticle.id}
+              category={featuredArticle.category}
+              publishedAt={featuredArticle.published_at}
+            />
+          )}
+
+          {/* Article Grid */}
+          {secondaryArticles.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-xl font-serif text-brushed-silver mb-6">Latest Coverage</h2>
+              <ArticleGrid articles={secondaryArticles} />
             </div>
           )}
-          
-          <div className="text-center mt-12">
-            <Link to="/episodes" className="btn-primary inline-flex items-center">
-              View All Episodes
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* Show Schedule */}
-      <section className="py-20 bg-gray-50">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Weekly Schedule</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Three episodes per week, each with a unique focus on different aspects of AI
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {scheduleItems.map((item, index) => (
-              <div key={index} className="card p-8 hover:shadow-xl transition-shadow duration_minutes-300">
-                <div className={`${item.color} text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4`}>
-                  {item.day}
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-500 font-medium mb-3">{item.duration_minutes}</p>
-                <p className="text-gray-600 leading-relaxed">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Signup */}
-      <section id="newsletter" className="py-20">
-        <div className="container-custom">
-          <NewsletterSignup />
-        </div>
-      </section>
+          {/* Market Data Widget */}
+          <MarketDataWidget />
+        </main>
+      </div>
     </>
   )
 }
