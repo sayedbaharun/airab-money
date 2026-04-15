@@ -93,25 +93,25 @@ const ContactPage = () => {
 
   const contactInfo = [
     {
-      icon: <Mail className="w-6 h-6 text-amber-500" />,
+      icon: <Mail className="w-6 h-6 text-dusk-rose" />,
       title: "Email Us",
       content: "hello@airabmoney.com",
       description: "Send us an email and we'll respond within 24 hours"
     },
     {
-      icon: <Phone className="w-6 h-6 text-blue-600" />,
+      icon: <Phone className="w-6 h-6 text-dusk-rose" />,
       title: "Call Us",
       content: "+971 4 123 4567",
       description: "Speak with our team during business hours (9 AM - 6 PM GST)"
     },
     {
-      icon: <MapPin className="w-6 h-6 text-emerald-600" />,
+      icon: <MapPin className="w-6 h-6 text-dusk-rose" />,
       title: "Visit Us",
       content: "Dubai Internet City, Dubai, UAE",
       description: "Schedule a meeting at our Dubai headquarters"
     },
     {
-      icon: <Clock className="w-6 h-6 text-purple-600" />,
+      icon: <Clock className="w-6 h-6 text-dusk-rose" />,
       title: "Business Hours",
       content: "Sunday - Thursday: 9 AM - 6 PM GST",
       description: "We're closed on weekends and UAE public holidays"
@@ -127,7 +127,7 @@ const ContactPage = () => {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-brand text-white">
+      <section className="py-16 bg-graphite text-off-white">
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl lg:text-5xl font-bold mb-6">
@@ -148,13 +148,13 @@ const ContactPage = () => {
             {contactInfo.map((info, index) => (
               <div key={index} className="text-center">
                 <div className="flex justify-center mb-4">
-                  <div className="p-3 bg-gray-100 rounded-full">
+                  <div className="p-3 bg-charcoal border border-white/5 rounded-none">
                     {info.icon}
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{info.title}</h3>
-                <p className="text-gray-900 font-medium mb-2">{info.content}</p>
-                <p className="text-sm text-gray-600">{info.description}</p>
+                <h3 className="text-lg font-semibold text-off-white mb-2">{info.title}</h3>
+                <p className="text-off-white font-medium mb-2">{info.content}</p>
+                <p className="text-sm text-brushed-silver">{info.description}</p>
               </div>
             ))}
           </div>
@@ -162,14 +162,14 @@ const ContactPage = () => {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-charcoal">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-bold text-off-white mb-4">
                 Send Us a Message
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-brushed-silver">
                 Fill out the form below and we'll get back to you as soon as possible
               </p>
             </div>
@@ -178,7 +178,7 @@ const ContactPage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-brushed-silver mb-2">
                       Full Name *
                     </label>
                     <input
@@ -195,7 +195,7 @@ const ContactPage = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-brushed-silver mb-2">
                       Email Address *
                     </label>
                     <input
@@ -214,7 +214,7 @@ const ContactPage = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="messageType" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="messageType" className="block text-sm font-medium text-brushed-silver mb-2">
                       Message Type
                     </label>
                     <select
@@ -232,7 +232,7 @@ const ContactPage = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="subject" className="block text-sm font-medium text-brushed-silver mb-2">
                       Subject
                     </label>
                     <input
@@ -249,7 +249,7 @@ const ContactPage = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-brushed-silver mb-2">
                     Message *
                   </label>
                   <textarea
@@ -264,7 +264,7 @@ const ContactPage = () => {
                     disabled={loading}
                     minLength={10}
                   />
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-sm text-brushed-silver mt-2">
                     Minimum 10 characters. Be as detailed as possible to help us provide the best response.
                   </p>
                 </div>
@@ -312,51 +312,51 @@ const ContactPage = () => {
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-bold text-off-white mb-4">
                 Frequently Asked Questions
               </h2>
-              <p className="text-gray-600">
+              <p className="text-brushed-silver">
                 Quick answers to common questions about AIRAB Money
               </p>
             </div>
             
             <div className="space-y-6">
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-off-white mb-3">
                   How can I be a guest on the podcast?
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-brushed-silver">
                   We're always looking for AI experts, entrepreneurs, and industry leaders to share their insights. 
-                  Please fill out our <a href="/guest-application" className="text-blue-600 hover:text-blue-800 underline">guest application form</a> 
+                  Please fill out our <a href="/guest-application" className="text-dusk-rose hover:text-brushed-silver underline">guest application form</a> 
                   with your background and proposed topics.
                 </p>
               </div>
               
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-off-white mb-3">
                   Do you accept story suggestions or news tips?
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-brushed-silver">
                   Absolutely! We value input from our community. Send us your AI-related news tips, 
                   story suggestions, or regional developments you think we should cover.
                 </p>
               </div>
               
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-off-white mb-3">
                   Are you available for speaking engagements?
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-brushed-silver">
                   Yes, our team is available for conferences, corporate events, and panel discussions 
                   about AI trends in the Arab world. Contact us with your event details and requirements.
                 </p>
               </div>
               
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-off-white mb-3">
                   How can my company sponsor or partner with AIRAB Money?
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-brushed-silver">
                   We offer various sponsorship and partnership opportunities including episode sponsorships, 
                   content partnerships, and event collaborations. Please contact us to discuss options 
                   that align with your business objectives.

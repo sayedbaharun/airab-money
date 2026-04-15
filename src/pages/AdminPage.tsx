@@ -576,16 +576,16 @@ const AdminPage: React.FC = () => {
   // Auth form
   if (checkingStoredAuth) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center p-4">
+      <div className="min-h-screen bg-graphite flex items-center justify-center p-4">
         <Helmet>
           <title>Admin Login - AIRAB Money</title>
         </Helmet>
-        <div className="bg-navy-light border border-purple/30 rounded-xl p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple to-cyan rounded-full mx-auto mb-4 flex items-center justify-center">
-            <Settings className="w-8 h-8 text-white" />
+        <div className="bg-graphite-light border border-white/5 rounded-xl p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-full mx-auto mb-4 flex items-center justify-center">
+            <Settings className="w-8 h-8 text-off-white" />
           </div>
-          <h1 className="text-2xl font-heading font-bold text-white">Admin Access</h1>
-          <p className="text-gray-400 mt-2">Checking saved admin session...</p>
+          <h1 className="text-2xl font-heading font-bold text-off-white">Admin Access</h1>
+          <p className="text-brushed-silver mt-2">Checking saved admin session...</p>
         </div>
       </div>
     )
@@ -593,26 +593,26 @@ const AdminPage: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center p-4">
+      <div className="min-h-screen bg-graphite flex items-center justify-center p-4">
         <Helmet>
           <title>Admin Login - AIRAB Money</title>
         </Helmet>
-        <div className="bg-navy-light border border-purple/30 rounded-xl p-8 max-w-md w-full">
+        <div className="bg-graphite-light border border-white/5 rounded-xl p-8 max-w-md w-full">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple to-cyan rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Settings className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-full mx-auto mb-4 flex items-center justify-center">
+              <Settings className="w-8 h-8 text-off-white" />
             </div>
-            <h1 className="text-2xl font-heading font-bold text-white">Admin Access</h1>
-            <p className="text-gray-400 mt-2">Enter your credentials to continue</p>
+            <h1 className="text-2xl font-heading font-bold text-off-white">Admin Access</h1>
+            <p className="text-brushed-silver mt-2">Enter your credentials to continue</p>
           </div>
           <form onSubmit={handleAuth}>
             <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-2">Password</label>
+              <label className="block text-sm text-brushed-silver mb-2">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-navy border border-purple/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple"
+                className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
                 placeholder="Enter admin password"
               />
             </div>
@@ -624,7 +624,7 @@ const AdminPage: React.FC = () => {
             <button
               type="submit"
               disabled={authenticating}
-              className="w-full bg-gradient-to-r from-purple to-cyan text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity"
+              className="w-full bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity"
             >
               {authenticating ? 'Checking...' : 'Login'}
             </button>
@@ -635,22 +635,22 @@ const AdminPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-graphite">
       <Helmet>
         <title>Admin Dashboard - AIRAB Money</title>
       </Helmet>
       
       {/* Header */}
-      <div className="bg-navy-light border-b border-purple/30">
+      <div className="bg-graphite-light border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple to-cyan rounded-xl flex items-center justify-center">
-                <Settings className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-xl flex items-center justify-center">
+                <Settings className="w-6 h-6 text-off-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-heading font-bold text-white">Admin Dashboard</h1>
-                <p className="text-gray-400 text-sm">AIRAB Money Content Management</p>
+                <h1 className="text-2xl font-heading font-bold text-off-white">Admin Dashboard</h1>
+                <p className="text-brushed-silver text-sm">AIRAB Money Content Management</p>
               </div>
             </div>
             <button
@@ -660,7 +660,7 @@ const AdminPage: React.FC = () => {
                 setPassword('')
                 setAuthError('')
               }}
-              className="text-gray-400 hover:text-white text-sm"
+              className="text-brushed-silver hover:text-off-white text-sm"
             >
               Logout
             </button>
@@ -675,8 +675,8 @@ const AdminPage: React.FC = () => {
             onClick={() => setActiveTab('generator')}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'generator'
-                ? 'bg-gradient-to-r from-purple to-cyan text-white'
-                : 'bg-navy-light text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
+                : 'bg-graphite-light text-brushed-silver hover:text-off-white'
             }`}
           >
             <FileText className="w-5 h-5 inline-block mr-2" />
@@ -686,8 +686,8 @@ const AdminPage: React.FC = () => {
             onClick={() => setActiveTab('templates')}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'templates'
-                ? 'bg-gradient-to-r from-purple to-cyan text-white'
-                : 'bg-navy-light text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
+                : 'bg-graphite-light text-brushed-silver hover:text-off-white'
             }`}
           >
             <BookOpen className="w-5 h-5 inline-block mr-2" />
@@ -697,8 +697,8 @@ const AdminPage: React.FC = () => {
             onClick={() => setActiveTab('articles')}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'articles'
-                ? 'bg-gradient-to-r from-purple to-cyan text-white'
-                : 'bg-navy-light text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
+                : 'bg-graphite-light text-brushed-silver hover:text-off-white'
             }`}
           >
             <FileText className="w-5 h-5 inline-block mr-2" />
@@ -711,22 +711,22 @@ const AdminPage: React.FC = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Input Section */}
-              <div className="bg-navy-light border border-purple/30 rounded-xl p-6">
-                <h2 className="text-xl font-heading font-bold text-white mb-6">Generate New Article</h2>
+              <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
+                <h2 className="text-xl font-heading font-bold text-off-white mb-6">Generate New Article</h2>
                 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">News Source / Topic</label>
+                    <label className="block text-sm text-brushed-silver mb-2">News Source / Topic</label>
                     <textarea
                       value={topic}
                       onChange={(e) => setTopic(e.target.value)}
-                      className="w-full bg-navy border border-purple/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple h-32 resize-none"
+                      className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose h-32 resize-none"
                       placeholder="Enter a topic, news headline, or paste article content to summarize..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">
+                    <label className="block text-sm text-brushed-silver mb-2">
                       Word Count: {wordCount} words
                     </label>
                     <input
@@ -736,16 +736,16 @@ const AdminPage: React.FC = () => {
                       step="50"
                       value={wordCount}
                       onChange={(e) => setWordCount(Number(e.target.value))}
-                      className="w-full h-2 bg-navy rounded-lg appearance-none cursor-pointer accent-purple"
+                      className="w-full h-2 bg-graphite rounded-lg appearance-none cursor-pointer accent-dusk-rose"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-brushed-silver mt-1">
                       <span>450</span>
                       <span>1000</span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Style / Tone</label>
+                    <label className="block text-sm text-brushed-silver mb-2">Style / Tone</label>
                     <div className="grid grid-cols-3 gap-3">
                       {(['Professional', 'Casual', 'Technical'] as const).map((s) => (
                         <button
@@ -753,8 +753,8 @@ const AdminPage: React.FC = () => {
                           onClick={() => setStyle(s)}
                           className={`py-3 px-4 rounded-lg font-medium transition-all ${
                             style === s
-                              ? 'bg-purple text-white'
-                              : 'bg-navy text-gray-400 hover:text-white'
+                              ? 'bg-dusk-rose text-off-white'
+                              : 'bg-graphite text-brushed-silver hover:text-off-white'
                           }`}
                         >
                           {s}
@@ -767,7 +767,7 @@ const AdminPage: React.FC = () => {
                     <button
                       onClick={generateArticle}
                       disabled={generating}
-                      className="flex-1 bg-gradient-to-r from-purple to-cyan text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                      className="flex-1 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       {generating ? (
                         <span className="flex items-center justify-center gap-2">
@@ -783,7 +783,7 @@ const AdminPage: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setShowTemplateModal(true)}
-                      className="px-4 py-3 bg-navy border border-purple/30 rounded-lg text-gray-400 hover:text-white transition-colors"
+                      className="px-4 py-3 bg-graphite border border-white/5 rounded-lg text-brushed-silver hover:text-off-white transition-colors"
                       title="Save as template"
                     >
                       <Save className="w-5 h-5" />
@@ -800,14 +800,14 @@ const AdminPage: React.FC = () => {
               </div>
 
               {/* Output Section */}
-              <div className="bg-navy-light border border-purple/30 rounded-xl p-6">
+              <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-heading font-bold text-white">Generated Article</h2>
+                  <h2 className="text-xl font-heading font-bold text-off-white">Generated Article</h2>
                   {generatedArticle && (
                     <div className="flex flex-wrap gap-2 justify-end">
                       <button
                         onClick={() => copyToClipboard(generatedHeadline + '\n\n' + generatedArticle)}
-                        className="p-2 bg-navy rounded-lg text-gray-400 hover:text-white transition-colors"
+                        className="p-2 bg-graphite rounded-lg text-brushed-silver hover:text-off-white transition-colors"
                         title="Copy to clipboard"
                       >
                         <Copy className="w-5 h-5" />
@@ -815,7 +815,7 @@ const AdminPage: React.FC = () => {
                       <button
                         onClick={openImageTools}
                         disabled={generatingPrompts || generatingImages}
-                        className="flex items-center gap-2 px-4 py-2 bg-navy rounded-lg text-cyan hover:text-white transition-colors disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-graphite rounded-lg text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
                         title="Generate images"
                       >
                         {generatingPrompts ? (
@@ -828,7 +828,7 @@ const AdminPage: React.FC = () => {
                       <button
                         onClick={saveArticle}
                         disabled={savingArticle || Boolean(savedArticleId)}
-                        className="flex items-center gap-2 px-4 py-2 bg-navy rounded-lg text-green-400 hover:text-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 bg-graphite rounded-lg text-green-400 hover:text-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         title={savedArticleId ? 'Article already saved' : 'Save to database'}
                       >
                         {savingArticle ? (
@@ -854,8 +854,8 @@ const AdminPage: React.FC = () => {
 
                 {generatedArticle ? (
                   <div className="space-y-4">
-                    <div className="bg-navy rounded-lg p-4">
-                      <h3 className="text-lg font-bold text-white mb-2">{generatedHeadline}</h3>
+                    <div className="bg-graphite rounded-lg p-4">
+                      <h3 className="text-lg font-bold text-off-white mb-2">{generatedHeadline}</h3>
                       <div className="prose prose-invert max-w-none">
                         {generatedArticle.split('\n\n').map((para, i) => (
                           <p key={i} className="text-gray-300 mb-3">{para}</p>
@@ -867,7 +867,7 @@ const AdminPage: React.FC = () => {
                       Article generated successfully
                     </div>
                     {articleSaveMessage && (
-                      <div className="flex items-center gap-2 text-cyan text-sm">
+                      <div className="flex items-center gap-2 text-brushed-silver text-sm">
                         {savingArticle ? (
                           <RefreshCw className="w-5 h-5 animate-spin" />
                         ) : (
@@ -878,9 +878,9 @@ const AdminPage: React.FC = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="bg-navy rounded-lg p-8 text-center">
-                    <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-500">Generated article will appear here</p>
+                  <div className="bg-graphite rounded-lg p-8 text-center">
+                    <FileText className="w-12 h-12 text-brushed-silver mx-auto mb-4" />
+                    <p className="text-brushed-silver">Generated article will appear here</p>
                   </div>
                 )}
               </div>
@@ -888,16 +888,16 @@ const AdminPage: React.FC = () => {
 
             {/* Image Prompts Section */}
             {generatedArticle && showImagePromptsSection && (
-              <div className="bg-navy-light border border-purple/30 rounded-xl p-6">
+              <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                  <h2 className="text-xl font-heading font-bold text-off-white flex items-center gap-2">
                     <Image className="w-6 h-6" />
                     Generate Images
                   </h2>
                   {!heroPrompt && !generatingPrompts && (
                     <button
                       onClick={generateImagePrompts}
-                      className="flex items-center gap-2 bg-gradient-to-r from-purple to-cyan text-white px-4 py-2 rounded-lg hover:opacity-90"
+                      className="flex items-center gap-2 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white px-4 py-2 rounded-lg hover:opacity-90"
                     >
                       <RefreshCw className="w-5 h-5" />
                       Generate Prompts
@@ -906,7 +906,7 @@ const AdminPage: React.FC = () => {
                 </div>
 
                 {generatingPrompts && (
-                  <div className="flex items-center justify-center gap-3 py-8 text-gray-400">
+                  <div className="flex items-center justify-center gap-3 py-8 text-brushed-silver">
                     <RefreshCw className="w-6 h-6 animate-spin" />
                     <span>Generating image prompts from article content...</span>
                   </div>
@@ -917,13 +917,13 @@ const AdminPage: React.FC = () => {
                     {/* Hero Prompt */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm font-semibold text-purple">Hero Image Prompt</label>
+                        <label className="text-sm font-semibold text-dusk-rose">Hero Image Prompt</label>
                         <button
                           onClick={() => setPromptsReviewed(true)}
                           className={`text-xs px-3 py-1 rounded ${
                             promptsReviewed 
                               ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-navy text-gray-400 hover:text-white'
+                              : 'bg-graphite text-brushed-silver hover:text-off-white'
                           }`}
                         >
                           {promptsReviewed ? 'Reviewed ✓' : 'Mark as Reviewed'}
@@ -935,21 +935,21 @@ const AdminPage: React.FC = () => {
                           setHeroPrompt(e.target.value)
                           setPromptsReviewed(false)
                         }}
-                        className="w-full bg-navy border border-purple/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple h-32 resize-none"
+                        className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose h-32 resize-none"
                         placeholder="Hero image prompt will appear here..."
                       />
                     </div>
 
                     {/* Inline Prompt */}
                     <div>
-                      <label className="text-sm font-semibold text-cyan block mb-2">Inline Image Prompt</label>
+                      <label className="text-sm font-semibold text-brushed-silver block mb-2">Inline Image Prompt</label>
                       <textarea
                         value={inlinePrompt}
                         onChange={(e) => {
                           setInlinePrompt(e.target.value)
                           setPromptsReviewed(false)
                         }}
-                        className="w-full bg-navy border border-cyan/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan h-32 resize-none"
+                        className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-cyan h-32 resize-none"
                         placeholder="Inline image prompt will appear here..."
                       />
                     </div>
@@ -959,7 +959,7 @@ const AdminPage: React.FC = () => {
                       <button
                         onClick={generateImages}
                         disabled={!promptsReviewed || generatingImages}
-                        className="flex-1 bg-gradient-to-r from-purple to-cyan text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {generatingImages ? (
                           <span className="flex items-center justify-center gap-2">
@@ -975,7 +975,7 @@ const AdminPage: React.FC = () => {
                       </button>
                       <button
                         onClick={generateImagePrompts}
-                        className="px-4 py-3 bg-navy border border-purple/30 rounded-lg text-gray-400 hover:text-white transition-colors"
+                        className="px-4 py-3 bg-graphite border border-white/5 rounded-lg text-brushed-silver hover:text-off-white transition-colors"
                         title="Regenerate prompts"
                       >
                         <RefreshCw className="w-5 h-5" />
@@ -991,10 +991,10 @@ const AdminPage: React.FC = () => {
 
                     {/* Generated Images */}
                     {(heroImageUrl || inlineImageUrl) && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-purple/30">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
                         {/* Hero Image */}
                         <div className="space-y-3">
-                          <h3 className="text-sm font-semibold text-purple">Hero Image</h3>
+                          <h3 className="text-sm font-semibold text-dusk-rose">Hero Image</h3>
                           {heroImageUrl ? (
                             <div className="relative">
                               <img
@@ -1006,7 +1006,7 @@ const AdminPage: React.FC = () => {
                                 <button
                                   onClick={() => regenerateImage('hero')}
                                   disabled={generatingImages}
-                                  className="p-2 bg-navy/80 rounded-lg text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                                  className="p-2 bg-graphite/80 rounded-lg text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
                                   title="Regenerate"
                                 >
                                   <RefreshCw className="w-4 h-4" />
@@ -1017,8 +1017,8 @@ const AdminPage: React.FC = () => {
                                   onClick={() => setHeroImageApproved(!heroImageApproved)}
                                   className={`p-2 rounded-lg transition-colors ${
                                     heroImageApproved 
-                                      ? 'bg-green-500 text-white' 
-                                      : 'bg-navy/80 text-gray-400 hover:text-white'
+                                      ? 'bg-green-500 text-off-white' 
+                                      : 'bg-graphite/80 text-brushed-silver hover:text-off-white'
                                   }`}
                                   title={heroImageApproved ? 'Approved' : 'Approve'}
                                 >
@@ -1034,15 +1034,15 @@ const AdminPage: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <div className="w-full h-48 bg-navy rounded-lg flex items-center justify-center">
-                              <RefreshCw className="w-8 h-8 text-gray-600 animate-spin" />
+                            <div className="w-full h-48 bg-graphite rounded-lg flex items-center justify-center">
+                              <RefreshCw className="w-8 h-8 text-brushed-silver animate-spin" />
                             </div>
                           )}
                         </div>
 
                         {/* Inline Image */}
                         <div className="space-y-3">
-                          <h3 className="text-sm font-semibold text-cyan">Inline Image</h3>
+                          <h3 className="text-sm font-semibold text-brushed-silver">Inline Image</h3>
                           {inlineImageUrl ? (
                             <div className="relative">
                               <img
@@ -1054,7 +1054,7 @@ const AdminPage: React.FC = () => {
                                 <button
                                   onClick={() => regenerateImage('inline')}
                                   disabled={generatingImages}
-                                  className="p-2 bg-navy/80 rounded-lg text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                                  className="p-2 bg-graphite/80 rounded-lg text-brushed-silver hover:text-off-white transition-colors disabled:opacity-50"
                                   title="Regenerate"
                                 >
                                   <RefreshCw className="w-4 h-4" />
@@ -1065,8 +1065,8 @@ const AdminPage: React.FC = () => {
                                   onClick={() => setInlineImageApproved(!inlineImageApproved)}
                                   className={`p-2 rounded-lg transition-colors ${
                                     inlineImageApproved 
-                                      ? 'bg-green-500 text-white' 
-                                      : 'bg-navy/80 text-gray-400 hover:text-white'
+                                      ? 'bg-green-500 text-off-white' 
+                                      : 'bg-graphite/80 text-brushed-silver hover:text-off-white'
                                   }`}
                                   title={inlineImageApproved ? 'Approved' : 'Approve'}
                                 >
@@ -1082,8 +1082,8 @@ const AdminPage: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <div className="w-full h-48 bg-navy rounded-lg flex items-center justify-center">
-                              <RefreshCw className="w-8 h-8 text-gray-600 animate-spin" />
+                            <div className="w-full h-48 bg-graphite rounded-lg flex items-center justify-center">
+                              <RefreshCw className="w-8 h-8 text-brushed-silver animate-spin" />
                             </div>
                           )}
                         </div>
@@ -1092,11 +1092,11 @@ const AdminPage: React.FC = () => {
 
                     {/* Save Images Button */}
                     {(heroImageApproved || inlineImageApproved) && (
-                      <div className="flex justify-end pt-4 border-t border-purple/30">
+                      <div className="flex justify-end pt-4 border-t border-white/5">
                         <button
                           onClick={saveImagesToArticle}
                           disabled={savingApprovedImages}
-                          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-off-white font-semibold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {savingApprovedImages ? (
                             <>
@@ -1121,16 +1121,16 @@ const AdminPage: React.FC = () => {
 
         {/* Templates Tab */}
         {activeTab === 'templates' && (
-          <div className="bg-navy-light border border-purple/30 rounded-xl p-6">
+          <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-heading font-bold text-white">Prompt Templates</h2>
+              <h2 className="text-xl font-heading font-bold text-off-white">Prompt Templates</h2>
               <button
                 onClick={() => {
                   setEditingTemplate(null)
                   setTemplateName('')
                   setShowTemplateModal(true)
                 }}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple to-cyan text-white px-4 py-2 rounded-lg hover:opacity-90"
+                className="flex items-center gap-2 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white px-4 py-2 rounded-lg hover:opacity-90"
               >
                 <Plus className="w-5 h-5" />
                 New Template
@@ -1142,33 +1142,33 @@ const AdminPage: React.FC = () => {
                 {templates.map((template) => (
                   <div
                     key={template.id}
-                    className="bg-navy border border-purple/30 rounded-lg p-4 hover:border-purple/50 transition-colors"
+                    className="bg-graphite border border-white/5 rounded-lg p-4 hover:border-dusk-rose/50 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-semibold text-white">{template.name}</h3>
+                      <h3 className="font-semibold text-off-white">{template.name}</h3>
                       <div className="flex gap-1">
                         <button
                           onClick={() => loadTemplate(template)}
-                          className="p-1 text-gray-400 hover:text-white"
+                          className="p-1 text-brushed-silver hover:text-off-white"
                           title="Load template"
                         >
                           <Download className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => deleteTemplate(template.id)}
-                          className="p-1 text-gray-400 hover:text-red-400"
+                          className="p-1 text-brushed-silver hover:text-red-400"
                           title="Delete template"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
-                    <p className="text-gray-400 text-sm mb-2 line-clamp-2">{template.topic}</p>
+                    <p className="text-brushed-silver text-sm mb-2 line-clamp-2">{template.topic}</p>
                     <div className="flex gap-2 text-xs">
-                      <span className="bg-purple/20 text-purple px-2 py-1 rounded">
+                      <span className="bg-dusk-rose/20 text-dusk-rose px-2 py-1 rounded">
                         {template.word_count} words
                       </span>
-                      <span className="bg-cyan/20 text-cyan px-2 py-1 rounded">
+                      <span className="bg-cyan/20 text-brushed-silver px-2 py-1 rounded">
                         {template.style}
                       </span>
                     </div>
@@ -1177,8 +1177,8 @@ const AdminPage: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <BookOpen className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500">No templates saved yet</p>
+                <BookOpen className="w-12 h-12 text-brushed-silver mx-auto mb-4" />
+                <p className="text-brushed-silver">No templates saved yet</p>
               </div>
             )}
           </div>
@@ -1186,12 +1186,12 @@ const AdminPage: React.FC = () => {
 
         {/* Articles Tab */}
         {activeTab === 'articles' && (
-          <div className="bg-navy-light border border-purple/30 rounded-xl p-6">
+          <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-heading font-bold text-white">All Articles</h2>
+              <h2 className="text-xl font-heading font-bold text-off-white">All Articles</h2>
               <button
                 onClick={fetchArticles}
-                className="flex items-center gap-2 text-gray-400 hover:text-white"
+                className="flex items-center gap-2 text-brushed-silver hover:text-off-white"
               >
                 <RefreshCw className="w-5 h-5" />
                 Refresh
@@ -1200,51 +1200,51 @@ const AdminPage: React.FC = () => {
 
             {loadingArticles ? (
               <div className="text-center py-12">
-                <RefreshCw className="w-8 h-8 text-purple animate-spin mx-auto mb-4" />
-                <p className="text-gray-500">Loading articles...</p>
+                <RefreshCw className="w-8 h-8 text-dusk-rose animate-spin mx-auto mb-4" />
+                <p className="text-brushed-silver">Loading articles...</p>
               </div>
             ) : articles.length > 0 ? (
               <div className="space-y-4">
                 {articles.map((article) => (
                   <div
                     key={article.id}
-                    className="bg-navy border border-purple/30 rounded-lg p-4 hover:border-purple/50 transition-colors"
+                    className="bg-graphite border border-white/5 rounded-lg p-4 hover:border-dusk-rose/50 transition-colors"
                   >
                     {editingArticleId === article.id ? (
                       // Edit Form
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Headline</label>
+                          <label className="block text-sm text-brushed-silver mb-2">Headline</label>
                           <input
                             type="text"
                             value={editFormData.headline}
                             onChange={(e) => setEditFormData({...editFormData, headline: e.target.value})}
-                            className="w-full bg-navy-light border border-purple/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple"
+                            className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Content</label>
+                          <label className="block text-sm text-brushed-silver mb-2">Content</label>
                           <textarea
                             value={editFormData.content}
                             onChange={(e) => setEditFormData({...editFormData, content: e.target.value})}
-                            className="w-full bg-navy-light border border-purple/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple h-64 resize-none"
+                            className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose h-64 resize-none"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Summary</label>
+                          <label className="block text-sm text-brushed-silver mb-2">Summary</label>
                           <textarea
                             value={editFormData.summary}
                             onChange={(e) => setEditFormData({...editFormData, summary: e.target.value})}
-                            className="w-full bg-navy-light border border-purple/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple h-24 resize-none"
+                            className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose h-24 resize-none"
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm text-gray-400 mb-2">Category</label>
+                            <label className="block text-sm text-brushed-silver mb-2">Category</label>
                             <select
                               value={editFormData.category}
                               onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
-                              className="w-full bg-navy-light border border-purple/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple"
+                              className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
                             >
                               <option value="AI">AI</option>
                               <option value="Finance">Finance</option>
@@ -1255,12 +1255,12 @@ const AdminPage: React.FC = () => {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-sm text-gray-400 mb-2">Tags (comma separated)</label>
+                            <label className="block text-sm text-brushed-silver mb-2">Tags (comma separated)</label>
                             <input
                               type="text"
                               value={editFormData.tags}
                               onChange={(e) => setEditFormData({...editFormData, tags: e.target.value})}
-                              className="w-full bg-navy-light border border-purple/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple"
+                              className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
                               placeholder="tag1, tag2, tag3"
                             />
                           </div>
@@ -1274,7 +1274,7 @@ const AdminPage: React.FC = () => {
                           <button
                             onClick={saveArticleEdit}
                             disabled={savingEdit}
-                            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-off-white font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
                           >
                             {savingEdit ? (
                               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -1285,7 +1285,7 @@ const AdminPage: React.FC = () => {
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="flex items-center gap-2 bg-navy text-gray-400 hover:text-white px-4 py-2 rounded-lg transition-colors"
+                            className="flex items-center gap-2 bg-graphite text-brushed-silver hover:text-off-white px-4 py-2 rounded-lg transition-colors"
                           >
                             <X className="w-4 h-4" />
                             Cancel
@@ -1296,10 +1296,10 @@ const AdminPage: React.FC = () => {
                       // Article Display
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-white mb-1">{article.headline}</h3>
-                          <p className="text-gray-400 text-sm mb-2 line-clamp-2">{article.summary}</p>
+                          <h3 className="font-semibold text-off-white mb-1">{article.headline}</h3>
+                          <p className="text-brushed-silver text-sm mb-2 line-clamp-2">{article.summary}</p>
                           <div className="flex items-center gap-3 text-xs flex-wrap">
-                            <span className="bg-purple/20 text-purple px-2 py-1 rounded">
+                            <span className="bg-dusk-rose/20 text-dusk-rose px-2 py-1 rounded">
                               {article.category}
                             </span>
                             {article.hero_image_url && (
@@ -1308,7 +1308,7 @@ const AdminPage: React.FC = () => {
                               </span>
                             )}
                             {article.inline_image_url && (
-                              <span className="bg-cyan/20 text-cyan px-2 py-1 rounded">
+                              <span className="bg-cyan/20 text-brushed-silver px-2 py-1 rounded">
                                 Inline Image ✓
                               </span>
                             )}
@@ -1319,7 +1319,7 @@ const AdminPage: React.FC = () => {
                             }`}>
                               {article.status}
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-brushed-silver">
                               {new Date(article.created_at).toLocaleDateString()}
                             </span>
                           </div>
@@ -1327,21 +1327,21 @@ const AdminPage: React.FC = () => {
                         <div className="flex gap-2 ml-4">
                           <button
                             onClick={() => startEditArticle(article)}
-                            className="p-2 text-gray-400 hover:text-purple"
+                            className="p-2 text-brushed-silver hover:text-dusk-rose"
                             title="Edit article"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => copyToClipboard(article.content)}
-                            className="p-2 text-gray-400 hover:text-white"
+                            className="p-2 text-brushed-silver hover:text-off-white"
                             title="Copy content"
                           >
                             <Copy className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => deleteArticle(article.id)}
-                            className="p-2 text-gray-400 hover:text-red-400"
+                            className="p-2 text-brushed-silver hover:text-red-400"
                             title="Delete article"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1354,8 +1354,8 @@ const AdminPage: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500">No articles found</p>
+                <FileText className="w-12 h-12 text-brushed-silver mx-auto mb-4" />
+                <p className="text-brushed-silver">No articles found</p>
               </div>
             )}
           </div>
@@ -1365,17 +1365,17 @@ const AdminPage: React.FC = () => {
       {/* Save Template Modal */}
       {showTemplateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-navy-light border border-purple/30 rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-heading font-bold text-white mb-4">
+          <div className="bg-graphite-light border border-white/5 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-heading font-bold text-off-white mb-4">
               {editingTemplate ? 'Edit Template' : 'Save as Template'}
             </h3>
             <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-2">Template Name</label>
+              <label className="block text-sm text-brushed-silver mb-2">Template Name</label>
               <input
                 type="text"
                 value={templateName}
                 onChange={(e) => setTemplateName(e.target.value)}
-                className="w-full bg-navy border border-purple/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple"
+                className="w-full bg-graphite border border-white/5 rounded-lg px-4 py-3 text-off-white focus:outline-none focus:border-dusk-rose"
                 placeholder="Enter a name for this template"
               />
             </div>
@@ -1383,7 +1383,7 @@ const AdminPage: React.FC = () => {
               <button
                 onClick={saveTemplate}
                 disabled={!templateName.trim()}
-                className="flex-1 bg-gradient-to-r from-purple to-cyan text-white font-semibold py-3 rounded-lg hover:opacity-90 disabled:opacity-50"
+                className="flex-1 bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white font-semibold py-3 rounded-lg hover:opacity-90 disabled:opacity-50"
               >
                 Save Template
               </button>
@@ -1393,7 +1393,7 @@ const AdminPage: React.FC = () => {
                   setEditingTemplate(null)
                   setTemplateName('')
                 }}
-                className="px-6 py-3 bg-navy text-gray-400 rounded-lg hover:text-white"
+                className="px-6 py-3 bg-graphite text-brushed-silver rounded-lg hover:text-off-white"
               >
                 Cancel
               </button>

@@ -84,12 +84,12 @@ const MarketsPage: React.FC = () => {
 
   const getTypeColor = (type: string): string => {
     switch (type) {
-      case 'crypto': return 'bg-orange-500/20 text-orange-500'
-      case 'commodity': return 'bg-yellow-500/20 text-yellow-500'
-      case 'middleeast': return 'bg-green-500/20 text-green-500'
-      case 'index': return 'bg-blue-500/20 text-blue-500'
-      case 'gcc': return 'bg-purple-500/20 text-purple-500'
-      default: return 'bg-gray-500/20 text-gray-500'
+      case 'crypto': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
+      case 'commodity': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
+      case 'middleeast': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
+      case 'index': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
+      case 'gcc': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
+      default: return 'bg-charcoal text-brushed-silver border border-white/5'
     }
   }
 
@@ -100,16 +100,16 @@ const MarketsPage: React.FC = () => {
         <meta name="description" content="Real-time financial market data including stocks, crypto, commodities, and Middle East markets" />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-graphite">
         {/* Hero Section */}
         <section className="relative py-20 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-background to-primary/10"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(0,217,255,0.15),transparent_60%)]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-dusk-rose/10 via-graphite to-dusk-rose/5"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(166,124,116,0.08),transparent_60%)]"></div>
           
           <div className="relative max-w-6xl mx-auto text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-sm text-green-500 font-medium">
+              <span className="w-3 h-3 bg-dusk-rose rounded-full animate-pulse"></span>
+              <span className="text-sm text-dusk-rose font-medium">
                 {language === 'en' ? 'Live Data' : 'بيانات حية'}
               </span>
             </div>
@@ -117,7 +117,7 @@ const MarketsPage: React.FC = () => {
             <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6">
               {language === 'en' ? 'Live Markets' : 'أسواق حية'}
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-brushed-silver max-w-3xl mx-auto mb-8">
               {language === 'en'
                 ? 'Real-time financial data from global markets. Indices, cryptocurrencies, commodities, and Middle East markets - all in one place.'
                 : 'بيانات مالية في الوقت الفعلي من الأسواق العالمية. المؤشرات والعملات المشفرة والسلع وأسواق الشرق الأوسط - كل شيء في مكان واحد.'
@@ -127,13 +127,13 @@ const MarketsPage: React.FC = () => {
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-6 py-2 rounded-full transition-all ${language === 'en' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}
+                className={`px-6 py-2 rounded-full transition-all ${language === 'en' ? 'bg-primary text-white' : 'bg-muted text-brushed-silver'}`}
               >
                 English
               </button>
               <button
                 onClick={() => setLanguage('ar')}
-                className={`px-6 py-2 rounded-full transition-all ${language === 'ar' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}
+                className={`px-6 py-2 rounded-full transition-all ${language === 'ar' ? 'bg-primary text-white' : 'bg-muted text-brushed-silver'}`}
               >
                 العربية
               </button>
@@ -152,7 +152,7 @@ const MarketsPage: React.FC = () => {
                   className={`px-6 py-2 rounded-full transition-all ${
                     activeTab === tab 
                       ? 'bg-primary text-white' 
-                      : 'bg-card text-muted-foreground hover:bg-muted'
+                      : 'bg-card text-brushed-silver hover:bg-muted'
                   }`}
                 >
                   {getTabLabel(tab)}
@@ -199,7 +199,7 @@ const MarketsPage: React.FC = () => {
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                        <span className="text-xs text-brushed-silver uppercase tracking-wider">
                           {item.symbol}
                         </span>
                         <h3 className="text-lg font-semibold text-foreground">
@@ -219,7 +219,7 @@ const MarketsPage: React.FC = () => {
                     </div>
                     
                     <div className={`flex items-center gap-1 ${
-                      item.change >= 0 ? 'text-green-500' : 'text-red-500'
+                      item.change >= 0 ? 'text-dusk-rose' : 'text-red-500'
                     }`}>
                       <svg 
                         className={`w-4 h-4 ${item.change < 0 ? 'rotate-180' : ''}`} 
@@ -244,23 +244,23 @@ const MarketsPage: React.FC = () => {
         </section>
 
         {/* Market Summary Cards */}
-        <section className="px-4 pb-16 bg-card/50">
+        <section className="px-4 pb-16 bg-charcoal">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
                   </div>
-                  <span className="text-muted-foreground">
+                  <span className="text-brushed-silver">
                     {language === 'en' ? 'Global Indices' : 'المؤشرات العالمية'}
                   </span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">
                   {marketData.filter(i => i.type === 'index').length} 
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                  <span className="text-sm font-normal text-brushed-silver ml-2">
                     {language === 'en' ? 'indices' : 'مؤشر'}
                   </span>
                 </p>
@@ -268,18 +268,18 @@ const MarketsPage: React.FC = () => {
 
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <span className="text-muted-foreground">
+                  <span className="text-brushed-silver">
                     {language === 'en' ? 'Crypto' : 'العملات المشفرة'}
                   </span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">
                   {marketData.filter(i => i.type === 'crypto').length}
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                  <span className="text-sm font-normal text-brushed-silver ml-2">
                     {language === 'en' ? 'coins' : 'عملة'}
                   </span>
                 </p>
@@ -287,18 +287,18 @@ const MarketsPage: React.FC = () => {
 
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                   </div>
-                  <span className="text-muted-foreground">
+                  <span className="text-brushed-silver">
                     {language === 'en' ? 'Commodities' : 'السلع'}
                   </span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">
                   {marketData.filter(i => i.type === 'commodity').length}
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                  <span className="text-sm font-normal text-brushed-silver ml-2">
                     {language === 'en' ? 'assets' : 'أصل'}
                   </span>
                 </p>
@@ -306,18 +306,18 @@ const MarketsPage: React.FC = () => {
 
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <span className="text-muted-foreground">
+                  <span className="text-brushed-silver">
                     {language === 'en' ? 'Middle East' : 'الشرق الأوسط'}
                   </span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">
                   {marketData.filter(i => i.type === 'middleeast' || i.type === 'gcc').length}
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                  <span className="text-sm font-normal text-brushed-silver ml-2">
                     {language === 'en' ? 'indices' : 'مؤشر'}
                   </span>
                 </p>
