@@ -108,7 +108,8 @@ const ArticleDetailPage = () => {
     )
   }
 
-  const coverImage = article.hero_image_url || article.image_url || article.inline_image_url
+  const coverImage = article.hero_image_url || article.image_url
+  const inlineImageInsertAfter = paragraphs.length > 3 ? 1 : 0
   const publishedAt = article.published_at || article.created_at
   const sourceLabel = article.article_url ? getCompanyNameFromUrl(article.article_url) : article.source_name || 'AIRAB desk'
 
@@ -196,9 +197,23 @@ const ArticleDetailPage = () => {
             <div className="editorial-panel p-8 md:p-12">
               <div className="space-y-7 text-lg leading-8 text-brushed-silver">
                 {paragraphs.map((paragraph, index) => (
-                  <p key={`${article.id}-${index}`} className={index === 0 ? 'text-xl leading-9 text-off-white' : ''}>
-                    {paragraph}
-                  </p>
+                  <React.Fragment key={`${article.id}-${index}`}>
+                    <p className={index === 0 ? 'text-xl leading-9 text-off-white' : ''}>{paragraph}</p>
+                    {article.inline_image_url && index === inlineImageInsertAfter ? (
+                      <figure className="overflow-hidden border border-white/10 bg-black/20">
+                        <img
+                          src={article.inline_image_url}
+                          alt={`${article.headline} detail visual`}
+                          className="w-full object-cover"
+                        />
+                        {article.inline_image_prompt ? (
+                          <figcaption className="border-t border-white/10 px-4 py-3 text-xs uppercase tracking-[0.18em] text-brushed-silver/80">
+                            AI-generated supporting visual
+                          </figcaption>
+                        ) : null}
+                      </figure>
+                    ) : null}
+                  </React.Fragment>
                 ))}
               </div>
             </div>
