@@ -1,13 +1,13 @@
 import React from 'react'
+import { ArrowRight, Calendar, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Calendar, User } from 'lucide-react'
 
 interface Article {
   id: string
   headline: string
   summary: string
   category?: string
-  published_at?: string
+  published_at?: string | null
   author?: string
   image_url?: string
 }
@@ -18,64 +18,54 @@ interface ArticleGridProps {
 
 const ArticleGrid: React.FC<ArticleGridProps> = ({ articles }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {articles.map((article) => (
-        <Link
-          key={article.id}
-          to={`/article/${article.id}`}
-          className="block group"
-        >
-          <article className="bg-graphite border border-white/5 hover:border-dusk-rose/30 transition-colors duration-300 overflow-hidden">
-            {/* Image */}
-            {article.image_url && (
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={article.image_url}
-                  alt={article.headline}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+    <div className="grid gap-6 md:grid-cols-2">
+      {articles.map((article, index) => (
+        <Link key={article.id} to={`/article/${article.id}`} className="group editorial-panel overflow-hidden transition-colors hover:border-dusk-rose/30">
+          {article.image_url ? (
+            <div className="aspect-[16/10] overflow-hidden border-b border-white/5">
+              <img
+                src={article.image_url}
+                alt={article.headline}
+                className="h-full w-full object-cover grayscale transition duration-300 group-hover:scale-[1.02]"
+              />
+            </div>
+          ) : null}
+
+          <div className="space-y-5 p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-3">
+                {article.category ? <div className="eyebrow">{article.category}</div> : null}
+                <h3 className="font-serif text-2xl leading-tight tracking-[-0.04em] text-off-white">{article.headline}</h3>
               </div>
-            )}
-
-            {/* Content */}
-            <div className="p-6">
-              {/* Category */}
-              {article.category && (
-                <div className="text-dusk-rose text-xs uppercase tracking-widest mb-3">
-                  {article.category}
-                </div>
-              )}
-
-              {/* Headline */}
-              <h3 className="text-off-white font-serif font-bold text-lg leading-tight mb-3 group-hover:text-brushed-silver transition-colors">
-                {article.headline}
-              </h3>
-
-              {/* Summary */}
-              <p className="text-brushed-silver text-sm leading-relaxed mb-4 line-clamp-3">
-                {article.summary}
-              </p>
-
-              {/* Metadata */}
-              <div className="flex items-center space-x-4 text-brushed-silver text-xs uppercase tracking-widest">
-                {article.published_at && (
-                  <div className="flex items-center space-x-1">
-                    <Calendar size={12} />
-                    <span>{new Date(article.published_at).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    })}</span>
-                  </div>
-                )}
-                {article.author && (
-                  <div className="flex items-center space-x-1">
-                    <User size={12} />
-                    <span>{article.author}</span>
-                  </div>
-                )}
+              <div className="font-serif text-3xl tracking-[-0.05em] text-brushed-silver/30">
+                {String(index + 1).padStart(2, '0')}
               </div>
             </div>
-          </article>
+
+            <p className="line-clamp-3 text-sm leading-7 text-brushed-silver">{article.summary}</p>
+
+            <div className="flex flex-wrap items-center gap-4 border-t border-white/5 pt-4 text-xs uppercase tracking-[0.22em] text-brushed-silver/65">
+              {article.published_at ? (
+                <span className="inline-flex items-center gap-2">
+                  <Calendar size={14} className="text-dusk-rose" />
+                  {new Date(article.published_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+              ) : null}
+              {article.author ? (
+                <span className="inline-flex items-center gap-2">
+                  <User size={14} className="text-dusk-rose" />
+                  {article.author}
+                </span>
+              ) : null}
+              <span className="inline-flex items-center gap-2 text-off-white">
+                Read
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </div>
         </Link>
       ))}
     </div>

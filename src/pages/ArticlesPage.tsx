@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import Sidebar from '../components/Sidebar'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Calendar, Tag, ArrowRight, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import ArticleGrid from '../components/ArticleGrid'
+import HeroFeatureCard from '../components/HeroFeatureCard'
+import PageIntro from '../components/PageIntro'
 import { Article, getArticles } from '../lib/api'
 
 const ArticlesPage = () => {
@@ -10,7 +12,6 @@ const ArticlesPage = () => {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [featuredArticle, setFeaturedArticle] = useState<Article | null>(null)
 
   useEffect(() => {
     async function fetchArticles() {
@@ -19,13 +20,10 @@ const ArticlesPage = () => {
           status: 'published',
           sort: 'published_at',
           order: 'desc',
-          limit: 20,
+          limit: 24,
         })
 
-        if (data && data.length > 0) {
-          setFeaturedArticle(data[0])
-          setArticles(data.slice(1))
-        }
+        setArticles(data || [])
       } catch (error) {
         console.error('Error fetching articles:', error)
       } finally {
@@ -36,109 +34,119 @@ const ArticlesPage = () => {
     fetchArticles()
   }, [])
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+  const featuredArticle = articles[0] || null
+  const archiveArticles = featuredArticle ? articles.filter((article) => article.id !== featuredArticle.id) : articles
 
-  const getCategoryColor = (category: string) => {
-    return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
-  }
+  const categories = useMemo(() => {
+    return ['all', ...Array.from(new Set(archiveArticles.map((article) => article.category).filter(Boolean)))]
+  }, [archiveArticles])
 
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.summary.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredArticles = archiveArticles.filter((article) => {
+    const matchesSearch =
+      article.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.summary.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory
     return matchesSearch && matchesCategory
   })
 
+  const showFeatured = featuredArticle && selectedCategory === 'all' && searchTerm.trim().length === 0
+
   return (
-    <div className="flex min-h-screen bg-graphite text-off-white">
-      <Sidebar />
+    <>
+      <Helmet>
+        <title>Latest Coverage | AIRAB Money</title>
+        <meta
+          name="description"
+          content="Browse the AIRAB Money coverage archive for news, policy moves, infrastructure stories, and capital signals shaping AI across the Arab world."
+        />
+      </Helmet>
 
-      <main className="flex-1 p-8">
-        <div className="max-w-4xl mx-auto">
-          <header className="flex justify-between items-center mb-8">
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <span className="text-xl font-bold gradient-text">AIRAB Money</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link to="/" className="text-brushed-silver hover:text-white transition-colors">Home</Link>
-              <Link to="/articles" className="text-brushed-silver hover:text-white transition-colors">News</Link>
-              <Link to="/markets" className="text-brushed-silver hover:text-white transition-colors">Markets</Link>
-            </div>
-          </header>
+      <PageIntro
+        eyebrow="Coverage archive"
+        title="The AIRAB newsroom archive."
+        description="Every story in one place, with the lead file pinned at the top. Search by keyword, skim by category, and move straight into the pieces driving the current regional conversation."
+        actions={
+          <Link to="/markets" className="ghost-button">
+            Open markets desk
+          </Link>
+        }
+        metrics={[
+          { label: 'Published files', value: String(articles.length).padStart(2, '0') },
+          { label: 'Active categories', value: String(categories.length - 1).padStart(2, '0') },
+          { label: 'Archive mode', value: 'Live' },
+        ]}
+      />
 
-          {loading ? (
-            <div className="text-center py-12">
-              <Search className="w-8 h-8 text-dusk-rose animate-spin mx-auto mb-4" />
-              <p className="text-brushed-silver">Loading articles...</p>
+      <section className="editorial-page pt-0">
+        <div className="editorial-panel space-y-5 p-5">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+            <div className="relative">
+              <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brushed-silver/45" />
+              <input
+                type="text"
+                placeholder="Search headlines and summaries"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="field-dark pl-11"
+              />
             </div>
-          ) : filteredArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredArticles.map((article) => (
-                <Link
-                  key={article.id}
-                  to={`/article/${article.id}`}
-                  className="block bg-charcoal rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-white/5"
-                >
-                  <div className="aspect-video bg-gradient-to-br from-dusk-rose flex items-center justify-center overflow-hidden">
-                    {article.image_url ? (
-                      <img
-                        src={article.image_url}
-                        alt={article.headline}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Tag className="w-12 h-12 text-white opacity-60" />
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${getCategoryColor(article.category)}`}>
-                          {article.category}
-                        </span>
-                        <span className="flex items-center text-brushed-silver text-xs">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {formatDate(article.published_at)}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-off-white line-clamp-2 leading-tight">
-                        {article.headline}
-                      </h3>
-                      <p className="text-brushed-silver text-sm line-clamp-3">
-                        {article.summary}
-                      </p>
-                      <span className="inline-flex items-center text-dusk-rose hover:text-brushed-silver font-medium text-sm mt-2">
-                        Read More
-                        <ArrowRight className="w-4 h-4 ml-1" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            <div className="text-sm text-brushed-silver">
+              {filteredArticles.length} result{filteredArticles.length === 1 ? '' : 's'}
             </div>
-          ) : (
-            <div className="text-center py-16">
-              <Search className="w-16 h-16 text-brushed-silver mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-off-white mb-2">No Articles Found</h3>
-              <p className="text-brushed-silver">
-                {searchTerm || selectedCategory !== 'all'
-                  ? 'Try adjusting your search or filters.'
-                  : 'New articles coming soon!'}
-              </p>
-            </div>
-          )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => setSelectedCategory(category)}
+                className={`border px-3 py-2 text-xs uppercase tracking-[0.22em] transition-colors ${
+                  selectedCategory === category
+                    ? 'border-dusk-rose/50 bg-dusk-rose/10 text-off-white'
+                    : 'border-white/10 text-brushed-silver hover:border-dusk-rose/30 hover:text-off-white'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {showFeatured ? (
+        <section className="editorial-page pt-0">
+          <HeroFeatureCard
+            headline={featuredArticle.headline}
+            summary={featuredArticle.summary}
+            imageUrl={featuredArticle.image_url || featuredArticle.hero_image_url}
+            articleId={featuredArticle.id}
+            category={featuredArticle.category}
+            publishedAt={featuredArticle.published_at}
+          />
+        </section>
+      ) : null}
+
+      <section className="editorial-page pt-0">
+        {loading ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {[0, 1, 2, 3].map((index) => (
+              <div key={index} className="editorial-panel h-72 animate-pulse bg-white/[0.03]" />
+            ))}
+          </div>
+        ) : filteredArticles.length > 0 ? (
+          <ArticleGrid articles={filteredArticles} />
+        ) : (
+          <div className="editorial-panel mx-auto max-w-2xl p-10 text-center">
+            <div className="eyebrow">No match</div>
+            <h2 className="mt-4 font-serif text-4xl tracking-[-0.05em] text-off-white">Nothing surfaced in the archive.</h2>
+            <p className="mx-auto mt-4 max-w-xl text-brushed-silver">
+              Try a broader search term or switch back to all categories to reopen the full newsroom view.
+            </p>
+          </div>
+        )}
+      </section>
+    </>
   )
 }
 

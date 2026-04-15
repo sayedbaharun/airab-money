@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
+import PageIntro from '../components/PageIntro'
 import { MarketData, getMarketData } from '../lib/api'
 
 const MarketsPage: React.FC = () => {
@@ -7,13 +8,13 @@ const MarketsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'indices' | 'crypto' | 'commodities' | 'middleeast'>('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [marketData, setMarketData] = useState<MarketData[]>([])
 
   const fetchMarketData = useCallback(async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const data = await getMarketData()
 
@@ -21,16 +22,11 @@ const MarketsPage: React.FC = () => {
         throw new Error('Failed to fetch market data')
       }
 
-      const fetchedData = data.data as MarketData[]
-      
-      if (fetchedData && fetchedData.length > 0) {
-        setMarketData(fetchedData)
-      } else {
-        throw new Error('No market data received')
-      }
-    } catch (err: any) {
-      console.error('Failed to fetch market data:', err)
-      setError(err.message || 'Unable to load market data')
+      setMarketData(data.data || [])
+      setUpdatedAt(data.updatedAt)
+    } catch (fetchError: unknown) {
+      console.error('Failed to fetch market data:', fetchError)
+      setError(fetchError instanceof Error ? fetchError.message : 'Unable to load market data')
       setMarketData([])
     } finally {
       setLoading(false)
@@ -39,293 +35,225 @@ const MarketsPage: React.FC = () => {
 
   useEffect(() => {
     fetchMarketData()
-    
-    // Refresh every 60 seconds
-    const interval = setInterval(fetchMarketData, 60000)
+    const interval = setInterval(fetchMarketData, 60_000)
     return () => clearInterval(interval)
   }, [fetchMarketData])
 
-  const filteredData = activeTab === 'all' 
-    ? marketData 
-    : marketData.filter(item => {
-        if (activeTab === 'indices') return item.type === 'index'
-        if (activeTab === 'middleeast') return item.type === 'middleeast'
-        return item.type === activeTab
-      })
+  const filteredData =
+    activeTab === 'all'
+      ? marketData
+      : marketData.filter((item) => {
+          if (activeTab === 'indices') return item.type === 'index'
+          if (activeTab === 'middleeast') return item.type === 'middleeast' || item.type === 'gcc'
+          if (activeTab === 'commodities') return item.type === 'commodity'
+          return item.type === activeTab
+        })
 
-  const formatPrice = (price: number): string => {
-    if (price > 10000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    if (price > 1000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    if (price > 100) return price.toFixed(2)
-    if (price > 1) return price.toFixed(2)
-    return price.toFixed(4)
-  }
-
-  const getTabLabel = (tab: string): string => {
+  const getTabLabel = (tab: typeof activeTab) => {
     if (language === 'ar') {
-      const labels: Record<string, string> = {
+      const labels: Record<typeof activeTab, string> = {
         all: 'الكل',
         indices: 'المؤشرات',
         crypto: 'العملات المشفرة',
         commodities: 'السلع',
-        middleeast: 'الخليج'
+        middleeast: 'الخليج',
       }
-      return labels[tab] || tab
+      return labels[tab]
     }
-    const enLabels: Record<string, string> = {
+
+    const labels: Record<typeof activeTab, string> = {
       all: 'All',
       indices: 'Indices',
       crypto: 'Crypto',
       commodities: 'Commodities',
-      middleeast: 'Middle East'
+      middleeast: 'Middle East',
     }
-    return enLabels[tab] || tab
+    return labels[tab]
   }
 
-  const getTypeColor = (type: string): string => {
-    switch (type) {
-      case 'crypto': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
-      case 'commodity': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
-      case 'middleeast': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
-      case 'index': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
-      case 'gcc': return 'bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30'
-      default: return 'bg-charcoal text-brushed-silver border border-white/5'
-    }
+  const priceLabel = (item: MarketData) => {
+    const prefix = item.type === 'crypto' || item.type === 'commodity' || item.type === 'stock' ? '$' : ''
+    const digits = item.price >= 100 ? 2 : 4
+    return `${prefix}${item.price.toLocaleString('en-US', {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits,
+    })}`
+  }
+
+  const typeLabel = (type: MarketData['type']) => {
+    if (type === 'middleeast' || type === 'gcc') return 'Regional'
+    if (type === 'commodity') return 'Commodity'
+    if (type === 'crypto') return 'Crypto'
+    if (type === 'index') return 'Index'
+    return 'Equity'
   }
 
   return (
     <>
       <Helmet>
-        <title>Live Markets - AIRAB Money 2026</title>
-        <meta name="description" content="Real-time financial market data including stocks, crypto, commodities, and Middle East markets" />
+        <title>Markets Desk | AIRAB Money</title>
+        <meta
+          name="description"
+          content="Live financial market context from global and Middle East markets, presented in AIRAB Money's editorial data-desk format."
+        />
       </Helmet>
 
-      <div className="min-h-screen bg-graphite">
-        {/* Hero Section */}
-        <section className="relative py-20 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-dusk-rose/10 via-graphite to-dusk-rose/5"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(166,124,116,0.08),transparent_60%)]"></div>
-          
-          <div className="relative max-w-6xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="w-3 h-3 bg-dusk-rose rounded-full animate-pulse"></span>
-              <span className="text-sm text-dusk-rose font-medium">
-                {language === 'en' ? 'Live Data' : 'بيانات حية'}
-              </span>
-            </div>
-            
-            <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6">
-              {language === 'en' ? 'Live Markets' : 'أسواق حية'}
-            </h1>
-            <p className="text-xl text-brushed-silver max-w-3xl mx-auto mb-8">
-              {language === 'en'
-                ? 'Real-time financial data from global markets. Indices, cryptocurrencies, commodities, and Middle East markets - all in one place.'
-                : 'بيانات مالية في الوقت الفعلي من الأسواق العالمية. المؤشرات والعملات المشفرة والسلع وأسواق الشرق الأوسط - كل شيء في مكان واحد.'
-              }
-            </p>
-            
-            <div className="flex justify-center gap-4">
+      <PageIntro
+        eyebrow="Markets desk"
+        title="Live prices, trimmed into editorial signal."
+        description="This desk is designed for readers who want context faster than a terminal but with more density than a marketing dashboard. Track the region, key global indicators, and risk tone in one place."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {(['en', 'ar'] as const).map((code) => (
               <button
-                onClick={() => setLanguage('en')}
-                className={`px-6 py-2 rounded-full transition-all ${language === 'en' ? 'bg-primary text-white' : 'bg-muted text-brushed-silver'}`}
+                key={code}
+                type="button"
+                onClick={() => setLanguage(code)}
+                className={`border px-4 py-3 text-sm uppercase tracking-[0.22em] transition-colors ${
+                  language === code
+                    ? 'border-dusk-rose/50 bg-dusk-rose/10 text-off-white'
+                    : 'border-white/10 text-brushed-silver hover:border-dusk-rose/30 hover:text-off-white'
+                }`}
               >
-                English
+                {code === 'en' ? 'English' : 'العربية'}
               </button>
-              <button
-                onClick={() => setLanguage('ar')}
-                className={`px-6 py-2 rounded-full transition-all ${language === 'ar' ? 'bg-primary text-white' : 'bg-muted text-brushed-silver'}`}
-              >
-                العربية
-              </button>
+            ))}
+          </div>
+        }
+        aside={
+          <div className="space-y-5 text-sm text-brushed-silver">
+            <div>
+              <div className="stat-kicker">Refresh cadence</div>
+              <div className="mt-2 text-off-white">60 seconds</div>
             </div>
-          </div>
-        </section>
-
-        {/* Market Tabs */}
-        <section className="px-4 mb-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap gap-2 justify-center">
-              {['all', 'indices', 'crypto', 'commodities', 'middleeast'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab as typeof activeTab)}
-                  className={`px-6 py-2 rounded-full transition-all ${
-                    activeTab === tab 
-                      ? 'bg-primary text-white' 
-                      : 'bg-card text-brushed-silver hover:bg-muted'
-                  }`}
-                >
-                  {getTabLabel(tab)}
-                </button>
-              ))}
+            <div>
+              <div className="stat-kicker">Current universe</div>
+              <div className="mt-2 text-off-white">{marketData.length || '--'} instruments</div>
             </div>
-          </div>
-        </section>
-
-        {/* Market Data Grid */}
-        <section className="px-4 pb-16">
-          <div className="max-w-7xl mx-auto">
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {[...Array(12)].map((_, i) => (
-                  <div key={i} className="glass-card rounded-xl p-6 animate-pulse">
-                    <div className="h-4 bg-muted rounded w-1/3 mb-3"></div>
-                    <div className="h-6 bg-muted rounded w-2/3 mb-2"></div>
-                    <div className="h-4 bg-muted rounded w-1/4"></div>
-                  </div>
-                ))}
-              </div>
-            ) : error && marketData.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <p className="text-red-500 text-lg mb-2">{error}</p>
-                <button 
-                  onClick={fetchMarketData}
-                  className="px-6 py-2 bg-primary text-white rounded-full hover:opacity-90 transition-opacity"
-                >
-                  {language === 'en' ? 'Retry' : 'إعادة المحاولة'}
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {filteredData.map((item) => (
-                  <div
-                    key={item.symbol}
-                    className="glass-card rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <span className="text-xs text-brushed-silver uppercase tracking-wider">
-                          {item.symbol}
-                        </span>
-                        <h3 className="text-lg font-semibold text-foreground">
-                          {item.name}
-                        </h3>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(item.type)}`}>
-                        {item.type === 'middleeast' ? 'ME' : item.type}
-                      </span>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold text-foreground">
-                        {item.type === 'crypto' ? '$' : item.type === 'commodity' ? '$' : ''}
-                        {formatPrice(item.price)}
-                      </span>
-                    </div>
-                    
-                    <div className={`flex items-center gap-1 ${
-                      item.change >= 0 ? 'text-dusk-rose' : 'text-red-500'
-                    }`}>
-                      <svg 
-                        className={`w-4 h-4 ${item.change < 0 ? 'rotate-180' : ''}`} 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                      </svg>
-                      <span className="font-medium">
-                        {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}
-                      </span>
-                      <span className="text-sm">
-                        ({item.change >= 0 ? '+' : ''}{item.changePercent?.toFixed(2) || 0}%)
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Market Summary Cards */}
-        <section className="px-4 pb-16 bg-charcoal">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="glass-card rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <span className="text-brushed-silver">
-                    {language === 'en' ? 'Global Indices' : 'المؤشرات العالمية'}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-foreground">
-                  {marketData.filter(i => i.type === 'index').length} 
-                  <span className="text-sm font-normal text-brushed-silver ml-2">
-                    {language === 'en' ? 'indices' : 'مؤشر'}
-                  </span>
-                </p>
-              </div>
-
-              <div className="glass-card rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <span className="text-brushed-silver">
-                    {language === 'en' ? 'Crypto' : 'العملات المشفرة'}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-foreground">
-                  {marketData.filter(i => i.type === 'crypto').length}
-                  <span className="text-sm font-normal text-brushed-silver ml-2">
-                    {language === 'en' ? 'coins' : 'عملة'}
-                  </span>
-                </p>
-              </div>
-
-              <div className="glass-card rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                  </div>
-                  <span className="text-brushed-silver">
-                    {language === 'en' ? 'Commodities' : 'السلع'}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-foreground">
-                  {marketData.filter(i => i.type === 'commodity').length}
-                  <span className="text-sm font-normal text-brushed-silver ml-2">
-                    {language === 'en' ? 'assets' : 'أصل'}
-                  </span>
-                </p>
-              </div>
-
-              <div className="glass-card rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-dusk-rose/20 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-dusk-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <span className="text-brushed-silver">
-                    {language === 'en' ? 'Middle East' : 'الشرق الأوسط'}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-foreground">
-                  {marketData.filter(i => i.type === 'middleeast' || i.type === 'gcc').length}
-                  <span className="text-sm font-normal text-brushed-silver ml-2">
-                    {language === 'en' ? 'indices' : 'مؤشر'}
-                  </span>
-                </p>
+            <div>
+              <div className="stat-kicker">Last update</div>
+              <div className="mt-2 text-off-white">
+                {updatedAt
+                  ? new Date(updatedAt).toLocaleTimeString('en-US', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : '--:--'}
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        }
+      />
+
+      <section className="editorial-page pt-0">
+        <div className="editorial-panel flex flex-wrap gap-2 p-4">
+          {(['all', 'indices', 'crypto', 'commodities', 'middleeast'] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`border px-3 py-2 text-xs uppercase tracking-[0.22em] transition-colors ${
+                activeTab === tab
+                  ? 'border-dusk-rose/50 bg-dusk-rose/10 text-off-white'
+                  : 'border-white/10 text-brushed-silver hover:border-dusk-rose/30 hover:text-off-white'
+              }`}
+            >
+              {getTabLabel(tab)}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="editorial-page pt-0">
+        {loading ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {[0, 1, 2, 3, 4, 5].map((card) => (
+              <div key={card} className="editorial-panel h-48 animate-pulse bg-white/[0.03]" />
+            ))}
+          </div>
+        ) : error && marketData.length === 0 ? (
+          <div className="editorial-panel mx-auto max-w-2xl p-10 text-center">
+            <div className="eyebrow">Desk unavailable</div>
+            <h2 className="mt-4 font-serif text-4xl tracking-[-0.05em] text-off-white">Market feed interrupted</h2>
+            <p className="mx-auto mt-4 max-w-xl text-brushed-silver">{error}</p>
+            <button type="button" onClick={fetchMarketData} className="rose-button mt-8">
+              Retry feed
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {filteredData.map((item) => {
+              const positive = item.change >= 0
+              const barWidth = Math.min(100, Math.max(14, 54 + item.changePercent * 7))
+
+              return (
+                <div key={item.symbol} className="editorial-panel p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="stat-kicker">{typeLabel(item.type)}</div>
+                      <h3 className="mt-2 text-lg uppercase tracking-[0.18em] text-off-white">{item.symbol}</h3>
+                      <p className="mt-2 text-sm leading-6 text-brushed-silver">{item.name}</p>
+                    </div>
+                    <span
+                      className={`border px-2 py-1 text-[11px] uppercase tracking-[0.22em] ${
+                        positive
+                          ? 'border-signal-green/35 bg-signal-green/10 text-signal-green'
+                          : 'border-signal-red/35 bg-signal-red/10 text-signal-red'
+                      }`}
+                    >
+                      {positive ? 'Up' : 'Down'}
+                    </span>
+                  </div>
+
+                  <div className="mt-7 font-serif text-4xl tracking-[-0.05em] text-off-white">{priceLabel(item)}</div>
+
+                  <div className="mt-3 text-sm text-brushed-silver">
+                    {positive ? '+' : ''}
+                    {item.change.toFixed(2)} ({positive ? '+' : ''}
+                    {item.changePercent.toFixed(2)}%)
+                  </div>
+
+                  <div className="mt-4 h-px bg-white/10">
+                    <div
+                      className={`h-px ${positive ? 'bg-signal-green' : 'bg-signal-red'}`}
+                      style={{ width: `${barWidth}%` }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="editorial-page pt-0">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="editorial-panel p-5">
+            <div className="stat-kicker">Indices</div>
+            <div className="mt-3 font-serif text-4xl tracking-[-0.05em] text-off-white">
+              {marketData.filter((item) => item.type === 'index').length}
+            </div>
+          </div>
+          <div className="editorial-panel p-5">
+            <div className="stat-kicker">Crypto</div>
+            <div className="mt-3 font-serif text-4xl tracking-[-0.05em] text-off-white">
+              {marketData.filter((item) => item.type === 'crypto').length}
+            </div>
+          </div>
+          <div className="editorial-panel p-5">
+            <div className="stat-kicker">Commodities</div>
+            <div className="mt-3 font-serif text-4xl tracking-[-0.05em] text-off-white">
+              {marketData.filter((item) => item.type === 'commodity').length}
+            </div>
+          </div>
+          <div className="editorial-panel p-5">
+            <div className="stat-kicker">Regional</div>
+            <div className="mt-3 font-serif text-4xl tracking-[-0.05em] text-off-white">
+              {marketData.filter((item) => item.type === 'middleeast' || item.type === 'gcc').length}
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   )
 }

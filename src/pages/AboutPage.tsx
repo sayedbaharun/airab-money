@@ -1,236 +1,182 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Users, Award, Globe, Target, Heart, Lightbulb } from 'lucide-react'
+import { Globe, Heart, Lightbulb, Target, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import PageIntro from '../components/PageIntro'
+
+const coreValues = [
+  {
+    icon: <Lightbulb size={18} className="text-dusk-rose" />,
+    title: 'Infrastructure over hype',
+    description: 'We focus on systems, incentives, and deployment realities rather than novelty cycles.',
+  },
+  {
+    icon: <Globe size={18} className="text-dusk-rose" />,
+    title: 'Regional fluency',
+    description: 'The desk is tuned to GCC and Arab world context, not just imported narratives.',
+  },
+  {
+    icon: <Heart size={18} className="text-dusk-rose" />,
+    title: 'Clear editorial judgment',
+    description: 'We aim for authority without bluster and for signal without flattening nuance.',
+  },
+  {
+    icon: <Users size={18} className="text-dusk-rose" />,
+    title: 'Operator perspective',
+    description: 'AIRAB is built for founders, investors, policy teams, and executives who need useful context.',
+  },
+  {
+    icon: <Target size={18} className="text-dusk-rose" />,
+    title: 'Future-facing but grounded',
+    description: 'We care about what is becoming operational now, not just what is theoretically possible.',
+  },
+]
+
+const hosts = [
+  {
+    name: 'Nora Al-Mansouri',
+    title: 'AI Investment Expert and Former McKinsey Consultant',
+    bio: 'UAE national with a Harvard MBA and MIT AI certification. Nora translates venture, capital allocation, and market strategy into language that business operators can act on.',
+    expertise: ['Investment analysis', 'Market strategy', 'Business intelligence', 'Startup ecosystems'],
+    image: '/images/avatars/nora/nora_professional_formal.png',
+  },
+  {
+    name: 'Omar Al-Rashid',
+    title: 'AI Research Pioneer and Serial Entrepreneur',
+    bio: 'Former Google AI researcher from Saudi Arabia with a Stanford computer science PhD. Omar sits at the intersection of technical depth, operating experience, and regional deployment reality.',
+    expertise: ['AI research', 'Machine learning', 'Entrepreneurship', 'Applied innovation'],
+    image: '/images/avatars/omar/omar_tech_executive.png',
+  },
+]
 
 const AboutPage = () => {
-  const coreValues = [
-    {
-      icon: <Lightbulb className="w-8 h-8 text-dusk-rose" />,
-      title: "Innovation First",
-      description: "Embracing cutting-edge AI technologies in our content creation and delivery"
-    },
-    {
-      icon: <Globe className="w-8 h-8 text-dusk-rose" />,
-      title: "Regional Expertise",
-      description: "Deep understanding of Arab and GCC market dynamics and cultural nuances"
-    },
-    {
-      icon: <Heart className="w-8 h-8 text-dusk-rose" />,
-      title: "Authentic Insights",
-      description: "Providing genuine, unbiased analysis of AI developments and trends"
-    },
-    {
-      icon: <Users className="w-8 h-8 text-dusk-rose" />,
-      title: "Community Building",
-      description: "Fostering connections within the regional AI ecosystem and beyond"
-    },
-    {
-      icon: <Target className="w-8 h-8 text-dusk-rose" />,
-      title: "Future-Forward",
-      description: "Anticipating trends and preparing audiences for what's next in AI"
-    }
-  ]
-
-  const hosts = [
-    {
-      name: "Nora Al-Mansouri",
-      title: "AI Investment Expert & Former McKinsey Consultant",
-      bio: "UAE national with Harvard MBA and MIT AI certification. Former McKinsey consultant turned AI venture capitalist, specializing in technology investment analysis and market strategy. Known for her analytical approach and ability to break down complex concepts for business leaders.",
-      expertise: ["Investment Analysis", "Market Strategy", "Business Intelligence", "Startup Ecosystems"],
-      image: "/images/avatars/nora/nora_professional_formal.png",
-      background: "bg-dusk-rose"
-    },
-    {
-      name: "Omar Al-Rashid",
-      title: "AI Research Pioneer & Serial Entrepreneur",
-      bio: "Former Google AI researcher and serial entrepreneur from Saudi Arabia. PhD in Computer Science from Stanford, founded two successful AI startups. Now focuses on AI research and development across MENA region, bridging technical innovation with business applications.",
-      expertise: ["AI Research", "Machine Learning", "Entrepreneurship", "Technical Innovation"],
-      image: "/images/avatars/omar/omar_tech_executive.png",
-      background: "bg-charcoal"
-    }
-  ]
-
   return (
     <>
       <Helmet>
-        <title>About AIRAB Money - Our Mission & AI-Powered Hosts</title>
-        <meta name="description" content="Learn about AIRAB Money's mission to democratize AI knowledge across the Arab world. Meet our AI-powered hosts Nora Al-Mansouri and Omar Al-Rashid." />
-        <meta name="keywords" content="AIRAB Money, about, AI hosts, Arab world AI, mission, vision, values" />
+        <title>About AIRAB Money</title>
+        <meta
+          name="description"
+          content="Learn about AIRAB Money's mission, editorial point of view, and the AI-powered hosts behind the desk."
+        />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="py-20 bg-graphite text-off-white">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-              Where AI Meets{' '}
-              <span className="text-amber-300">Arabia</span>
-            </h1>
-            <p className="text-xl lg:text-2xl text-blue-100 leading-relaxed">
-              Bridging the gap between global AI innovations and regional implementation
+      <PageIntro
+        eyebrow="About the desk"
+        title="An editorial data brand built for the region’s AI economy."
+        description="AIRAB Money exists to cover what happens when AI becomes infrastructure, policy, and capital allocation rather than just a talking point. The desk sits between journalism, market intelligence, and regional context."
+        actions={
+          <Link to="/contact" className="rose-button">
+            Talk to the desk
+          </Link>
+        }
+        metrics={[
+          { label: 'Publishing languages', value: '02' },
+          { label: 'Core hosts', value: '02' },
+          { label: 'Regional focus', value: 'GCC+' },
+        ]}
+      />
+
+      <section className="editorial-page pt-0">
+        <div className="grid gap-6 xl:grid-cols-2">
+          <div className="editorial-panel p-8">
+            <div className="eyebrow">Mission</div>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Translate the AI economy into a readable regional signal.</h2>
+            <p className="mt-5 text-base leading-8 text-brushed-silver">
+              We cover capital flows, regulation, infrastructure, and operator strategy so decision-makers in the Arab world can see the system beneath the headlines.
+            </p>
+          </div>
+
+          <div className="editorial-panel p-8">
+            <div className="eyebrow">Editorial thesis</div>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">AI is no longer a technology beat alone.</h2>
+            <p className="mt-5 text-base leading-8 text-brushed-silver">
+              It is a market structure story, a policy story, and an industrial capacity story. AIRAB is designed around that broader frame and around the region’s specific strategic posture.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section className="py-20">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-off-white mb-6">Our Mission</h2>
-              <p className="text-lg text-brushed-silver leading-relaxed mb-8">
-                To democratize AI knowledge and insights across the Arab world by delivering 
-                cutting-edge analysis, expert interviews, and strategic intelligence on artificial 
-                intelligence developments, ensuring the region remains at the forefront of the global AI revolution.
+      <section className="editorial-page pt-0">
+        <div className="editorial-panel p-8 md:p-10">
+          <div className="eyebrow">Why now</div>
+          <div className="mt-5 grid gap-8 xl:grid-cols-[minmax(0,1.1fr)_0.9fr]">
+            <div className="space-y-5 text-base leading-8 text-brushed-silver">
+              <p>
+                AIRAB Money was built around a simple observation: the Arab world’s AI story is often discussed through outside narratives, while the region’s own operating logic gets under-covered.
               </p>
-              
-              <h3 className="text-2xl font-semibold text-off-white mb-4">Our Vision</h3>
-              <p className="text-lg text-brushed-silver leading-relaxed">
-                To become the definitive voice for AI discourse in the Arab world, bridging the gap 
-                between global AI innovations and regional implementation, while fostering a thriving 
-                ecosystem of AI entrepreneurs, investors, and innovators.
+              <p>
+                From sovereign compute bets to startup financing, from Arabic-language tooling to industrial deployment, the most important developments are often not the loudest ones.
+              </p>
+              <p>
+                The desk exists to map that terrain clearly and consistently, with enough editorial restraint that the information remains useful after the headline cycle has moved on.
               </p>
             </div>
-            
-            <div className="relative">
-              <div className="bg-charcoal border border-white/5 rounded-none p-8">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-dusk-rose mb-2">50+</div>
-                    <div className="text-sm text-brushed-silver">Expert Guests</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-dusk-rose mb-2">100+</div>
-                    <div className="text-sm text-brushed-silver">Episodes Planned</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-dusk-rose mb-2">7</div>
-                    <div className="text-sm text-brushed-silver">GCC Countries</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-dusk-rose mb-2">3</div>
-                    <div className="text-sm text-brushed-silver">Episodes/Week</div>
-                  </div>
+
+            <div className="space-y-4">
+              {[
+                'State-backed infrastructure is becoming a decisive competitive layer.',
+                'Regional regulation now shapes execution as much as raw model capability.',
+                'Capital, language, and energy all matter more than generic AI boosterism.',
+              ].map((point) => (
+                <div key={point} className="border border-white/5 bg-white/[0.02] p-5 text-sm leading-7 text-brushed-silver">
+                  {point}
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className="py-20 bg-charcoal">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold text-off-white mb-8 text-center">Our Story</h2>
-            <div className="prose prose-lg mx-auto text-brushed-silver">
-              <p className="text-xl leading-relaxed mb-6">
-                AIRAB Money was born from a simple observation: while the world talked about AI's global impact, 
-                the Arab world's incredible innovations were happening in the shadows.
-              </p>
-              <p className="text-lg leading-relaxed mb-6">
-                From Saudi Arabia's NEOM city to the UAE's AI Strategy 2071, from Qatar's smart city initiatives 
-                to the region's growing startup ecosystem, incredible developments were underway. Yet these 
-                stories weren't being told with the depth and expertise they deserved.
-              </p>
-              <p className="text-lg leading-relaxed mb-6">
-                We created AIRAB Money to bridge this gap - combining cutting-edge AI technology with deep 
-                regional expertise to deliver intelligence that matters to leaders, investors, and innovators 
-                across the Arab world.
-              </p>
-              
-              <div className="bg-charcoal border-l-2 border-dusk-rose p-6 my-8">
-                <h3 className="text-xl font-semibold text-off-white mb-3">What Makes Us Different</h3>
-                <ul className="space-y-2 text-brushed-silver">
-                  <li>• First AI-powered podcast focused exclusively on the Arab world</li>
-                  <li>• Hosted by AI avatars with deep regional knowledge and global perspective</li>
-                  <li>• Weekly episodes featuring the most influential voices in regional AI development</li>
-                  <li>• Actionable insights for business leaders, investors, and policy makers</li>
-                  <li>• Content available in both English and Arabic</li>
-                </ul>
+      <section className="editorial-page pt-0">
+        <div className="mb-6">
+          <div className="eyebrow">Operating principles</div>
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">What the desk optimizes for</h2>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {coreValues.map((value) => (
+            <div key={value.title} className="editorial-panel p-6">
+              <div className="flex items-center gap-3">
+                {value.icon}
+                <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">{value.title}</h3>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-brushed-silver">{value.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="editorial-page pt-0">
+        <div className="mb-6">
+          <div className="eyebrow">Hosts</div>
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">The AIRAB voices behind the desk</h2>
+        </div>
+
+        <div className="space-y-6">
+          {hosts.map((host) => (
+            <div key={host.name} className="editorial-panel overflow-hidden">
+              <div className="grid xl:grid-cols-[18rem_minmax(0,1fr)]">
+                <div className="border-b border-white/5 xl:border-b-0 xl:border-r">
+                  <img src={host.image} alt={host.name} className="h-full w-full object-cover grayscale" />
+                </div>
+                <div className="space-y-5 p-8 md:p-10">
+                  <div className="eyebrow">Host profile</div>
+                  <div>
+                    <h3 className="font-serif text-3xl tracking-[-0.04em] text-off-white">{host.name}</h3>
+                    <p className="mt-2 text-sm uppercase tracking-[0.18em] text-dusk-rose">{host.title}</p>
+                  </div>
+                  <p className="max-w-3xl text-base leading-8 text-brushed-silver">{host.bio}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {host.expertise.map((skill) => (
+                      <span key={skill} className="data-pill">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section className="py-20">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-off-white mb-4">Our Core Values</h2>
-            <p className="text-xl text-brushed-silver max-w-3xl mx-auto">
-              These principles guide everything we do, from content creation to community building
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {coreValues.map((value, index) => (
-              <div key={index} className="card p-8 text-center hover:shadow-xl transition-shadow duration-300">
-                <div className="flex justify-center mb-4">
-                  {value.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-off-white mb-3">{value.title}</h3>
-                <p className="text-brushed-silver leading-relaxed">{value.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Meet Our Hosts */}
-      <section className="py-20 bg-charcoal">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-off-white mb-4">Meet Our AI-Powered Hosts</h2>
-            <p className="text-xl text-brushed-silver max-w-3xl mx-auto">
-              Our AI avatars combine cutting-edge technology with deep expertise to deliver 
-              unparalleled insights into the AI landscape
-            </p>
-          </div>
-          
-          <div className="space-y-16">
-            {hosts.map((host, index) => (
-              <div key={index} className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${
-                index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''
-              }`}>
-                <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
-                  <div className={`${host.background} rounded-2xl p-8 text-white`}>
-                    <img 
-                      src={host.image} 
-                      alt={host.name} 
-                      className="w-48 h-48 rounded-xl mx-auto mb-6 object-cover shadow-2xl"
-                    />
-                    <div className="text-center">
-                      <h3 className="text-2xl font-bold mb-2">{host.name}</h3>
-                      <p className="text-lg opacity-90">{host.title}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className={index % 2 === 1 ? 'lg:col-start-1' : ''}>
-                  <div className="space-y-6">
-                    <p className="text-lg text-brushed-silver leading-relaxed">{host.bio}</p>
-                    
-                    <div>
-                      <h4 className="text-lg font-semibold text-off-white mb-3">Areas of Expertise</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {host.expertise.map((skill, skillIndex) => (
-                          <span 
-                            key={skillIndex} 
-                            className="px-3 py-1 bg-dusk-rose/20 text-dusk-rose border border-dusk-rose/30 rounded-none text-sm font-medium"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
     </>

@@ -418,6 +418,22 @@ app.get('/api/blogs', async (req, res) => {
   }
 })
 
+app.get('/api/blogs/:slug', async (req, res) => {
+  try {
+    const post = await prisma.blogPost.findUnique({
+      where: { slug: req.params.slug },
+    })
+
+    if (!post) {
+      return res.status(404).json({ error: 'Blog post not found' })
+    }
+
+    res.json({ data: post })
+  } catch (error) {
+    handleError(res, error, 'Failed to fetch blog post')
+  }
+})
+
 app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, subject, message, messageType } = req.body

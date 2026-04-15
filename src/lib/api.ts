@@ -319,6 +319,11 @@ export const getBlogPosts = async (params: {
   return response.data
 }
 
+export const getBlogPost = async (slug: string) => {
+  const response = await apiFetch<ApiEnvelope<BlogPost>>(`/blogs/${slug}`)
+  return response.data
+}
+
 export const submitContactForm = async (payload: ContactSubmission) => {
   const response = await apiFetch<ApiEnvelope<ApiMessageResult>>('/contact', {
     method: 'POST',

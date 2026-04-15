@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Mail, Phone, MapPin, MessageCircle, Send, CheckCircle, AlertCircle, Clock } from 'lucide-react'
+import { AlertCircle, CheckCircle, Clock, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import PageIntro from '../components/PageIntro'
 import { submitContactForm } from '../lib/api'
 
 interface ContactFormData {
@@ -17,10 +19,6 @@ interface ContactResponse {
     status: string
     message_id?: string
   }
-  error?: {
-    code: string
-    message: string
-  }
 }
 
 const ContactPage = () => {
@@ -29,33 +27,60 @@ const ContactPage = () => {
     email: '',
     subject: '',
     message: '',
-    messageType: 'general'
+    messageType: 'general',
   })
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [statusMessage, setStatusMessage] = useState('')
 
   const messageTypes = [
-    { value: 'general', label: 'General Inquiry' },
-    { value: 'media', label: 'Media & Press' },
+    { value: 'general', label: 'General inquiry' },
+    { value: 'media', label: 'Media and press' },
     { value: 'partnership', label: 'Partnership' },
-    { value: 'guest', label: 'Guest Appearance' },
+    { value: 'guest', label: 'Guest appearance' },
     { value: 'sponsorship', label: 'Sponsorship' },
     { value: 'feedback', label: 'Feedback' },
-    { value: 'technical', label: 'Technical Support' }
+    { value: 'technical', label: 'Technical support' },
   ]
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+  const contactInfo = [
+    {
+      icon: <Mail size={18} className="text-dusk-rose" />,
+      title: 'Editorial and partnerships',
+      content: 'hello@airabmoney.com',
+      description: 'For press requests, collaboration conversations, and general desk enquiries.',
+    },
+    {
+      icon: <Phone size={18} className="text-dusk-rose" />,
+      title: 'Office line',
+      content: '+971 4 123 4567',
+      description: 'Sunday to Thursday, 9 AM to 6 PM GST.',
+    },
+    {
+      icon: <MapPin size={18} className="text-dusk-rose" />,
+      title: 'Location',
+      content: 'Dubai Internet City',
+      description: 'Dubai, United Arab Emirates.',
+    },
+    {
+      icon: <Clock size={18} className="text-dusk-rose" />,
+      title: 'Response window',
+      content: 'Within 24 hours',
+      description: 'Faster for live editorial matters and scheduled appearances.',
+    },
+  ]
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = event.target
+    setFormData((current) => ({ ...current, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+
     if (!formData.name || !formData.email || !formData.message) {
       setStatus('error')
-      setStatusMessage('Please fill in all required fields')
+      setStatusMessage('Please fill in all required fields.')
       return
     }
 
@@ -64,13 +89,13 @@ const ContactPage = () => {
     setStatusMessage('')
 
     try {
-      const data = await submitContactForm({
+      const data = (await submitContactForm({
         name: formData.name.trim(),
         email: formData.email.trim(),
-        subject: formData.subject.trim() || 'Contact Form Submission',
+        subject: formData.subject.trim() || 'AIRAB Money contact form',
         message: formData.message.trim(),
         messageType: formData.messageType,
-      }) as ContactResponse['data']
+      })) as ContactResponse['data']
 
       if (data) {
         setStatus('success')
@@ -80,290 +105,249 @@ const ContactPage = () => {
           email: '',
           subject: '',
           message: '',
-          messageType: 'general'
+          messageType: 'general',
         })
       }
-    } catch (error: any) {
+    } catch (submitError: unknown) {
       setStatus('error')
-      setStatusMessage(error.message || 'Something went wrong. Please try again.')
+      setStatusMessage(submitError instanceof Error ? submitError.message : 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const contactInfo = [
-    {
-      icon: <Mail className="w-6 h-6 text-dusk-rose" />,
-      title: "Email Us",
-      content: "hello@airabmoney.com",
-      description: "Send us an email and we'll respond within 24 hours"
-    },
-    {
-      icon: <Phone className="w-6 h-6 text-dusk-rose" />,
-      title: "Call Us",
-      content: "+971 4 123 4567",
-      description: "Speak with our team during business hours (9 AM - 6 PM GST)"
-    },
-    {
-      icon: <MapPin className="w-6 h-6 text-dusk-rose" />,
-      title: "Visit Us",
-      content: "Dubai Internet City, Dubai, UAE",
-      description: "Schedule a meeting at our Dubai headquarters"
-    },
-    {
-      icon: <Clock className="w-6 h-6 text-dusk-rose" />,
-      title: "Business Hours",
-      content: "Sunday - Thursday: 9 AM - 6 PM GST",
-      description: "We're closed on weekends and UAE public holidays"
-    }
-  ]
-
   return (
     <>
       <Helmet>
-        <title>Contact Us - AIRAB Money | Get In Touch</title>
-        <meta name="description" content="Contact AIRAB Money for media inquiries, partnerships, guest appearances, or general questions. We're here to help with all your AI intelligence needs." />
-        <meta name="keywords" content="contact AIRAB Money, media inquiries, partnerships, guest appearance, AI podcast contact" />
+        <title>Contact the Desk | AIRAB Money</title>
+        <meta
+          name="description"
+          content="Get in touch with AIRAB Money for editorial enquiries, partnerships, guest appearances, or sponsorship conversations."
+        />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="py-16 bg-graphite text-off-white">
-        <div className="container-custom">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-              Get In Touch
-            </h1>
-            <p className="text-xl text-blue-100 leading-relaxed">
-              Have a question, story idea, or want to collaborate? We'd love to hear from you. 
-              Our team is here to help with all your AI intelligence needs.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageIntro
+        eyebrow="Contact the desk"
+        title="Editorial, partnerships, guest requests, and everything in between."
+        description="Use the desk form for press enquiries, collaboration ideas, sponsorship discussions, or story leads. If you want to appear on the program, you can also go directly to the guest desk."
+        actions={
+          <Link to="/guest-application" className="ghost-button">
+            Open guest desk
+          </Link>
+        }
+        metrics={[
+          { label: 'Response target', value: '24h' },
+          { label: 'Desk base', value: 'Dubai' },
+          { label: 'Business days', value: 'Sun-Thu' },
+        ]}
+      />
 
-      {/* Contact Information */}
-      <section className="py-16">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {contactInfo.map((info, index) => (
-              <div key={index} className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 bg-charcoal border border-white/5 rounded-none">
-                    {info.icon}
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold text-off-white mb-2">{info.title}</h3>
-                <p className="text-off-white font-medium mb-2">{info.content}</p>
-                <p className="text-sm text-brushed-silver">{info.description}</p>
+      <section className="editorial-page pt-0">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {contactInfo.map((info) => (
+            <div key={info.title} className="editorial-panel p-5">
+              <div className="flex items-center gap-3">
+                {info.icon}
+                <div className="stat-kicker">{info.title}</div>
               </div>
-            ))}
-          </div>
+              <div className="mt-4 font-serif text-2xl tracking-[-0.04em] text-off-white">{info.content}</div>
+              <p className="mt-3 text-sm leading-7 text-brushed-silver">{info.description}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section className="py-16 bg-charcoal">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-off-white mb-4">
-                Send Us a Message
-              </h2>
-              <p className="text-xl text-brushed-silver">
-                Fill out the form below and we'll get back to you as soon as possible
-              </p>
-            </div>
-            
-            <div className="card p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-brushed-silver mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Your full name"
-                      disabled={loading}
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-brushed-silver mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="your.email@example.com"
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="messageType" className="block text-sm font-medium text-brushed-silver mb-2">
-                      Message Type
-                    </label>
-                    <select
-                      id="messageType"
-                      name="messageType"
-                      value={formData.messageType}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      disabled={loading}
-                    >
-                      {messageTypes.map(type => (
-                        <option key={type.value} value={type.value}>{type.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-brushed-silver mb-2">
-                      Subject
-                    </label>
-                    <input
-                      type="text"
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Brief subject line"
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-                
+      <section className="editorial-page pt-0">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="editorial-panel p-8 md:p-10">
+            <div className="eyebrow">Message form</div>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Send a note to AIRAB Money</h2>
+
+            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-brushed-silver mb-2">
-                    Message *
+                  <label htmlFor="name" className="mb-2 block text-sm text-brushed-silver">
+                    Full name *
                   </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={formData.name}
                     onChange={handleChange}
                     required
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
-                    placeholder="Please provide details about your inquiry, including any specific questions or requirements..."
                     disabled={loading}
-                    minLength={10}
+                    className="field-dark"
+                    placeholder="Your full name"
                   />
-                  <p className="text-sm text-brushed-silver mt-2">
-                    Minimum 10 characters. Be as detailed as possible to help us provide the best response.
-                  </p>
                 </div>
-                
-                <button
-                  type="submit"
-                  disabled={loading || !formData.name || !formData.email || !formData.message}
-                  className="w-full btn-primary disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {loading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  ) : (
-                    <Send className="w-5 h-5 mr-2" />
-                  )}
-                  {loading ? 'Sending...' : 'Send Message'}
-                </button>
-              </form>
-              
-              {status === 'success' && (
-                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-green-800 font-medium">Message Sent Successfully!</h4>
-                    <p className="text-green-700 text-sm mt-1">{statusMessage}</p>
-                  </div>
+                <div>
+                  <label htmlFor="email" className="mb-2 block text-sm text-brushed-silver">
+                    Email address *
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={loading}
+                    className="field-dark"
+                    placeholder="name@company.com"
+                  />
                 </div>
-              )}
-              
-              {status === 'error' && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
-                  <AlertCircle className="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-red-800 font-medium">Error Sending Message</h4>
-                    <p className="text-red-700 text-sm mt-1">{statusMessage}</p>
-                  </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label htmlFor="messageType" className="mb-2 block text-sm text-brushed-silver">
+                    Message type
+                  </label>
+                  <select
+                    id="messageType"
+                    name="messageType"
+                    value={formData.messageType}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className="select-dark"
+                  >
+                    {messageTypes.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
-            </div>
+                <div>
+                  <label htmlFor="subject" className="mb-2 block text-sm text-brushed-silver">
+                    Subject
+                  </label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className="field-dark"
+                    placeholder="Short subject line"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="message" className="mb-2 block text-sm text-brushed-silver">
+                  Message *
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  disabled={loading}
+                  minLength={10}
+                  className="textarea-dark"
+                  placeholder="Tell us what you need, what the context is, and any deadlines we should know."
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !formData.name || !formData.email || !formData.message}
+                className="rose-button w-full disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.02] disabled:text-brushed-silver/40"
+              >
+                {loading ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border border-current border-t-transparent" />
+                    Sending
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} />
+                    Send message
+                  </>
+                )}
+              </button>
+            </form>
+
+            {status === 'success' ? (
+              <div className="mt-6 flex gap-3 border border-signal-green/30 bg-signal-green/10 p-4 text-sm text-off-white">
+                <CheckCircle size={18} className="mt-0.5 text-signal-green" />
+                <div>
+                  <div className="font-medium">Message sent</div>
+                  <div className="mt-1 text-brushed-silver">{statusMessage}</div>
+                </div>
+              </div>
+            ) : null}
+
+            {status === 'error' ? (
+              <div className="mt-6 flex gap-3 border border-signal-red/30 bg-signal-red/10 p-4 text-sm text-off-white">
+                <AlertCircle size={18} className="mt-0.5 text-signal-red" />
+                <div>
+                  <div className="font-medium">Unable to send</div>
+                  <div className="mt-1 text-brushed-silver">{statusMessage}</div>
+                </div>
+              </div>
+            ) : null}
           </div>
+
+          <aside className="space-y-6">
+            <div className="editorial-panel p-6">
+              <div className="stat-kicker mb-3">Best use cases</div>
+              <div className="space-y-3 text-sm leading-7 text-brushed-silver">
+                <p>Press requests and executive commentary.</p>
+                <p>Brand, content, and event partnerships.</p>
+                <p>Guest appearances, sponsorships, and speaker invites.</p>
+                <p>Story leads and regional market tips.</p>
+              </div>
+            </div>
+
+            <div className="editorial-panel p-6">
+              <div className="stat-kicker mb-3">Need the program specifically?</div>
+              <p className="text-sm leading-7 text-brushed-silver">
+                If you already know you want to appear on AIRAB Money, go straight to the guest application flow and tell the desk what perspective you can bring.
+              </p>
+            </div>
+          </aside>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-16">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-off-white mb-4">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-brushed-silver">
-                Quick answers to common questions about AIRAB Money
-              </p>
+      <section className="editorial-page pt-0">
+        <div className="mb-6">
+          <div className="eyebrow">FAQ</div>
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">Common desk questions</h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {[
+            {
+              question: 'How do I become a guest on the podcast?',
+              answer:
+                'Use the guest desk application so the editorial team can review your background, topics, and availability in one place.',
+            },
+            {
+              question: 'Do you accept story suggestions or market leads?',
+              answer:
+                'Yes. The newsroom actively reviews leads, especially on policy, infrastructure, capital, and regional operating trends.',
+            },
+            {
+              question: 'Can AIRAB Money support events or panels?',
+              answer:
+                'Yes. Use the contact form for speaking invitations, panel moderation, and regional conference participation.',
+            },
+            {
+              question: 'Do you offer sponsorship and commercial partnerships?',
+              answer:
+                'Yes. The desk works with aligned partners on programs, series sponsorships, and selective commercial collaborations.',
+            },
+          ].map((item) => (
+            <div key={item.question} className="editorial-panel p-6">
+              <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">{item.question}</h3>
+              <p className="mt-4 text-sm leading-7 text-brushed-silver">{item.answer}</p>
             </div>
-            
-            <div className="space-y-6">
-              <div className="card p-6">
-                <h3 className="text-lg font-semibold text-off-white mb-3">
-                  How can I be a guest on the podcast?
-                </h3>
-                <p className="text-brushed-silver">
-                  We're always looking for AI experts, entrepreneurs, and industry leaders to share their insights. 
-                  Please fill out our <a href="/guest-application" className="text-dusk-rose hover:text-brushed-silver underline">guest application form</a> 
-                  with your background and proposed topics.
-                </p>
-              </div>
-              
-              <div className="card p-6">
-                <h3 className="text-lg font-semibold text-off-white mb-3">
-                  Do you accept story suggestions or news tips?
-                </h3>
-                <p className="text-brushed-silver">
-                  Absolutely! We value input from our community. Send us your AI-related news tips, 
-                  story suggestions, or regional developments you think we should cover.
-                </p>
-              </div>
-              
-              <div className="card p-6">
-                <h3 className="text-lg font-semibold text-off-white mb-3">
-                  Are you available for speaking engagements?
-                </h3>
-                <p className="text-brushed-silver">
-                  Yes, our team is available for conferences, corporate events, and panel discussions 
-                  about AI trends in the Arab world. Contact us with your event details and requirements.
-                </p>
-              </div>
-              
-              <div className="card p-6">
-                <h3 className="text-lg font-semibold text-off-white mb-3">
-                  How can my company sponsor or partner with AIRAB Money?
-                </h3>
-                <p className="text-brushed-silver">
-                  We offer various sponsorship and partnership opportunities including episode sponsorships, 
-                  content partnerships, and event collaborations. Please contact us to discuss options 
-                  that align with your business objectives.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </>

@@ -18,9 +18,12 @@ module.exports = {
 		extend: {
 			colors: {
 				graphite: '#1E1E1E',
+				charcoal: '#252525',
 				'dusk-rose': '#A67C74',
 				'brushed-silver': '#C0C0C0',
 				'off-white': '#F5F5F5',
+				'signal-green': '#88B28D',
+				'signal-red': '#CD8E84',
 			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],

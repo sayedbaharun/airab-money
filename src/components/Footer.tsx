@@ -1,77 +1,117 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Mail, MapPin, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react'
+import { Instagram, Linkedin, Mail, MapPin, Twitter, Youtube } from 'lucide-react'
+import { platformNavigation, primaryNavigation } from './siteNavigation'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Brand Column */}
-          <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <span className="text-xl font-bold gradient-text">AIRAB Money</span>
-            </div>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              The definitive AI-powered financial media platform for the Arab world and GCC region.
+    <footer className="border-t border-white/5 bg-[#151515]">
+      <div className="editorial-page py-12">
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1.2fr)_0.8fr_0.8fr]">
+          <div className="space-y-5">
+            <div className="eyebrow">AIRAB Money</div>
+            <h2 className="font-serif text-3xl leading-none tracking-[-0.05em] text-off-white">
+              A dark editorial desk for regional AI and capital intelligence.
+            </h2>
+            <p className="max-w-2xl text-sm leading-7 text-brushed-silver">
+              Built for readers who care about infrastructure, policy, operators, and the market implications of AI across the GCC and broader Arab world.
             </p>
-            <div className="flex space-x-4">
-              <a href="https://twitter.com/airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
-                <Twitter size={18} />
+            <div className="flex flex-wrap gap-3 text-sm text-brushed-silver">
+              <a
+                href="https://twitter.com/airabmoney"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ghost-button"
+              >
+                <Twitter size={16} />
+                X
               </a>
-              <a href="https://linkedin.com/company/airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
-                <Linkedin size={18} />
+              <a
+                href="https://linkedin.com/company/airabmoney"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ghost-button"
+              >
+                <Linkedin size={16} />
+                LinkedIn
               </a>
-              <a href="https://instagram.com/airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
-                <Instagram size={18} />
+              <a
+                href="https://instagram.com/airabmoney"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ghost-button"
+              >
+                <Instagram size={16} />
+                Instagram
               </a>
-              <a href="https://youtube.com/@airabmoney" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
-                <Youtube size={18} />
+              <a
+                href="https://youtube.com/@airabmoney"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ghost-button"
+              >
+                <Youtube size={16} />
+                YouTube
               </a>
             </div>
           </div>
 
-          {/* Essential Links */}
-          <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Navigation</h3>
-            <ul className="space-y-3">
-              <li><Link to="/" className="text-muted-foreground hover:text-primary transition-colors">Home</Link></li>
-              <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">About</Link></li>
-              <li><Link to="/articles" className="text-muted-foreground hover:text-primary transition-colors">News</Link></li>
-              <li><Link to="/markets" className="text-muted-foreground hover:text-primary transition-colors">Markets</Link></li>
-              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
-            </ul>
-          </div>
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-1">
+            <div>
+              <div className="stat-kicker mb-4">Newsroom</div>
+              <ul className="space-y-3">
+                {primaryNavigation.map((item) => (
+                  <li key={item.href}>
+                    <Link to={item.href} className="group flex items-start justify-between gap-3 text-sm text-brushed-silver transition-colors hover:text-off-white">
+                      <span>{item.label}</span>
+                      <span className="text-xs uppercase tracking-[0.22em] text-brushed-silver/40 group-hover:text-dusk-rose">
+                        {item.description}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Contact */}
-          <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Contact</h3>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <Mail size={16} className="text-primary mt-1 flex-shrink-0" />
-                <span className="text-muted-foreground text-sm">hello@airabmoney.com</span>
-              </div>
-              <div className="flex items-start space-x-3">
-                <MapPin size={16} className="text-primary mt-1 flex-shrink-0" />
-                <span className="text-muted-foreground text-sm">
-                  Dubai Internet City<br />
-                  Dubai, UAE
-                </span>
-              </div>
+            <div>
+              <div className="stat-kicker mb-4">Platform</div>
+              <ul className="space-y-3">
+                {platformNavigation.map((item) => (
+                  <li key={item.href}>
+                    <Link to={item.href} className="group flex items-start justify-between gap-3 text-sm text-brushed-silver transition-colors hover:text-off-white">
+                      <span>{item.label}</span>
+                      <span className="text-xs uppercase tracking-[0.22em] text-brushed-silver/40 group-hover:text-dusk-rose">
+                        {item.description}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-border mt-10 pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-muted-foreground text-sm mb-4 md:mb-0">
-              © {currentYear} AIRAB Money. All rights reserved.
+          <div className="space-y-5">
+            <div className="stat-kicker">Desk contact</div>
+            <div className="editorial-panel space-y-4 p-5 text-sm text-brushed-silver">
+              <div className="flex items-start gap-3">
+                <Mail size={16} className="mt-1 text-dusk-rose" />
+                <div>
+                  <div className="text-off-white">hello@airabmoney.com</div>
+                  <div className="mt-1 text-brushed-silver/70">Editorial, partnerships, and guest desk enquiries.</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin size={16} className="mt-1 text-dusk-rose" />
+                <div>
+                  <div className="text-off-white">Dubai Internet City</div>
+                  <div className="mt-1 text-brushed-silver/70">Dubai, United Arab Emirates</div>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs uppercase tracking-[0.24em] text-brushed-silver/50">
+              © {currentYear} AIRAB Money
             </p>
           </div>
         </div>

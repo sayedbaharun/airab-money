@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { User, Briefcase, Globe, Lightbulb, Send, CheckCircle, AlertCircle, Star } from 'lucide-react'
+import { Briefcase, Globe, Lightbulb, Send, Star, User } from 'lucide-react'
+import PageIntro from '../components/PageIntro'
 import { submitGuestApplication } from '../lib/api'
 
 interface GuestFormData {
@@ -21,11 +22,71 @@ interface GuestResponse {
     status: string
     application_id?: string
   }
-  error?: {
-    code: string
-    message: string
-  }
 }
+
+const expertiseOptions = [
+  'Artificial Intelligence',
+  'Machine Learning',
+  'Natural Language Processing',
+  'Computer Vision',
+  'Robotics',
+  'AI Ethics',
+  'Investment and Venture Capital',
+  'Startup Development',
+  'Digital Transformation',
+  'Government Policy',
+  'Healthcare AI',
+  'Fintech',
+  'Smart Cities',
+  'Education Technology',
+  'Cybersecurity',
+  'Data Science',
+  'Cloud Computing',
+  'IoT and Edge Computing',
+  'Blockchain and Web3',
+  'Sustainability Tech',
+]
+
+const topicSuggestions = [
+  'AI strategy in GCC markets',
+  'Investment trends in Middle East AI',
+  'Building AI startups in the Arab world',
+  'Government AI initiatives',
+  'AI for social good in MENA',
+  'Women in AI leadership',
+  'AI in traditional industries',
+  'Cross-border AI collaboration',
+  'AI talent development',
+  'Regulatory frameworks for AI',
+  'Arabic language processing',
+  'Smart city implementations',
+  'AI in financial services',
+  'Healthcare innovation with AI',
+  'AI ethics and cultural values',
+]
+
+const benefits = [
+  {
+    icon: <Star size={18} className="text-dusk-rose" />,
+    title: 'Expert audience',
+    description: 'Share perspective with leaders, operators, founders, and investors following the region closely.',
+  },
+  {
+    icon: <Globe size={18} className="text-dusk-rose" />,
+    title: 'Regional reach',
+    description: 'Connect with a GCC and wider Arab world audience that cares about practical AI execution.',
+  },
+  {
+    icon: <Lightbulb size={18} className="text-dusk-rose" />,
+    title: 'Thought leadership',
+    description: 'Position your work inside an editorial environment designed around signal rather than vanity.',
+  },
+  {
+    icon: <User size={18} className="text-dusk-rose" />,
+    title: 'Network effects',
+    description: 'Appear alongside founders, researchers, policymakers, and investors shaping the region.',
+  },
+]
 
 const GuestApplicationPage = () => {
   const [formData, setFormData] = useState<GuestFormData>({
@@ -37,88 +98,47 @@ const GuestApplicationPage = () => {
     expertiseAreas: [],
     linkedinUrl: '',
     websiteUrl: '',
-    proposedTopics: []
+    proposedTopics: [],
   })
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [statusMessage, setStatusMessage] = useState('')
 
-  const expertiseOptions = [
-    'Artificial Intelligence',
-    'Machine Learning',
-    'Natural Language Processing',
-    'Computer Vision',
-    'Robotics',
-    'AI Ethics',
-    'Investment & Venture Capital',
-    'Startup Development',
-    'Digital Transformation',
-    'Government Policy',
-    'Healthcare AI',
-    'Fintech',
-    'Smart Cities',
-    'Education Technology',
-    'Cybersecurity',
-    'Data Science',
-    'Cloud Computing',
-    'IoT & Edge Computing',
-    'Blockchain & Web3',
-    'Sustainability Tech'
-  ]
-
-  const topicSuggestions = [
-    'AI Strategy in GCC Markets',
-    'Investment Trends in Middle East AI',
-    'Building AI Startups in the Arab World',
-    'Government AI Initiatives',
-    'AI for Social Good in MENA',
-    'Women in AI Leadership',
-    'AI in Traditional Industries',
-    'Cross-Border AI Collaboration',
-    'AI Talent Development',
-    'Regulatory Frameworks for AI',
-    'AI in Arabic Language Processing',
-    'Smart City Implementations',
-    'AI in Financial Services',
-    'Healthcare Innovation with AI',
-    'AI Ethics and Cultural Values'
-  ]
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target
+    setFormData((current) => ({ ...current, [name]: value }))
   }
 
-  const handleExpertiseChange = (expertise: string) => {
-    setFormData(prev => ({
-      ...prev,
-      expertiseAreas: prev.expertiseAreas.includes(expertise)
-        ? prev.expertiseAreas.filter(item => item !== expertise)
-        : [...prev.expertiseAreas, expertise]
+  const toggleExpertise = (expertise: string) => {
+    setFormData((current) => ({
+      ...current,
+      expertiseAreas: current.expertiseAreas.includes(expertise)
+        ? current.expertiseAreas.filter((item) => item !== expertise)
+        : [...current.expertiseAreas, expertise],
     }))
   }
 
-  const handleTopicChange = (topic: string) => {
-    setFormData(prev => ({
-      ...prev,
-      proposedTopics: prev.proposedTopics.includes(topic)
-        ? prev.proposedTopics.filter(item => item !== topic)
-        : [...prev.proposedTopics, topic]
+  const toggleTopic = (topic: string) => {
+    setFormData((current) => ({
+      ...current,
+      proposedTopics: current.proposedTopics.includes(topic)
+        ? current.proposedTopics.filter((item) => item !== topic)
+        : [...current.proposedTopics, topic],
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+
     if (!formData.name || !formData.email || !formData.bio) {
       setStatus('error')
-      setStatusMessage('Please fill in all required fields')
+      setStatusMessage('Please fill in all required fields.')
       return
     }
 
     if (formData.bio.length < 50) {
       setStatus('error')
-      setStatusMessage('Bio must be at least 50 characters long')
+      setStatusMessage('Your bio should be at least 50 characters long.')
       return
     }
 
@@ -127,7 +147,7 @@ const GuestApplicationPage = () => {
     setStatusMessage('')
 
     try {
-      const data = await submitGuestApplication({
+      const data = (await submitGuestApplication({
         name: formData.name.trim(),
         email: formData.email.trim(),
         company: formData.company.trim() || null,
@@ -137,12 +157,11 @@ const GuestApplicationPage = () => {
         linkedinUrl: formData.linkedinUrl.trim() || null,
         websiteUrl: formData.websiteUrl.trim() || null,
         proposedTopics: formData.proposedTopics,
-      }) as GuestResponse['data']
+      })) as GuestResponse['data']
 
       if (data) {
         setStatus('success')
         setStatusMessage(data.message)
-        // Reset form
         setFormData({
           name: '',
           email: '',
@@ -152,384 +171,234 @@ const GuestApplicationPage = () => {
           expertiseAreas: [],
           linkedinUrl: '',
           websiteUrl: '',
-          proposedTopics: []
+          proposedTopics: [],
         })
       }
-    } catch (error: any) {
+    } catch (submitError: unknown) {
       setStatus('error')
-      setStatusMessage(error.message || 'Something went wrong. Please try again.')
+      setStatusMessage(submitError instanceof Error ? submitError.message : 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const benefits = [
-    {
-      icon: <Star className="w-6 h-6 text-amber-500" />,
-      title: "Expert Platform",
-      description: "Share your expertise with thousands of AI leaders, investors, and innovators across the Arab world"
-    },
-    {
-      icon: <Globe className="w-6 h-6 text-blue-600" />,
-      title: "Regional Reach",
-      description: "Connect with decision-makers and thought leaders across the GCC and broader MENA region"
-    },
-    {
-      icon: <Lightbulb className="w-6 h-6 text-emerald-600" />,
-      title: "Thought Leadership",
-      description: "Establish yourself as a thought leader in AI innovation and regional market development"
-    },
-    {
-      icon: <User className="w-6 h-6 text-purple-600" />,
-      title: "Professional Network",
-      description: "Build valuable connections with other industry experts, investors, and AI pioneers"
-    }
-  ]
-
   return (
     <>
       <Helmet>
-        <title>Be a Guest on AIRAB Money Podcast | Guest Application</title>
-        <meta name="description" content="Apply to be a guest on AIRAB Money podcast. Share your AI expertise with leaders across the Arab world and GCC region. Apply now for interview opportunities." />
-        <meta name="keywords" content="AIRAB Money guest, podcast guest application, AI expert interview, Arab world AI, GCC technology" />
+        <title>Guest Desk | AIRAB Money</title>
+        <meta
+          name="description"
+          content="Apply to appear on AIRAB Money and share your perspective on AI, markets, infrastructure, and policy across the Arab world."
+        />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="py-16 bg-gradient-brand text-white">
-        <div className="container-custom">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-              Be a Guest on AIRAB Money
-            </h1>
-            <p className="text-xl text-blue-100 leading-relaxed mb-8">
-              Share your AI expertise with thousands of leaders, investors, and innovators 
-              across the Arab world and GCC region
-            </p>
-            <div className="inline-flex items-center space-x-4 text-blue-100">
-              <div className="flex items-center">
-                <Star className="w-5 h-5 text-amber-400 mr-2" />
-                <span>50+ Expert Guests</span>
+      <PageIntro
+        eyebrow="Guest desk"
+        title="Bring a useful perspective to the AIRAB program."
+        description="We look for guests with operator insight, technical depth, market context, or policy experience that adds signal for the audience. The more specific your angle, the better."
+        metrics={[
+          { label: 'Target audience', value: 'GCC+' },
+          { label: 'Required bio', value: '50+' },
+          { label: 'Review mode', value: 'Editorial' },
+        ]}
+      />
+
+      <section className="editorial-page pt-0">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {benefits.map((benefit) => (
+            <div key={benefit.title} className="editorial-panel p-5">
+              <div className="flex items-center gap-3">
+                {benefit.icon}
+                <div className="stat-kicker">{benefit.title}</div>
               </div>
-              <div className="flex items-center">
-                <User className="w-5 h-5 text-amber-400 mr-2" />
-                <span>10,000+ Monthly Listeners</span>
-              </div>
-              <div className="flex items-center">
-                <Globe className="w-5 h-5 text-amber-400 mr-2" />
-                <span>7 GCC Countries</span>
-              </div>
+              <p className="mt-4 text-sm leading-7 text-brushed-silver">{benefit.description}</p>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-16">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Why Be a Guest?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join our community of AI experts and thought leaders shaping the future of technology in the Arab world
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 bg-gray-100 rounded-full">
-                    {benefit.icon}
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">{benefit.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section className="editorial-page pt-0">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="editorial-panel p-8 md:p-10">
+            <div className="eyebrow">Application form</div>
+            <h2 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">Tell the desk who you are and what you can add.</h2>
 
-      {/* Application Form */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Guest Application Form
-              </h2>
-              <p className="text-xl text-gray-600">
-                Tell us about yourself and the insights you'd like to share with our audience
-              </p>
-            </div>
-            
-            <div className="card p-8">
-              <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Personal Information */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <User className="w-5 h-5 mr-2 text-blue-600" />
-                    Personal Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Your full name"
-                        disabled={loading}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="your.email@example.com"
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-8">
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <User size={18} className="text-dusk-rose" />
+                  <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">Personal information</h3>
                 </div>
 
-                {/* Professional Information */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <Briefcase className="w-5 h-5 mr-2 text-emerald-600" />
-                    Professional Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                        Company/Organization
-                      </label>
-                      <input
-                        type="text"
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Your company or organization"
-                        disabled={loading}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
-                        Position/Title
-                      </label>
-                      <input
-                        type="text"
-                        id="position"
-                        name="position"
-                        value={formData.position}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Your current position"
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="mt-6">
-                    <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
-                      Professional Bio *
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="name" className="mb-2 block text-sm text-brushed-silver">
+                      Full name *
                     </label>
-                    <textarea
-                      id="bio"
-                      name="bio"
-                      value={formData.bio}
-                      onChange={handleInputChange}
-                      required
-                      rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
-                      placeholder="Tell us about your background, experience, and achievements in AI and related fields. Minimum 50 characters."
-                      disabled={loading}
-                      minLength={50}
-                    />
-                    <p className="text-sm text-gray-500 mt-2">
-                      {formData.bio.length}/50 minimum characters. Include your educational background, 
-                      professional experience, and notable achievements.
-                    </p>
+                    <input id="name" name="name" value={formData.name} onChange={handleInputChange} required disabled={loading} className="field-dark" />
                   </div>
-                </div>
-
-                {/* Expertise Areas */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Areas of Expertise
-                  </h3>
-                  <p className="text-gray-600 mb-4">Select all areas that apply to your expertise:</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {expertiseOptions.map((expertise) => (
-                      <label key={expertise} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.expertiseAreas.includes(expertise)}
-                          onChange={() => handleExpertiseChange(expertise)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          disabled={loading}
-                        />
-                        <span className="text-sm text-gray-700">{expertise}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Online Presence */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <Globe className="w-5 h-5 mr-2 text-purple-600" />
-                    Online Presence
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="linkedinUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                        LinkedIn Profile
-                      </label>
-                      <input
-                        type="url"
-                        id="linkedinUrl"
-                        name="linkedinUrl"
-                        value={formData.linkedinUrl}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="https://linkedin.com/in/yourprofile"
-                        disabled={loading}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                        Personal/Company Website
-                      </label>
-                      <input
-                        type="url"
-                        id="websiteUrl"
-                        name="websiteUrl"
-                        value={formData.websiteUrl}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="https://yourwebsite.com"
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Proposed Topics */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <Lightbulb className="w-5 h-5 mr-2 text-amber-500" />
-                    Proposed Discussion Topics
-                  </h3>
-                  <p className="text-gray-600 mb-4">Select topics you'd like to discuss on the podcast:</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {topicSuggestions.map((topic) => (
-                      <label key={topic} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.proposedTopics.includes(topic)}
-                          onChange={() => handleTopicChange(topic)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          disabled={loading}
-                        />
-                        <span className="text-sm text-gray-700">{topic}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
-                <button
-                  type="submit"
-                  disabled={loading || !formData.name || !formData.email || !formData.bio}
-                  className="w-full btn-primary disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {loading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  ) : (
-                    <Send className="w-5 h-5 mr-2" />
-                  )}
-                  {loading ? 'Submitting Application...' : 'Submit Guest Application'}
-                </button>
-              </form>
-              
-              {status === 'success' && (
-                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="text-green-800 font-medium">Application Submitted Successfully!</h4>
-                    <p className="text-green-700 text-sm mt-1">{statusMessage}</p>
+                    <label htmlFor="email" className="mb-2 block text-sm text-brushed-silver">
+                      Email address *
+                    </label>
+                    <input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required disabled={loading} className="field-dark" />
                   </div>
                 </div>
-              )}
-              
-              {status === 'error' && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
-                  <AlertCircle className="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" />
+              </section>
+
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <Briefcase size={18} className="text-dusk-rose" />
+                  <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">Professional context</h3>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
                   <div>
-                    <h4 className="text-red-800 font-medium">Error Submitting Application</h4>
-                    <p className="text-red-700 text-sm mt-1">{statusMessage}</p>
+                    <label htmlFor="company" className="mb-2 block text-sm text-brushed-silver">
+                      Company or organization
+                    </label>
+                    <input id="company" name="company" value={formData.company} onChange={handleInputChange} disabled={loading} className="field-dark" />
+                  </div>
+                  <div>
+                    <label htmlFor="position" className="mb-2 block text-sm text-brushed-silver">
+                      Position or title
+                    </label>
+                    <input id="position" name="position" value={formData.position} onChange={handleInputChange} disabled={loading} className="field-dark" />
                   </div>
                 </div>
-              )}
-            </div>
+
+                <div>
+                  <label htmlFor="bio" className="mb-2 block text-sm text-brushed-silver">
+                    Professional bio *
+                  </label>
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    required
+                    disabled={loading}
+                    className="textarea-dark"
+                    placeholder="Summarize your work, what you operate or research, and why your perspective would be useful to the AIRAB audience."
+                  />
+                </div>
+              </section>
+
+              <section className="space-y-6">
+                <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">Areas of expertise</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {expertiseOptions.map((expertise) => (
+                    <label key={expertise} className="flex items-start gap-3 border border-white/5 bg-white/[0.02] p-3 text-sm text-brushed-silver">
+                      <input
+                        type="checkbox"
+                        checked={formData.expertiseAreas.includes(expertise)}
+                        onChange={() => toggleExpertise(expertise)}
+                        disabled={loading}
+                        className="mt-1 h-4 w-4 accent-dusk-rose"
+                      />
+                      <span>{expertise}</span>
+                    </label>
+                  ))}
+                </div>
+              </section>
+
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <Globe size={18} className="text-dusk-rose" />
+                  <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">Links</h3>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="linkedinUrl" className="mb-2 block text-sm text-brushed-silver">
+                      LinkedIn URL
+                    </label>
+                    <input id="linkedinUrl" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleInputChange} disabled={loading} className="field-dark" />
+                  </div>
+                  <div>
+                    <label htmlFor="websiteUrl" className="mb-2 block text-sm text-brushed-silver">
+                      Website URL
+                    </label>
+                    <input id="websiteUrl" name="websiteUrl" value={formData.websiteUrl} onChange={handleInputChange} disabled={loading} className="field-dark" />
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <Lightbulb size={18} className="text-dusk-rose" />
+                  <h3 className="font-serif text-2xl tracking-[-0.04em] text-off-white">Potential discussion themes</h3>
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  {topicSuggestions.map((topic) => (
+                    <label key={topic} className="flex items-start gap-3 border border-white/5 bg-white/[0.02] p-3 text-sm text-brushed-silver">
+                      <input
+                        type="checkbox"
+                        checked={formData.proposedTopics.includes(topic)}
+                        onChange={() => toggleTopic(topic)}
+                        disabled={loading}
+                        className="mt-1 h-4 w-4 accent-dusk-rose"
+                      />
+                      <span>{topic}</span>
+                    </label>
+                  ))}
+                </div>
+              </section>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="rose-button w-full disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.02] disabled:text-brushed-silver/40"
+              >
+                {loading ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border border-current border-t-transparent" />
+                    Sending
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} />
+                    Submit application
+                  </>
+                )}
+              </button>
+            </form>
+
+            {status === 'success' ? (
+              <div className="mt-6 border border-signal-green/30 bg-signal-green/10 p-4 text-sm text-brushed-silver">
+                <div className="font-medium text-off-white">Application submitted</div>
+                <div className="mt-1">{statusMessage}</div>
+              </div>
+            ) : null}
+
+            {status === 'error' ? (
+              <div className="mt-6 border border-signal-red/30 bg-signal-red/10 p-4 text-sm text-brushed-silver">
+                <div className="font-medium text-off-white">Application incomplete</div>
+                <div className="mt-1">{statusMessage}</div>
+              </div>
+            ) : null}
           </div>
-        </div>
-      </section>
 
-      {/* What to Expect */}
-      <section className="py-16">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
-              What to Expect After Applying
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-3">
-                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto font-bold text-lg">
-                  1
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Review Process</h3>
-                <p className="text-gray-600">Our team reviews applications within 5-7 business days</p>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto font-bold text-lg">
-                  2
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Pre-Interview</h3>
-                <p className="text-gray-600">Selected candidates have a brief pre-interview call</p>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto font-bold text-lg">
-                  3
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Recording</h3>
-                <p className="text-gray-600">Schedule and record your podcast episode</p>
+          <aside className="space-y-6">
+            <div className="editorial-panel p-6">
+              <div className="stat-kicker mb-3">What the desk values</div>
+              <div className="space-y-3 text-sm leading-7 text-brushed-silver">
+                <p>Clear operating experience or real research depth.</p>
+                <p>A perspective that adds specificity rather than general optimism.</p>
+                <p>Topics that matter to regional builders, investors, and decision-makers.</p>
               </div>
             </div>
-          </div>
+
+            <div className="editorial-panel p-6">
+              <div className="stat-kicker mb-3">Strong applications tend to include</div>
+              <div className="space-y-3 text-sm leading-7 text-brushed-silver">
+                <p>A concise bio with direct evidence of your work.</p>
+                <p>One or two sharp topic angles rather than a broad list.</p>
+                <p>Links the desk can use to verify context quickly.</p>
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
     </>
