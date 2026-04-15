@@ -30,7 +30,7 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ articles }) => {
               <img
                 src={coverImage}
                 alt={article.headline}
-                className="h-full w-full object-cover grayscale transition duration-300 group-hover:scale-[1.02]"
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
               />
             </div>
           ) : null}

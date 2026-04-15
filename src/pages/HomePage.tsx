@@ -251,7 +251,7 @@ const HomePage = () => {
                   <img
                     src={featuredArticle.image_url || featuredArticle.hero_image_url}
                     alt={featuredArticle.headline}
-                    className="absolute inset-0 h-full w-full object-cover grayscale"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(166,124,116,0.22),transparent_34%),linear-gradient(140deg,#1f1f1f_12%,#171717_58%,#262626_100%)]" />

@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { ArrowLeft, ArrowUpRight, Calendar, Copy } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Calendar, Copy, Share2 } from 'lucide-react'
 import { Article, getArticle } from '../lib/api'
+import { parseArticleContent } from '../lib/articleContent'
 
 const getCompanyNameFromUrl = (url: string): string => {
   try {
@@ -61,10 +62,15 @@ const ArticleDetailPage = () => {
     fetchArticle()
   }, [id])
 
-  const paragraphs = useMemo(() => {
+  const contentBlocks = useMemo(() => {
     if (!article?.content) return []
-    return article.content.split(/\n\s*\n/).filter(Boolean)
+    return parseArticleContent(article.content)
   }, [article?.content])
+
+  const paragraphCount = useMemo(
+    () => contentBlocks.filter((block) => block.type === 'paragraph').length,
+    [contentBlocks],
+  )
 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return
@@ -75,6 +81,27 @@ const ArticleDetailPage = () => {
       window.setTimeout(() => setCopyState('idle'), 2000)
     } catch (copyError) {
       console.error('Failed to copy article URL:', copyError)
+    }
+  }
+
+  const handleNativeShare = async () => {
+    if (
+      typeof window === 'undefined' ||
+      typeof navigator === 'undefined' ||
+      typeof navigator.share !== 'function' ||
+      !article
+    ) {
+      return
+    }
+
+    try {
+      await navigator.share({
+        title: article.headline,
+        text: article.summary,
+        url: window.location.href,
+      })
+    } catch (shareError) {
+      console.error('Failed to share article:', shareError)
     }
   }
 
@@ -109,9 +136,30 @@ const ArticleDetailPage = () => {
   }
 
   const coverImage = article.hero_image_url || article.image_url
-  const inlineImageInsertAfter = paragraphs.length > 3 ? 1 : 0
+  const inlineImageInsertAfter = paragraphCount > 3 ? 1 : 0
   const publishedAt = article.published_at || article.created_at
   const sourceLabel = article.article_url ? getCompanyNameFromUrl(article.article_url) : article.source_name || 'AIRAB desk'
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const shareTargets = shareUrl
+    ? [
+        {
+          label: 'X',
+          href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.headline)}&url=${encodeURIComponent(shareUrl)}`,
+        },
+        {
+          label: 'LinkedIn',
+          href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+        },
+        {
+          label: 'Facebook',
+          href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+        },
+        {
+          label: 'WhatsApp',
+          href: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${article.headline} ${shareUrl}`)}`,
+        },
+      ]
+    : []
 
   return (
     <>
@@ -174,13 +222,36 @@ const ArticleDetailPage = () => {
                   <Copy size={16} />
                   {copyState === 'copied' ? 'Link copied' : 'Copy link'}
                 </button>
+
+                <div className="space-y-3 border-t border-white/5 pt-5">
+                  <div className="stat-kicker">Share</div>
+                  {typeof navigator !== 'undefined' && typeof navigator.share === 'function' ? (
+                    <button type="button" onClick={handleNativeShare} className="ghost-button w-full justify-center">
+                      <Share2 size={16} />
+                      Share story
+                    </button>
+                  ) : null}
+                  <div className="grid grid-cols-2 gap-2">
+                    {shareTargets.map((target) => (
+                      <a
+                        key={target.label}
+                        href={target.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg border border-white/10 px-3 py-2 text-center text-xs uppercase tracking-[0.18em] text-brushed-silver transition-colors hover:text-off-white"
+                      >
+                        {target.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
             </aside>
           </div>
 
           <div className="editorial-panel overflow-hidden">
             {coverImage ? (
-              <img src={coverImage} alt={article.headline} className="h-[22rem] w-full object-cover grayscale" />
+              <img src={coverImage} alt={article.headline} className="h-[22rem] w-full object-cover" />
             ) : (
               <div className="flex h-[22rem] items-end bg-[linear-gradient(135deg,rgba(166,124,116,0.2),rgba(37,37,37,1))] p-8">
                 <div>
@@ -196,10 +267,20 @@ const ArticleDetailPage = () => {
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
             <div className="editorial-panel p-8 md:p-12">
               <div className="space-y-7 text-lg leading-8 text-brushed-silver">
-                {paragraphs.map((paragraph, index) => (
-                  <React.Fragment key={`${article.id}-${index}`}>
-                    <p className={index === 0 ? 'text-xl leading-9 text-off-white' : ''}>{paragraph}</p>
-                    {article.inline_image_url && index === inlineImageInsertAfter ? (
+                {contentBlocks.map((block, index) => {
+                  const paragraphIndex =
+                    block.type === 'paragraph'
+                      ? contentBlocks.slice(0, index + 1).filter((item) => item.type === 'paragraph').length - 1
+                      : -1
+
+                  return (
+                    <React.Fragment key={`${article.id}-${index}`}>
+                      {block.type === 'heading' ? (
+                        <h2 className="pt-4 font-serif text-2xl tracking-[-0.035em] text-off-white">{block.content}</h2>
+                      ) : (
+                        <p className={paragraphIndex === 0 ? 'text-xl leading-9 text-off-white' : ''}>{block.content}</p>
+                      )}
+                      {article.inline_image_url && paragraphIndex === inlineImageInsertAfter ? (
                       <figure className="overflow-hidden border border-white/10 bg-black/20">
                         <img
                           src={article.inline_image_url}
@@ -213,8 +294,9 @@ const ArticleDetailPage = () => {
                         ) : null}
                       </figure>
                     ) : null}
-                  </React.Fragment>
-                ))}
+                    </React.Fragment>
+                  )
+                })}
               </div>
             </div>
 

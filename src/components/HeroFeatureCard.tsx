@@ -24,7 +24,7 @@ const HeroFeatureCard: React.FC<HeroFeatureCardProps> = ({
       <Link to={`/article/${articleId}`} className="grid xl:grid-cols-[minmax(0,1.25fr)_0.95fr]">
         <div className="relative min-h-[20rem] border-b border-white/5 xl:border-b-0 xl:border-r">
           {imageUrl ? (
-            <img src={imageUrl} alt={headline} className="h-full w-full object-cover grayscale" />
+            <img src={imageUrl} alt={headline} className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full min-h-[20rem] items-end bg-[linear-gradient(135deg,rgba(166,124,116,0.22),rgba(37,37,37,1))] p-8">
               <div>
