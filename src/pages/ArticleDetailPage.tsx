@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import Sidebar from '../components/Sidebar'
 import { Helmet } from 'react-helmet-async'
 import { Calendar, Tag, ArrowLeft, Share2, Bookmark } from 'lucide-react'
 import { Article, getArticle } from '../lib/api'
@@ -88,21 +89,24 @@ const ArticleDetailPage = () => {
     }
   }
 
-  if (loading) {
+if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container-custom py-12">
-          <div className="animate-pulse">
+      <div className="flex min-h-screen bg-graphite text-off-white">
+        <Sidebar />
+        <main className="flex-1 p-8">
+          <div className="max-w-4xl mx-auto animate-pulse">
             <div className="bg-gray-200 h-8 w-32 rounded mb-8"></div>
             <div className="bg-gray-200 h-12 w-3/4 rounded mb-4"></div>
             <div className="bg-gray-200 h-96 rounded-lg mb-8"></div>
             <div className="space-y-4">
-              <div className="bg-gray-200 h-4 rounded"></div>
-              <div className="bg-gray-200 h-4 rounded"></div>
-              <div className="bg-gray-200 h-4 rounded w-5/6"></div>
+              <div className="bg-gray-200 h-6 w-3/4 rounded"></div>
+              <div className="bg-gray-200 h-6 w-5/6 rounded"></div>
+              <div className="bg-gray-200 h-4 w-full rounded"></div>
+              <div className="bg-gray-200 h-6 w-4/5 rounded"></div>
+              <div className="bg-gray-200 h-6 w-3/5 rounded"></div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     )
   }
