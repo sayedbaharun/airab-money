@@ -580,7 +580,7 @@ const AdminPage: React.FC = () => {
         <Helmet>
           <title>Admin Login - AIRAB Money</title>
         </Helmet>
-        <div className="bg-graphite-light border border-white/5 rounded-xl p-8 max-w-md w-full text-center">
+        <div className="bg-charcoal border border-white/5 rounded-xl p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-full mx-auto mb-4 flex items-center justify-center">
             <Settings className="w-8 h-8 text-off-white" />
           </div>
@@ -597,7 +597,7 @@ const AdminPage: React.FC = () => {
         <Helmet>
           <title>Admin Login - AIRAB Money</title>
         </Helmet>
-        <div className="bg-graphite-light border border-white/5 rounded-xl p-8 max-w-md w-full">
+        <div className="bg-charcoal border border-white/5 rounded-xl p-8 max-w-md w-full">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-full mx-auto mb-4 flex items-center justify-center">
               <Settings className="w-8 h-8 text-off-white" />
@@ -641,7 +641,7 @@ const AdminPage: React.FC = () => {
       </Helmet>
       
       {/* Header */}
-      <div className="bg-graphite-light border-b border-white/5">
+      <div className="bg-charcoal border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -676,7 +676,7 @@ const AdminPage: React.FC = () => {
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'generator'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
-                : 'bg-graphite-light text-brushed-silver hover:text-off-white'
+                : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
             <FileText className="w-5 h-5 inline-block mr-2" />
@@ -687,7 +687,7 @@ const AdminPage: React.FC = () => {
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'templates'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
-                : 'bg-graphite-light text-brushed-silver hover:text-off-white'
+                : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
             <BookOpen className="w-5 h-5 inline-block mr-2" />
@@ -698,7 +698,7 @@ const AdminPage: React.FC = () => {
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'articles'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
-                : 'bg-graphite-light text-brushed-silver hover:text-off-white'
+                : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
             <FileText className="w-5 h-5 inline-block mr-2" />
@@ -711,7 +711,7 @@ const AdminPage: React.FC = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Input Section */}
-              <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
+              <div className="bg-charcoal border border-white/5 rounded-xl p-6">
                 <h2 className="text-xl font-heading font-bold text-off-white mb-6">Generate New Article</h2>
                 
                 <div className="space-y-6">
@@ -800,7 +800,7 @@ const AdminPage: React.FC = () => {
               </div>
 
               {/* Output Section */}
-              <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
+              <div className="bg-charcoal border border-white/5 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-heading font-bold text-off-white">Generated Article</h2>
                   {generatedArticle && (
@@ -888,7 +888,7 @@ const AdminPage: React.FC = () => {
 
             {/* Image Prompts Section */}
             {generatedArticle && showImagePromptsSection && (
-              <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
+              <div className="bg-charcoal border border-white/5 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-heading font-bold text-off-white flex items-center gap-2">
                     <Image className="w-6 h-6" />
@@ -1121,7 +1121,7 @@ const AdminPage: React.FC = () => {
 
         {/* Templates Tab */}
         {activeTab === 'templates' && (
-          <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
+          <div className="bg-charcoal border border-white/5 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-heading font-bold text-off-white">Prompt Templates</h2>
               <button
@@ -1186,7 +1186,7 @@ const AdminPage: React.FC = () => {
 
         {/* Articles Tab */}
         {activeTab === 'articles' && (
-          <div className="bg-graphite-light border border-white/5 rounded-xl p-6">
+          <div className="bg-charcoal border border-white/5 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-heading font-bold text-off-white">All Articles</h2>
               <button
@@ -1219,7 +1219,7 @@ const AdminPage: React.FC = () => {
                             type="text"
                             value={editFormData.headline}
                             onChange={(e) => setEditFormData({...editFormData, headline: e.target.value})}
-                            className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
+                            className="w-full bg-charcoal border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
                           />
                         </div>
                         <div>
@@ -1227,7 +1227,7 @@ const AdminPage: React.FC = () => {
                           <textarea
                             value={editFormData.content}
                             onChange={(e) => setEditFormData({...editFormData, content: e.target.value})}
-                            className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose h-64 resize-none"
+                            className="w-full bg-charcoal border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose h-64 resize-none"
                           />
                         </div>
                         <div>
@@ -1235,7 +1235,7 @@ const AdminPage: React.FC = () => {
                           <textarea
                             value={editFormData.summary}
                             onChange={(e) => setEditFormData({...editFormData, summary: e.target.value})}
-                            className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose h-24 resize-none"
+                            className="w-full bg-charcoal border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose h-24 resize-none"
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -1244,7 +1244,7 @@ const AdminPage: React.FC = () => {
                             <select
                               value={editFormData.category}
                               onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
-                              className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
+                              className="w-full bg-charcoal border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
                             >
                               <option value="AI">AI</option>
                               <option value="Finance">Finance</option>
@@ -1260,7 +1260,7 @@ const AdminPage: React.FC = () => {
                               type="text"
                               value={editFormData.tags}
                               onChange={(e) => setEditFormData({...editFormData, tags: e.target.value})}
-                              className="w-full bg-graphite-light border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
+                              className="w-full bg-charcoal border border-white/5 rounded-lg px-4 py-2 text-off-white focus:outline-none focus:border-dusk-rose"
                               placeholder="tag1, tag2, tag3"
                             />
                           </div>
@@ -1365,7 +1365,7 @@ const AdminPage: React.FC = () => {
       {/* Save Template Modal */}
       {showTemplateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-graphite-light border border-white/5 rounded-xl p-6 max-w-md w-full">
+          <div className="bg-charcoal border border-white/5 rounded-xl p-6 max-w-md w-full">
             <h3 className="text-xl font-heading font-bold text-off-white mb-4">
               {editingTemplate ? 'Edit Template' : 'Save as Template'}
             </h3>
