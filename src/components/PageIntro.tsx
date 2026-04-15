@@ -22,6 +22,8 @@ const PageIntro: React.FC<PageIntroProps> = ({
   metrics = [],
   aside,
 }) => {
+  const hasAside = Boolean(aside) || metrics.length > 0
+
   const renderAside = () => {
     if (aside) {
       return <div className="editorial-panel p-6">{aside}</div>
@@ -47,7 +49,7 @@ const PageIntro: React.FC<PageIntroProps> = ({
 
   return (
     <section className="editorial-page pb-8 md:pb-10">
-      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.6fr)_22rem]">
+      <div className={`grid items-start gap-8 ${hasAside ? 'xl:grid-cols-[minmax(0,1.6fr)_22rem]' : ''}`}>
         <div className="space-y-6">
           <div className="eyebrow">{eyebrow}</div>
           <h1 className="page-title">{title}</h1>

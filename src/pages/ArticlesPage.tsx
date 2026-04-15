@@ -70,11 +70,6 @@ const ArticlesPage = () => {
             Open market tape
           </Link>
         }
-        metrics={[
-          { label: 'Published files', value: String(articles.length).padStart(2, '0') },
-          { label: 'Active categories', value: String(categories.length - 1).padStart(2, '0') },
-          { label: 'Archive mode', value: 'Live' },
-        ]}
       />
 
       <section className="editorial-page pt-0">

@@ -135,11 +135,6 @@ const ContactPage = () => {
             Open guest desk
           </Link>
         }
-        metrics={[
-          { label: 'Response target', value: '24h' },
-          { label: 'Desk base', value: 'Dubai' },
-          { label: 'Business days', value: 'Sun-Thu' },
-        ]}
       />
 
       <section className="editorial-page pt-0">

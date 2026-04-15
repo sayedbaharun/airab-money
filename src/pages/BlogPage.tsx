@@ -70,11 +70,6 @@ const BlogPage = () => {
         eyebrow="Capital notes"
         title="Longer reads on Gulf AI money, compute, and power."
         description="Where the desk steps back from the daily file flow and writes slower. These pieces connect headlines to fund strategy, infrastructure ownership, energy constraints, and regional positioning."
-        metrics={[
-          { label: 'Published notes', value: String(posts.length + (featuredPost ? 1 : 0)).padStart(2, '0') },
-          { label: 'Categories', value: String(categories.length - 1).padStart(2, '0') },
-          { label: 'Reading mode', value: 'Deep' },
-        ]}
       />
 
       <section className="editorial-page pt-0">

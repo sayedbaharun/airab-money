@@ -186,11 +186,6 @@ const GuestApplicationPage = () => {
         eyebrow="Guest desk"
         title="Bring a sharp angle on AI capital or infrastructure."
         description="We prioritize guests who can speak concretely about capital deployment, compute build-out, sovereign strategy, company formation, or operating lessons in Middle East AI. The more specific your angle, the better."
-        metrics={[
-          { label: 'Target audience', value: 'GCC+' },
-          { label: 'Output formats', value: 'Audio + video' },
-          { label: 'Review mode', value: 'Editorial' },
-        ]}
       />
 
       <section className="editorial-page pt-0">

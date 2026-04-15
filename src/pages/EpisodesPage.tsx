@@ -68,11 +68,6 @@ const EpisodesPage = () => {
         eyebrow="Briefing archive"
         title="Daily AI-presented briefings plus selective interviews."
         description="Each day AIRAB can turn the article file into podcast and YouTube-ready briefings voiced by AI presenters. This archive also holds deeper interview-led programs when the story warrants them."
-        metrics={[
-          { label: 'Published briefings', value: String(episodes.length).padStart(2, '0') },
-          { label: 'Show formats', value: String(showTypes.length - 1).padStart(2, '0') },
-          { label: 'Distribution', value: 'Audio + video' },
-        ]}
       />
 
       <section className="editorial-page pt-0">

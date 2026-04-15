@@ -84,11 +84,6 @@ const VoiceDemoPage: React.FC = () => {
             ))}
           </div>
         }
-        metrics={[
-          { label: 'Voices', value: '04' },
-          { label: 'Outputs', value: 'Audio + video' },
-          { label: 'Studio mode', value: 'Daily brief' },
-        ]}
       />
 
       <section className="editorial-page pt-0">

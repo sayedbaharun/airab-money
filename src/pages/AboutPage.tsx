@@ -98,11 +98,6 @@ const AboutPage = () => {
             Talk to the desk
           </Link>
         }
-        metrics={[
-          { label: 'Publishing languages', value: '02' },
-          { label: 'AI presenters', value: '04' },
-          { label: 'Briefing cadence', value: 'Daily' },
-        ]}
       />
 
       <section className="editorial-page pt-0">
