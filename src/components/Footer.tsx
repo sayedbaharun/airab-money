@@ -1,105 +1,133 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Mail, MapPin } from 'lucide-react'
-import { coverageSignals, legalNavigation, platformNavigation, primaryNavigation } from './siteNavigation'
+import { ArrowUpRight, Mail, MapPin } from 'lucide-react'
+import { legalNavigation, platformNavigation, primaryNavigation } from './siteNavigation'
+
+const deskSignals = ['Gulf capital', 'Compute build-out', 'Policy signals']
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
-  const newsroomLinks = primaryNavigation.filter((item) => item.href !== '/')
+  const newsroomLinks = primaryNavigation.filter((item) => item.href === '/' || item.href === '/articles' || item.href === '/markets')
   const companyLinks = platformNavigation.concat(
     primaryNavigation.filter((item) => item.href === '/about' || item.href === '/contact'),
   )
 
   return (
-    <footer className="border-t border-white/5 bg-[#121212]">
-      <div className="editorial-page py-12">
-        <div className="rounded-[28px] border border-white/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))] p-8 md:p-10">
-          <div className="grid gap-10 xl:grid-cols-[minmax(0,1.2fr)_0.7fr_0.7fr_0.85fr]">
-            <div className="space-y-6">
-              <div className="eyebrow">AIRAB Money</div>
-              <div className="space-y-4">
-                <h2 className="max-w-3xl font-serif text-3xl leading-[0.96] tracking-[-0.05em] text-off-white">
-                  The AI capital desk tracking Gulf money, compute build-out, and regional infrastructure signals.
-                </h2>
-                <p className="max-w-2xl text-sm leading-7 text-brushed-silver">
-                  AIRAB follows where capital is being allocated, which operators are building infrastructure,
-                  and how policy and markets are shaping AI execution across the Middle East.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                {coverageSignals.map((signal) => (
-                  <div key={signal} className="rounded-2xl border border-white/6 bg-white/[0.02] p-4 text-sm leading-6 text-brushed-silver">
-                    {signal}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="stat-kicker">Newsroom</div>
-              <ul className="space-y-3">
-                {newsroomLinks.map((item) => (
-                  <li key={item.href}>
-                    <Link to={item.href} className="text-sm text-brushed-silver transition-colors hover:text-off-white">
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-4">
-              <div className="stat-kicker">Company</div>
-              <ul className="space-y-3">
-                {companyLinks.map((item) => (
-                  <li key={item.href}>
-                    <Link to={item.href} className="text-sm text-brushed-silver transition-colors hover:text-off-white">
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
+    <footer className="border-t border-white/5 bg-[#111111]">
+      <div className="editorial-page py-8 md:py-10">
+        <div className="overflow-hidden border border-white/6 bg-[radial-gradient(circle_at_top_left,rgba(166,124,116,0.14),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]">
+          <div className="grid gap-8 border-b border-white/6 px-6 py-6 md:px-8 md:py-7 xl:grid-cols-[minmax(0,1.3fr)_0.8fr] xl:items-start">
             <div className="space-y-5">
-              <div className="stat-kicker">Desk contact</div>
-              <div className="space-y-4 text-sm text-brushed-silver">
-                <div className="flex items-start gap-3">
-                  <Mail size={16} className="mt-1 text-dusk-rose" />
-                  <div>
-                    <div className="text-off-white">hello@airabmoney.com</div>
-                    <div className="mt-1 text-brushed-silver/70">Editorial leads, guest desk enquiries, and launch feedback.</div>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-dusk-rose/45 bg-dusk-rose/10 font-serif text-xl tracking-[-0.05em] text-off-white">
+                  A
                 </div>
-                <div className="flex items-start gap-3">
-                  <MapPin size={16} className="mt-1 text-dusk-rose" />
-                  <div>
-                    <div className="text-off-white">Dubai, United Arab Emirates</div>
-                    <div className="mt-1 text-brushed-silver/70">Independent soft-launch desk operating from the UAE.</div>
+                <div className="space-y-3">
+                  <div className="eyebrow">AIRAB Money</div>
+                  <div className="font-serif text-3xl leading-[0.95] tracking-[-0.06em] text-off-white md:text-[2.15rem]">
+                    Editorial data desk
                   </div>
+                  <p className="max-w-2xl text-sm leading-7 text-brushed-silver">
+                    Coverage of Gulf AI capital, compute infrastructure, market context, and the policy signals shaping regional execution.
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="stat-kicker">Policies</div>
-                <div className="flex flex-wrap gap-3">
-                  {legalNavigation.map((item) => (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.02] px-4 py-2 text-sm text-brushed-silver transition-colors hover:border-dusk-rose/50 hover:text-off-white"
-                    >
-                      <item.icon size={14} />
-                      {item.label}
-                    </Link>
-                  ))}
+              <div className="flex flex-wrap gap-2">
+                {deskSignals.map((signal) => (
+                  <span key={signal} className="data-pill border-white/8 bg-white/[0.02] px-3 py-1 text-[10px] tracking-[0.24em] text-brushed-silver/85">
+                    {signal}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+              <a
+                href="mailto:hello@airabmoney.com"
+                className="group border border-white/8 bg-black/15 p-4 transition-colors hover:border-dusk-rose/35 hover:bg-white/[0.03]"
+              >
+                <div className="flex items-start gap-3">
+                  <Mail size={16} className="mt-0.5 text-dusk-rose" />
+                  <div className="min-w-0">
+                    <div className="stat-kicker">Desk contact</div>
+                    <div className="mt-2 truncate text-sm text-off-white">hello@airabmoney.com</div>
+                    <div className="mt-1 text-xs leading-5 text-brushed-silver/65">
+                      Editorial leads, guest desk enquiries, and launch notes.
+                    </div>
+                  </div>
+                </div>
+              </a>
+
+              <div className="border border-white/8 bg-black/15 p-4">
+                <div className="flex items-start gap-3">
+                  <MapPin size={16} className="mt-0.5 text-dusk-rose" />
+                  <div>
+                    <div className="stat-kicker">Desk base</div>
+                    <div className="mt-2 text-sm text-off-white">Dubai, United Arab Emirates</div>
+                    <div className="mt-1 text-xs leading-5 text-brushed-silver/65">
+                      Independent soft-launch desk with regional market focus.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-10 flex flex-col gap-3 border-t border-white/6 pt-5 text-xs uppercase tracking-[0.22em] text-brushed-silver/45 md:flex-row md:items-center md:justify-between">
+          <div className="grid gap-8 px-6 py-5 md:grid-cols-3 md:px-8 md:py-6">
+            <div className="space-y-4">
+              <div className="stat-kicker">Explore</div>
+              <ul className="space-y-2">
+                {newsroomLinks.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="group flex items-center justify-between gap-4 border-b border-white/6 py-2 text-sm text-brushed-silver transition-colors hover:text-off-white"
+                    >
+                      <span>{item.label}</span>
+                      <ArrowUpRight size={14} className="text-brushed-silver/35 transition-colors group-hover:text-dusk-rose" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <div className="stat-kicker">Desk</div>
+              <ul className="space-y-2">
+                {companyLinks.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="group flex items-center justify-between gap-4 border-b border-white/6 py-2 text-sm text-brushed-silver transition-colors hover:text-off-white"
+                    >
+                      <span>{item.label}</span>
+                      <ArrowUpRight size={14} className="text-brushed-silver/35 transition-colors group-hover:text-dusk-rose" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <div className="stat-kicker">Policies</div>
+              <ul className="space-y-2">
+                {legalNavigation.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="group flex items-center justify-between gap-4 border-b border-white/6 py-2 text-sm text-brushed-silver transition-colors hover:text-off-white"
+                    >
+                      <span>{item.label}</span>
+                      <ArrowUpRight size={14} className="text-brushed-silver/35 transition-colors group-hover:text-dusk-rose" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 border-t border-white/6 px-6 py-4 text-[11px] uppercase tracking-[0.22em] text-brushed-silver/45 md:flex-row md:items-center md:justify-between md:px-8">
             <div>© {currentYear} AIRAB Money</div>
             <div>Dubai desk / Soft launch / AI-assisted, desk reviewed</div>
           </div>
