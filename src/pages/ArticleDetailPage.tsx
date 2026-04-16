@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
 import { ArrowLeft, ArrowUpRight, Calendar, Copy, Share2 } from 'lucide-react'
+import PageSeo from '../components/PageSeo'
 import { Article, getArticle } from '../lib/api'
 import { parseArticleContent } from '../lib/articleContent'
 
@@ -163,11 +163,15 @@ const ArticleDetailPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{article.headline} | AIRAB Money</title>
-        <meta name="description" content={article.summary} />
-        <meta name="keywords" content={article.tags?.join(', ') || article.category} />
-      </Helmet>
+      <PageSeo
+        title={article.headline}
+        description={article.summary}
+        path={`/article/${article.id}`}
+        type="article"
+        keywords={article.tags}
+        publishedTime={article.published_at || article.created_at}
+        image={coverImage || undefined}
+      />
 
       <article className="editorial-page">
         <div className="mx-auto max-w-6xl space-y-10">

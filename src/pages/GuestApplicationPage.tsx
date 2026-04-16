@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Briefcase, Globe, Lightbulb, Send, Star, User } from 'lucide-react'
+import PageSeo from '../components/PageSeo'
 import PageIntro from '../components/PageIntro'
 import { submitGuestApplication } from '../lib/api'
 
@@ -174,13 +174,11 @@ const GuestApplicationPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Guest Desk | AIRAB Money</title>
-        <meta
-          name="description"
-          content="Apply to appear on AIRAB Money and share a sharp perspective on Middle East AI capital, infrastructure, policy, and company formation."
-        />
-      </Helmet>
+      <PageSeo
+        title="Guest Desk"
+        description="Apply to appear on AIRAB Money and share a sharp perspective on Middle East AI capital, infrastructure, policy, and company formation."
+        path="/guest-application"
+      />
 
       <PageIntro
         eyebrow="Guest desk"

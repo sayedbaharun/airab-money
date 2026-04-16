@@ -1,23 +1,15 @@
 import React, { useMemo } from 'react'
 import { ArrowUpRight, TrendingDown, TrendingUp } from 'lucide-react'
-import { MarketData } from '../lib/api'
+import { MarketData, MarketFeedMode } from '../lib/api'
 
 interface MarketDataWidgetProps {
   marketData?: MarketData[]
   updatedAt?: string | null
+  feedMode?: MarketFeedMode
 }
 
-const fallbackData: MarketData[] = [
-  { symbol: 'TASI', name: 'Saudi Exchange', price: 11894.2, change: 94.1, changePercent: 0.8, type: 'middleeast' },
-  { symbol: 'DFMGI', name: 'Dubai Financial Market', price: 4341.8, change: 31.7, changePercent: 0.73, type: 'middleeast' },
-  { symbol: 'BRENT', name: 'Brent Crude', price: 81.43, change: -0.61, changePercent: -0.74, type: 'commodity' },
-  { symbol: 'BTC', name: 'Bitcoin', price: 71240.2, change: 1120.5, changePercent: 1.6, type: 'crypto' },
-  { symbol: 'NVDA', name: 'NVIDIA', price: 932.44, change: 22.1, changePercent: 2.43, type: 'stock' },
-  { symbol: 'ADX', name: 'Abu Dhabi Securities Exchange', price: 9512.11, change: -44.8, changePercent: -0.47, type: 'middleeast' },
-]
-
-const MarketDataWidget: React.FC<MarketDataWidgetProps> = ({ marketData, updatedAt }) => {
-  const data = marketData && marketData.length > 0 ? marketData : fallbackData
+const MarketDataWidget: React.FC<MarketDataWidgetProps> = ({ marketData, updatedAt, feedMode = 'snapshot' }) => {
+  const data = useMemo(() => (marketData && marketData.length > 0 ? marketData : []), [marketData])
 
   const highlights = useMemo(
     () =>
@@ -50,6 +42,26 @@ const MarketDataWidget: React.FC<MarketDataWidgetProps> = ({ marketData, updated
     })}`
   }
 
+  if (data.length === 0) {
+    return (
+      <section className="space-y-6">
+        <div>
+          <div className="eyebrow">Signal board</div>
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.05em] text-off-white md:text-4xl">
+            The market desk is wired, but the feed is not publishing yet.
+          </h2>
+        </div>
+
+        <div className="editorial-panel max-w-3xl p-8">
+          <p className="text-base leading-8 text-brushed-silver">
+            Markets stay visible during the soft launch, but the feed has to be honest. Once the final data source is
+            connected, AIRAB will surface the live tape here.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -60,7 +72,7 @@ const MarketDataWidget: React.FC<MarketDataWidgetProps> = ({ marketData, updated
           </h2>
         </div>
         <div className="space-y-2 text-sm text-brushed-silver">
-          <div className="stat-kicker">Market scope</div>
+          <div className="stat-kicker">{feedMode === 'live' ? 'Live feed' : 'Soft-launch snapshot'}</div>
           <div>{regionalCount} regional instruments in current rotation.</div>
           <div>
             {updatedAt
@@ -68,7 +80,7 @@ const MarketDataWidget: React.FC<MarketDataWidgetProps> = ({ marketData, updated
                   hour: '2-digit',
                   minute: '2-digit',
                 })}`
-              : 'Snapshot refreshed for the home desk.'}
+              : 'Feed timing unavailable.'}
           </div>
         </div>
       </div>

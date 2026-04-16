@@ -1,11 +1,10 @@
 import {
   BarChart3,
-  BookOpenText,
-  Headphones,
   Home,
   Info,
   Mail,
-  Mic2,
+  Scale,
+  Shield,
   Newspaper,
   UserRoundPlus,
   type LucideIcon,
@@ -38,12 +37,6 @@ export const primaryNavigation: NavigationItem[] = [
     description: 'AI risk tape',
   },
   {
-    href: '/episodes',
-    icon: Headphones,
-    label: 'Briefings',
-    description: 'Daily audio/video',
-  },
-  {
     href: '/about',
     icon: Info,
     label: 'About',
@@ -59,22 +52,25 @@ export const primaryNavigation: NavigationItem[] = [
 
 export const platformNavigation: NavigationItem[] = [
   {
-    href: '/blog',
-    icon: BookOpenText,
-    label: 'Analysis',
-    description: 'Capital notes',
-  },
-  {
     href: '/guest-application',
     icon: UserRoundPlus,
     label: 'Guest Desk',
-    description: 'Pitch a briefing',
+    description: 'Pitch an appearance',
+  },
+]
+
+export const legalNavigation: NavigationItem[] = [
+  {
+    href: '/privacy',
+    icon: Shield,
+    label: 'Privacy',
+    description: 'Data and email policy',
   },
   {
-    href: '/demo',
-    icon: Mic2,
-    label: 'Studio',
-    description: 'AI presenter demo',
+    href: '/terms',
+    icon: Scale,
+    label: 'Terms',
+    description: 'Editorial use terms',
   },
 ]
 

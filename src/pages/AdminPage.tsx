@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { 
+import {
   FileText, Settings, Plus, Save, Trash2, Edit, 
   Copy, Download, RefreshCw, CheckCircle, AlertCircle,
-  ChevronDown, ChevronUp, BookOpen, Image, Check, X
+  BookOpen, Image, Check, X
 } from 'lucide-react'
+import AdminStudioLab from '../components/AdminStudioLab'
 import {
   createArticle,
   deleteArticle as removeArticle,
@@ -118,7 +119,7 @@ const AdminPage: React.FC = () => {
   const articleSaveRequestRef = useRef<Promise<string> | null>(null)
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'generator' | 'templates' | 'articles' | 'settings'>('generator')
+  const [activeTab, setActiveTab] = useState<'generator' | 'studio' | 'templates' | 'articles' | 'settings'>('generator')
 
   // Auth handler
   const handleAuth = async (e: React.FormEvent) => {
@@ -953,6 +954,7 @@ const AdminPage: React.FC = () => {
       <div className="min-h-screen bg-graphite flex items-center justify-center p-4">
         <Helmet>
           <title>Admin Login - AIRAB Money</title>
+          <meta name="robots" content="noindex,nofollow" />
         </Helmet>
         <div className="bg-charcoal border border-white/5 rounded-xl p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-dusk-rose to-brushed-silver rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -970,6 +972,7 @@ const AdminPage: React.FC = () => {
       <div className="min-h-screen bg-graphite flex items-center justify-center p-4">
         <Helmet>
           <title>Admin Login - AIRAB Money</title>
+          <meta name="robots" content="noindex,nofollow" />
         </Helmet>
         <div className="bg-charcoal border border-white/5 rounded-xl p-8 max-w-md w-full">
           <div className="text-center mb-8">
@@ -1012,6 +1015,7 @@ const AdminPage: React.FC = () => {
     <div className="min-h-screen bg-graphite">
       <Helmet>
         <title>Admin Dashboard - AIRAB Money</title>
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       
       {/* Header */}
@@ -1044,49 +1048,60 @@ const AdminPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex gap-2 mb-8">
+        <div className="mb-8 flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('generator')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`inline-flex items-center rounded-lg px-4 py-3 font-semibold transition-all sm:px-6 ${
               activeTab === 'generator'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
                 : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
-            <FileText className="w-5 h-5 inline-block mr-2" />
+            <FileText className="mr-2 h-5 w-5" />
             Article Generator
           </button>
           <button
+            onClick={() => setActiveTab('studio')}
+            className={`inline-flex items-center rounded-lg px-4 py-3 font-semibold transition-all sm:px-6 ${
+              activeTab === 'studio'
+                ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
+                : 'bg-charcoal text-brushed-silver hover:text-off-white'
+            }`}
+          >
+            <Image className="mr-2 h-5 w-5" />
+            Studio Lab
+          </button>
+          <button
             onClick={() => setActiveTab('templates')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`inline-flex items-center rounded-lg px-4 py-3 font-semibold transition-all sm:px-6 ${
               activeTab === 'templates'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
                 : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
-            <BookOpen className="w-5 h-5 inline-block mr-2" />
+            <BookOpen className="mr-2 h-5 w-5" />
             Prompt Templates
           </button>
           <button
             onClick={() => setActiveTab('articles')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`inline-flex items-center rounded-lg px-4 py-3 font-semibold transition-all sm:px-6 ${
               activeTab === 'articles'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
                 : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
-            <FileText className="w-5 h-5 inline-block mr-2" />
+            <FileText className="mr-2 h-5 w-5" />
             Articles
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`inline-flex items-center rounded-lg px-4 py-3 font-semibold transition-all sm:px-6 ${
               activeTab === 'settings'
                 ? 'bg-gradient-to-r from-dusk-rose to-brushed-silver text-off-white'
                 : 'bg-charcoal text-brushed-silver hover:text-off-white'
             }`}
           >
-            <Settings className="w-5 h-5 inline-block mr-2" />
+            <Settings className="mr-2 h-5 w-5" />
             Settings
           </button>
         </div>
@@ -1297,6 +1312,10 @@ const AdminPage: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === 'studio' && (
+          <AdminStudioLab articleHeadline={generatedHeadline} articleContent={generatedArticle} />
         )}
 
         {/* Templates Tab */}

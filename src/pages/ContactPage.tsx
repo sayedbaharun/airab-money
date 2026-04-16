@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { AlertCircle, CheckCircle, Clock, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { AlertCircle, CheckCircle, Clock, Mail, MapPin, Send } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import PageSeo from '../components/PageSeo'
 import PageIntro from '../components/PageIntro'
 import { submitContactForm } from '../lib/api'
 
@@ -51,22 +51,22 @@ const ContactPage = () => {
       description: 'For story leads, capital deployment tips, guest pitches, and partnership conversations.',
     },
     {
-      icon: <Phone size={18} className="text-dusk-rose" />,
-      title: 'Office line',
-      content: '+971 4 123 4567',
-      description: 'Sunday to Thursday, 9 AM to 6 PM GST.',
+      icon: <Clock size={18} className="text-dusk-rose" />,
+      title: 'Desk rhythm',
+      content: 'Lean launch mode',
+      description: 'AIRAB is operating as a small desk, so replies are selective but deliberate.',
     },
     {
       icon: <MapPin size={18} className="text-dusk-rose" />,
       title: 'Location',
-      content: 'Dubai Internet City',
-      description: 'Dubai, United Arab Emirates.',
+      content: 'Dubai, United Arab Emirates',
+      description: 'Regional desk covering Gulf capital, infrastructure, and policy.',
     },
     {
       icon: <Clock size={18} className="text-dusk-rose" />,
       title: 'Response window',
-      content: 'Within 24 hours',
-      description: 'Faster for active news files, scheduled appearances, and live partnerships.',
+      content: '1-2 business days',
+      description: 'Faster for active news files and guest desk submissions tied to live stories.',
     },
   ]
 
@@ -118,13 +118,11 @@ const ContactPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Contact the Desk | AIRAB Money</title>
-        <meta
-          name="description"
-          content="Get in touch with AIRAB Money for AI capital story leads, infrastructure tips, guest appearances, partnerships, or sponsorship conversations."
-        />
-      </Helmet>
+      <PageSeo
+        title="Contact the Desk"
+        description="Get in touch with AIRAB Money for AI capital story leads, infrastructure tips, guest appearances, partnerships, or sponsorship conversations."
+        path="/contact"
+      />
 
       <PageIntro
         eyebrow="Contact the desk"

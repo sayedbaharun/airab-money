@@ -1,25 +1,26 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import EditorialLayout from './components/EditorialLayout'
+import SiteAnalytics from './components/SiteAnalytics'
 import HomePage from './pages/HomePage'
 import ArticlesPage from './pages/ArticlesPage'
 import ArticleDetailPage from './pages/ArticleDetailPage'
 import AboutPage from './pages/AboutPage'
-import EpisodesPage from './pages/EpisodesPage'
-import BlogPage from './pages/BlogPage'
-import BlogDetailPage from './pages/BlogDetailPage'
 import ContactPage from './pages/ContactPage'
 import MarketsPage from './pages/MarketsPage'
-import VoiceDemoPage from './pages/VoiceDemoPage'
 import AdminPage from './pages/AdminPage'
 import GuestApplicationPage from './pages/GuestApplicationPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
+import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
 function App() {
   return (
     <HelmetProvider>
       <Router>
+        <SiteAnalytics />
         <Routes>
           <Route element={<EditorialLayout />}>
             <Route path="/" element={<HomePage />} />
@@ -28,11 +29,14 @@ function App() {
             <Route path="/article/:id" element={<ArticleDetailPage />} />
             <Route path="/markets" element={<MarketsPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/episodes" element={<EpisodesPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:slug" element={<BlogDetailPage />} />
             <Route path="/guest-application" element={<GuestApplicationPage />} />
-            <Route path="/demo" element={<VoiceDemoPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/episodes" element={<Navigate to="/" replace />} />
+            <Route path="/blog" element={<Navigate to="/" replace />} />
+            <Route path="/blog/:slug" element={<Navigate to="/" replace />} />
+            <Route path="/demo" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route
             path="/admin"

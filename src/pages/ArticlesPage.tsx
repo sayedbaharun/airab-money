@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ArticleGrid from '../components/ArticleGrid'
 import HeroFeatureCard from '../components/HeroFeatureCard'
+import PageSeo from '../components/PageSeo'
 import PageIntro from '../components/PageIntro'
 import { Article, getArticles } from '../lib/api'
 
@@ -53,13 +53,11 @@ const ArticlesPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Latest Coverage | AIRAB Money</title>
-        <meta
-          name="description"
-          content="Browse AIRAB Money's archive of Gulf AI capital deployment, cross-border investment, compute build-out, and policy files across the Middle East."
-        />
-      </Helmet>
+      <PageSeo
+        title="Latest Coverage"
+        description="Browse AIRAB Money's archive of Gulf AI capital deployment, cross-border investment, compute build-out, and policy files across the Middle East."
+        path="/articles"
+      />
 
       <PageIntro
         eyebrow="Coverage archive"

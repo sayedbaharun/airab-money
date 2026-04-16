@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Helmet } from 'react-helmet-async'
 import PageIntro from '../components/PageIntro'
-import { MarketData, getMarketData } from '../lib/api'
+import PageSeo from '../components/PageSeo'
+import { MarketData, MarketFeedMode, getMarketData } from '../lib/api'
 
 const MarketsPage: React.FC = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en')
@@ -10,6 +10,7 @@ const MarketsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [marketData, setMarketData] = useState<MarketData[]>([])
+  const [feedMode, setFeedMode] = useState<MarketFeedMode>('snapshot')
 
   const fetchMarketData = useCallback(async () => {
     setLoading(true)
@@ -24,6 +25,7 @@ const MarketsPage: React.FC = () => {
 
       setMarketData(data.data || [])
       setUpdatedAt(data.updatedAt)
+      setFeedMode(data.feedMode || 'snapshot')
     } catch (fetchError: unknown) {
       console.error('Failed to fetch market data:', fetchError)
       setError(fetchError instanceof Error ? fetchError.message : 'Unable to load market data')
@@ -90,18 +92,16 @@ const MarketsPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Markets Desk | AIRAB Money</title>
-        <meta
-          name="description"
-          content="Track the market tape behind AI capital deployment, from Gulf exchanges and energy to global AI equities, commodities, and crypto risk."
-        />
-      </Helmet>
+      <PageSeo
+        title="Markets Desk"
+        description="Track the market tape behind AI capital deployment, from Gulf exchanges and energy to crypto risk and the broader market context around AI infrastructure."
+        path="/markets"
+      />
 
       <PageIntro
         eyebrow="Markets desk"
         title="The market tape behind AI capital deployment."
-        description="This desk tracks the assets that shape AI financing and infrastructure economics: regional exchanges, energy benchmarks, crypto risk, and the global equities most exposed to the AI trade."
+        description="This desk tracks the assets that shape AI financing and infrastructure economics: regional exchanges, energy benchmarks, crypto risk, and the global equities most exposed to the AI trade. During the soft launch the universe stays deliberately tight while the full live feed comes online."
         actions={
           <div className="flex flex-wrap gap-2">
             {(['en', 'ar'] as const).map((code) => (
@@ -123,8 +123,8 @@ const MarketsPage: React.FC = () => {
         aside={
           <div className="space-y-5 text-sm text-brushed-silver">
             <div>
-              <div className="stat-kicker">Refresh cadence</div>
-              <div className="mt-2 text-off-white">60 seconds</div>
+              <div className="stat-kicker">Feed mode</div>
+              <div className="mt-2 text-off-white">{feedMode === 'live' ? 'Live feed' : 'Soft-launch snapshot'}</div>
             </div>
             <div>
               <div className="stat-kicker">Current universe</div>
@@ -181,47 +181,56 @@ const MarketsPage: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {filteredData.map((item) => {
-              const positive = item.change >= 0
-              const barWidth = Math.min(100, Math.max(14, 54 + item.changePercent * 7))
+          <div className="space-y-4">
+            {feedMode === 'snapshot' ? (
+              <div className="editorial-panel border-dusk-rose/20 bg-dusk-rose/5 p-5 text-sm leading-7 text-brushed-silver">
+                Markets stay public for the soft launch, but the labeling stays honest. This is a curated snapshot
+                surface until the final live source is connected.
+              </div>
+            ) : null}
 
-              return (
-                <div key={item.symbol} className="editorial-panel p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="stat-kicker">{typeLabel(item.type)}</div>
-                      <h3 className="mt-2 text-lg uppercase tracking-[0.18em] text-off-white">{item.symbol}</h3>
-                      <p className="mt-2 text-sm leading-6 text-brushed-silver">{item.name}</p>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredData.map((item) => {
+                const positive = item.change >= 0
+                const barWidth = Math.min(100, Math.max(14, 54 + item.changePercent * 7))
+
+                return (
+                  <div key={item.symbol} className="editorial-panel p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="stat-kicker">{typeLabel(item.type)}</div>
+                        <h3 className="mt-2 text-lg uppercase tracking-[0.18em] text-off-white">{item.symbol}</h3>
+                        <p className="mt-2 text-sm leading-6 text-brushed-silver">{item.name}</p>
+                      </div>
+                      <span
+                        className={`border px-2 py-1 text-[11px] uppercase tracking-[0.22em] ${
+                          positive
+                            ? 'border-signal-green/35 bg-signal-green/10 text-signal-green'
+                            : 'border-signal-red/35 bg-signal-red/10 text-signal-red'
+                        }`}
+                      >
+                        {positive ? 'Up' : 'Down'}
+                      </span>
                     </div>
-                    <span
-                      className={`border px-2 py-1 text-[11px] uppercase tracking-[0.22em] ${
-                        positive
-                          ? 'border-signal-green/35 bg-signal-green/10 text-signal-green'
-                          : 'border-signal-red/35 bg-signal-red/10 text-signal-red'
-                      }`}
-                    >
-                      {positive ? 'Up' : 'Down'}
-                    </span>
-                  </div>
 
-                  <div className="mt-7 font-serif text-4xl tracking-[-0.05em] text-off-white">{priceLabel(item)}</div>
+                    <div className="mt-7 font-serif text-4xl tracking-[-0.05em] text-off-white">{priceLabel(item)}</div>
 
-                  <div className="mt-3 text-sm text-brushed-silver">
-                    {positive ? '+' : ''}
-                    {item.change.toFixed(2)} ({positive ? '+' : ''}
-                    {item.changePercent.toFixed(2)}%)
-                  </div>
+                    <div className="mt-3 text-sm text-brushed-silver">
+                      {positive ? '+' : ''}
+                      {item.change.toFixed(2)} ({positive ? '+' : ''}
+                      {item.changePercent.toFixed(2)}%)
+                    </div>
 
-                  <div className="mt-4 h-px bg-white/10">
-                    <div
-                      className={`h-px ${positive ? 'bg-signal-green' : 'bg-signal-red'}`}
-                      style={{ width: `${barWidth}%` }}
-                    />
+                    <div className="mt-4 h-px bg-white/10">
+                      <div
+                        className={`h-px ${positive ? 'bg-signal-green' : 'bg-signal-red'}`}
+                        style={{ width: `${barWidth}%` }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         )}
       </section>

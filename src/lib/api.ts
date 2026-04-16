@@ -129,6 +129,15 @@ export interface MarketData {
   type: 'stock' | 'crypto' | 'commodity' | 'gcc' | 'index' | 'middleeast'
 }
 
+export type MarketFeedMode = 'snapshot' | 'live'
+
+export interface MarketDataResponse {
+  success: boolean
+  data: MarketData[]
+  updatedAt: string
+  feedMode: MarketFeedMode
+}
+
 export interface ContactSubmission {
   name: string
   email: string
@@ -357,7 +366,7 @@ export const subscribeToNewsletter = async (payload: NewsletterSubscriptionInput
 }
 
 export const getMarketData = async () => {
-  return apiFetch<{ success: boolean; data: MarketData[]; updatedAt: string }>('/market-data')
+  return apiFetch<MarketDataResponse>('/market-data')
 }
 
 export const generateArticle = async (payload: ArticleGenerationInput) => {

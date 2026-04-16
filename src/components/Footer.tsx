@@ -1,18 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Instagram, Linkedin, Mail, MapPin, Twitter, Youtube } from 'lucide-react'
-import { coverageSignals, platformNavigation, primaryNavigation } from './siteNavigation'
+import { Mail, MapPin } from 'lucide-react'
+import { coverageSignals, legalNavigation, platformNavigation, primaryNavigation } from './siteNavigation'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
   const newsroomLinks = primaryNavigation.filter((item) => item.href !== '/')
-  const companyLinks = platformNavigation.concat(primaryNavigation.filter((item) => item.href === '/about' || item.href === '/contact'))
-  const socialLinks = [
-    { href: 'https://twitter.com/airabmoney', label: 'X', icon: Twitter },
-    { href: 'https://linkedin.com/company/airabmoney', label: 'LinkedIn', icon: Linkedin },
-    { href: 'https://instagram.com/airabmoney', label: 'Instagram', icon: Instagram },
-    { href: 'https://youtube.com/@airabmoney', label: 'YouTube', icon: Youtube },
-  ]
+  const companyLinks = platformNavigation.concat(
+    primaryNavigation.filter((item) => item.href === '/about' || item.href === '/contact'),
+  )
 
   return (
     <footer className="border-t border-white/5 bg-[#121212]">
@@ -73,38 +69,39 @@ const Footer = () => {
                   <Mail size={16} className="mt-1 text-dusk-rose" />
                   <div>
                     <div className="text-off-white">hello@airabmoney.com</div>
-                    <div className="mt-1 text-brushed-silver/70">Editorial leads, partnerships, and guest desk enquiries.</div>
+                    <div className="mt-1 text-brushed-silver/70">Editorial leads, guest desk enquiries, and launch feedback.</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <MapPin size={16} className="mt-1 text-dusk-rose" />
                   <div>
-                    <div className="text-off-white">Dubai Internet City</div>
-                    <div className="mt-1 text-brushed-silver/70">Dubai, United Arab Emirates</div>
+                    <div className="text-off-white">Dubai, United Arab Emirates</div>
+                    <div className="mt-1 text-brushed-silver/70">Independent soft-launch desk operating from the UAE.</div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {socialLinks.map(({ href, label, icon: Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/8 bg-white/[0.02] text-brushed-silver transition-colors hover:border-dusk-rose/50 hover:text-off-white"
-                  >
-                    <Icon size={16} />
-                  </a>
-                ))}
+              <div className="space-y-3">
+                <div className="stat-kicker">Policies</div>
+                <div className="flex flex-wrap gap-3">
+                  {legalNavigation.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.02] px-4 py-2 text-sm text-brushed-silver transition-colors hover:border-dusk-rose/50 hover:text-off-white"
+                    >
+                      <item.icon size={14} />
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
           <div className="mt-10 flex flex-col gap-3 border-t border-white/6 pt-5 text-xs uppercase tracking-[0.22em] text-brushed-silver/45 md:flex-row md:items-center md:justify-between">
             <div>© {currentYear} AIRAB Money</div>
-            <div>Dubai desk / Daily AI briefings / AI-generated, desk reviewed</div>
+            <div>Dubai desk / Soft launch / AI-assisted, desk reviewed</div>
           </div>
         </div>
       </div>

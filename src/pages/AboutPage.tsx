@@ -1,7 +1,7 @@
 import React from 'react'
-import { Helmet } from 'react-helmet-async'
-import { Globe, Lightbulb, Mic2, Target, Users } from 'lucide-react'
+import { Globe, Lightbulb, Target, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import PageSeo from '../components/PageSeo'
 import PageIntro from '../components/PageIntro'
 
 const coreValues = [
@@ -26,9 +26,9 @@ const coreValues = [
     description: 'AIRAB is built for investors, founders, policymakers, and executives who need signal they can act on.',
   },
   {
-    icon: <Mic2 size={18} className="text-dusk-rose" />,
-    title: 'AI-native publishing',
-    description: 'The product is designed for AI-generated articles and daily AI-presented briefings across audio and video.',
+    icon: <Lightbulb size={18} className="text-dusk-rose" />,
+    title: 'AI-assisted production',
+    description: 'The desk uses AI to accelerate drafting and packaging, but the public promise is still clarity, relevance, and editorial judgment.',
   },
 ]
 
@@ -50,44 +50,19 @@ const workflowSteps = [
   },
   {
     step: '04',
-    title: 'Daily AI briefing',
-    description: 'Convert the day\'s file stack into podcast and YouTube-ready scripts delivered by AI presenters.',
-  },
-]
-
-const presenterStack = [
-  {
-    name: 'Ahmad',
-    role: 'Anchor voice',
-    description: 'Used for calm, authoritative daily briefings on capital deployment and infrastructure financing.',
-  },
-  {
-    name: 'ARIA',
-    role: 'Fast file voice',
-    description: 'Designed for concise market and company updates when the desk needs tighter turnaround.',
-  },
-  {
-    name: 'Khaled',
-    role: 'Saudi lens',
-    description: 'Best suited to policy, industrial AI, compute, and capital formation stories anchored in Saudi Arabia.',
-  },
-  {
-    name: 'Fatima',
-    role: 'Distribution voice',
-    description: 'Optimized for energetic recaps, YouTube cuts, and shorter formats without losing AIRAB tone.',
+    title: 'Desk distribution',
+    description: 'Send the finished file through the site, the mailing list, and the next selective distribution channel.',
   },
 ]
 
 const AboutPage = () => {
   return (
     <>
-      <Helmet>
-        <title>About AIRAB Money</title>
-        <meta
-          name="description"
-          content="Learn AIRAB Money's editorial thesis, AI-native production workflow, and presenter system for Middle East AI capital coverage."
-        />
-      </Helmet>
+      <PageSeo
+        title="About"
+        description="Learn AIRAB Money's editorial thesis, soft-launch scope, and production workflow for Middle East AI capital coverage."
+        path="/about"
+      />
 
       <PageIntro
         eyebrow="About the desk"
@@ -140,7 +115,7 @@ const AboutPage = () => {
               {[
                 'Gulf capital is becoming a global AI shareholder.',
                 'Regional AI build-out depends on compute, power, cloud, and permitting.',
-                'A daily AI-native briefing format can compress this signal faster than legacy media.',
+                'A tighter, operator-first desk can compress this signal faster than legacy media.',
               ].map((point) => (
                 <div key={point} className="border border-white/5 bg-white/[0.02] p-5 text-sm leading-7 text-brushed-silver">
                   {point}
@@ -188,22 +163,33 @@ const AboutPage = () => {
       </section>
 
       <section className="editorial-page pt-0">
-        <div className="mb-6">
-          <div className="eyebrow">Presenter system</div>
-          <h2 className="mt-3 font-serif text-3xl tracking-[-0.04em] text-off-white">The AI voices used for daily briefings</h2>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {presenterStack.map((presenter) => (
-            <div key={presenter.name} className="editorial-panel p-6">
-              <div className="flex h-12 w-12 items-center justify-center border border-dusk-rose/40 bg-dusk-rose/10 font-serif text-xl text-off-white">
-                {presenter.name[0]}
-              </div>
-              <h3 className="mt-4 font-serif text-3xl tracking-[-0.04em] text-off-white">{presenter.name}</h3>
-              <div className="mt-2 text-sm uppercase tracking-[0.18em] text-dusk-rose">{presenter.role}</div>
-              <p className="mt-4 text-sm leading-7 text-brushed-silver">{presenter.description}</p>
+        <div className="editorial-panel p-8 md:p-10">
+          <div className="eyebrow">Soft-launch scope</div>
+          <div className="mt-5 grid gap-8 xl:grid-cols-[minmax(0,1fr)_0.8fr]">
+            <div className="space-y-5 text-base leading-8 text-brushed-silver">
+              <p>
+                AIRAB is deliberately launching with a narrower public surface than the long-term product vision.
+                The site is starting with coverage, the markets desk, contact and guest intake, and the supporting
+                pages needed to run the desk cleanly.
+              </p>
+              <p>
+                Briefings, long-form capital notes, and the public studio return only after they are operationally
+                real, not because the interface is already designed.
+              </p>
             </div>
-          ))}
+
+            <div className="space-y-4">
+              {[
+                'Coverage and markets stay public for the soft launch.',
+                'The archive is intentionally small while test content is replaced with real files.',
+                'The next layers reopen only when they can be operated consistently.',
+              ].map((point) => (
+                <div key={point} className="border border-white/5 bg-white/[0.02] p-5 text-sm leading-7 text-brushed-silver">
+                  {point}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     </>

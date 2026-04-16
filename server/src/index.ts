@@ -2,6 +2,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import OpenAI from 'openai'
+import fs from 'fs'
 import path from 'path'
 import { randomUUID, timingSafeEqual } from 'crypto'
 import { fileURLToPath } from 'url'
@@ -9,7 +10,23 @@ import { Prisma, PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 
-dotenv.config()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const envCandidates = [
+  path.resolve(__dirname, '../.env.local'),
+  path.resolve(__dirname, '../.env'),
+  path.resolve(process.cwd(), '.env.local'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(__dirname, '../../.env.local'),
+  path.resolve(__dirname, '../../.env'),
+]
+
+envCandidates.forEach((candidate) => {
+  if (fs.existsSync(candidate)) {
+    dotenv.config({ path: candidate })
+  }
+})
 
 const app = express()
 
@@ -18,8 +35,6 @@ const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 const distPath = path.resolve(__dirname, '../../dist')
 const ADMIN_PASSWORD_HEADER = 'x-admin-password'
 const OPENAI_SETTING_KEYS = ['OPENAI_API_KEY', 'OPENAI_TEXT_MODEL', 'OPENAI_IMAGE_MODEL'] as const
@@ -196,72 +211,16 @@ const upsertAdminSetting = async (key: (typeof OPENAI_SETTING_KEYS)[number], val
   })
 }
 
-const fallbackImagePrompts = (headline: string) => ({
-  hero_prompt: `Editorial hero illustration for "${headline}" with clean financial newsroom styling, premium business lighting, and a strong Middle East technology atmosphere.`,
-  inline_prompt: `Supporting illustration for "${headline}" focused on data, market movement, and AI-driven finance in the GCC region.`,
-  fallback: true,
-})
-
-const buildFallbackArticle = (topic: string, wordCount: number, style: string) => {
-  const tone =
-    style === 'Technical'
-      ? 'The analysis below focuses on implementation detail, market structure, and operating implications.'
-      : style === 'Casual'
-        ? 'The analysis below keeps the language approachable while staying grounded in business reality.'
-        : 'The analysis below is written in a clear editorial voice for executives and operators.'
-
-  const sections = [
-    `The latest movement around ${topic} matters because the Arab AI and finance ecosystem is moving from experimentation into execution. Capital is concentrating around practical use cases, regulators are watching more closely, and buyers increasingly want measurable outcomes instead of broad promises.`,
-    `${tone}`,
-    `In practical terms, organizations evaluating ${topic} should separate signal from noise in three areas: commercial demand, execution capacity, and time-to-value. Strong opportunities tend to show a defined customer problem, a realistic deployment path, and a clear link to revenue growth, cost reduction, or decision quality.`,
-    `For Gulf and wider MENA operators, the next question is localization. Solutions that understand Arabic language workflows, regional compliance expectations, and sector-specific buying patterns will usually outperform generic imports. That is especially true in government, finance, energy, and enterprise services.`,
-    `Investors and executives should also pay attention to infrastructure readiness. The winners around ${topic} will not only have a strong product narrative, but also the data access, distribution channels, partnerships, and internal discipline to sustain adoption after the initial launch window.`,
-    `The near-term outlook is straightforward: ${topic} is no longer a fringe conversation. It is becoming part of the core strategic agenda for institutions that want to lead in a market increasingly shaped by AI-native operations and regional execution speed.`,
-  ]
-
-  const content = sections.join('\n\n')
-  const headline = `${topic}: Why It Matters for AI and Capital in the Arab World`
-
-  return {
-    headline,
-    content,
-    fallback: true,
-    estimatedWordCount: Math.max(wordCount, content.split(/\s+/).length),
-  }
-}
-
-const buildPlaceholderImage = (prompt: string, imageType: 'hero' | 'inline') => {
-  const width = imageType === 'hero' ? 1536 : 1024
-  const height = imageType === 'hero' ? 1024 : 1024
-  const safePrompt = prompt
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <defs>
-        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#0f172a" />
-          <stop offset="50%" stop-color="#1d4ed8" />
-          <stop offset="100%" stop-color="#0f766e" />
-        </linearGradient>
-      </defs>
-      <rect width="${width}" height="${height}" fill="url(#bg)" />
-      <circle cx="${width - 160}" cy="160" r="120" fill="rgba(255,255,255,0.08)" />
-      <circle cx="140" cy="${height - 140}" r="100" fill="rgba(245,158,11,0.18)" />
-      <text x="84" y="120" fill="#e2e8f0" font-size="36" font-family="Helvetica, Arial, sans-serif">AIRAB Money</text>
-      <text x="84" y="180" fill="#f8fafc" font-size="58" font-weight="700" font-family="Helvetica, Arial, sans-serif">${imageType === 'hero' ? 'Hero Image' : 'Inline Image'}</text>
-      <foreignObject x="84" y="260" width="${width - 168}" height="${height - 344}">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="color:#e2e8f0;font-family:Helvetica,Arial,sans-serif;font-size:30px;line-height:1.45;">
-          ${safePrompt}
-        </div>
-      </foreignObject>
-    </svg>
-  `.trim()
-
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
-}
+const marketSnapshotData = [
+  { symbol: 'TASI', name: 'Saudi Tadawul Index', price: 12294.18, change: 74.22, changePercent: 0.61, type: 'middleeast' },
+  { symbol: 'DFMGI', name: 'Dubai Financial Market', price: 4318.57, change: -12.09, changePercent: -0.28, type: 'middleeast' },
+  { symbol: 'ADX', name: 'Abu Dhabi Securities Exchange', price: 9398.12, change: 21.88, changePercent: 0.23, type: 'middleeast' },
+  { symbol: 'BTC', name: 'Bitcoin', price: 84215.33, change: 1365.18, changePercent: 1.65, type: 'crypto' },
+  { symbol: 'ETH', name: 'Ethereum', price: 4021.61, change: -48.42, changePercent: -1.19, type: 'crypto' },
+  { symbol: 'XAU', name: 'Gold', price: 2364.2, change: 18.41, changePercent: 0.78, type: 'commodity' },
+  { symbol: 'BRENT', name: 'Brent Crude', price: 88.12, change: -0.57, changePercent: -0.64, type: 'commodity' },
+  { symbol: 'SPX', name: 'S&P 500', price: 5281.48, change: 22.91, changePercent: 0.44, type: 'index' },
+] as const
 
 const handleError = (res: express.Response, error: unknown, fallbackMessage: string) => {
   console.error(fallbackMessage, error)
@@ -709,16 +668,8 @@ app.get('/api/market-data', (_req, res) => {
   res.json({
     success: true,
     updatedAt: new Date().toISOString(),
-    data: [
-      { symbol: 'TASI', name: 'Saudi Tadawul Index', price: 12294.18, change: 74.22, changePercent: 0.61, type: 'middleeast' },
-      { symbol: 'DFMGI', name: 'Dubai Financial Market', price: 4318.57, change: -12.09, changePercent: -0.28, type: 'middleeast' },
-      { symbol: 'ADX', name: 'Abu Dhabi Securities Exchange', price: 9398.12, change: 21.88, changePercent: 0.23, type: 'middleeast' },
-      { symbol: 'BTC', name: 'Bitcoin', price: 84215.33, change: 1365.18, changePercent: 1.65, type: 'crypto' },
-      { symbol: 'ETH', name: 'Ethereum', price: 4021.61, change: -48.42, changePercent: -1.19, type: 'crypto' },
-      { symbol: 'XAU', name: 'Gold', price: 2364.2, change: 18.41, changePercent: 0.78, type: 'commodity' },
-      { symbol: 'BRENT', name: 'Brent Crude', price: 88.12, change: -0.57, changePercent: -0.64, type: 'commodity' },
-      { symbol: 'SPX', name: 'S&P 500', price: 5281.48, change: 22.91, changePercent: 0.44, type: 'index' },
-    ],
+    feedMode: 'snapshot',
+    data: marketSnapshotData,
   })
 })
 
@@ -735,12 +686,7 @@ app.post('/api/generate-article', requireAdminAuth, async (req, res) => {
     const { client: openai, config } = await getOpenAIClient()
 
     if (!openai) {
-      const fallback = buildFallbackArticle(topic, wordCount, style)
-      return res.json({
-        headline: fallback.headline,
-        content: fallback.content,
-        fallback: true,
-      })
+      return res.status(503).json({ error: 'OpenAI article generation is not configured' })
     }
 
     const completion = await openai.chat.completions.create({
@@ -760,24 +706,18 @@ app.post('/api/generate-article', requireAdminAuth, async (req, res) => {
     })
 
     const parsed = JSON.parse(completion.choices[0].message.content || '{}')
+
+    if (typeof parsed.headline !== 'string' || typeof parsed.content !== 'string') {
+      return res.status(502).json({ error: 'OpenAI returned incomplete article content' })
+    }
+
     res.json({
-      headline: parsed.headline || `${topic}: AIRAB Money Brief`,
-      content: parsed.content || buildFallbackArticle(topic, wordCount, style).content,
+      headline: parsed.headline,
+      content: parsed.content,
     })
   } catch (error) {
-    console.error('OpenAI article generation failed, using fallback:', error)
-
-    const fallback = buildFallbackArticle(
-      typeof req.body.topic === 'string' ? req.body.topic : 'AI and finance',
-      Number(req.body.word_count) || 750,
-      typeof req.body.style === 'string' ? req.body.style : 'Professional',
-    )
-
-    res.json({
-      headline: fallback.headline,
-      content: fallback.content,
-      fallback: true,
-    })
+    console.error('OpenAI article generation failed:', error)
+    res.status(502).json({ error: 'Article generation failed' })
   }
 })
 
@@ -793,7 +733,7 @@ app.post('/api/generate-image-prompts', requireAdminAuth, async (req, res) => {
     const { client: openai, config } = await getOpenAIClient()
 
     if (!openai) {
-      return res.json({ data: fallbackImagePrompts(headline) })
+      return res.status(503).json({ error: 'OpenAI prompt generation is not configured' })
     }
 
     const completion = await openai.chat.completions.create({
@@ -813,15 +753,20 @@ app.post('/api/generate-image-prompts', requireAdminAuth, async (req, res) => {
     })
 
     const parsed = JSON.parse(completion.choices[0].message.content || '{}')
+
+    if (typeof parsed.hero_prompt !== 'string' || typeof parsed.inline_prompt !== 'string') {
+      return res.status(502).json({ error: 'OpenAI returned incomplete image prompts' })
+    }
+
     res.json({
       data: {
-        hero_prompt: parsed.hero_prompt || fallbackImagePrompts(headline).hero_prompt,
-        inline_prompt: parsed.inline_prompt || fallbackImagePrompts(headline).inline_prompt,
+        hero_prompt: parsed.hero_prompt,
+        inline_prompt: parsed.inline_prompt,
       },
     })
   } catch (error) {
-    console.error('Image prompt generation failed, using fallback:', error)
-    res.json({ data: fallbackImagePrompts(typeof req.body.headline === 'string' ? req.body.headline : 'AIRAB Money feature') })
+    console.error('Image prompt generation failed:', error)
+    res.status(502).json({ error: 'Image prompt generation failed' })
   }
 })
 
@@ -837,12 +782,7 @@ app.post('/api/generate-article-image', requireAdminAuth, async (req, res) => {
     const { client: openai, config } = await getOpenAIClient()
 
     if (!openai) {
-      return res.json({
-        data: {
-          imageUrl: buildPlaceholderImage(prompt, imageType),
-          fallback: true,
-        },
-      })
+      return res.status(503).json({ error: 'OpenAI image generation is not configured' })
     }
 
     const image = await openai.images.generate({
@@ -853,9 +793,11 @@ app.post('/api/generate-article-image', requireAdminAuth, async (req, res) => {
     })
 
     const firstImage = image.data?.[0]
-    const imageUrl = firstImage?.b64_json
-      ? `data:image/png;base64,${firstImage.b64_json}`
-      : firstImage?.url || buildPlaceholderImage(prompt, imageType)
+    const imageUrl = firstImage?.b64_json ? `data:image/png;base64,${firstImage.b64_json}` : firstImage?.url
+
+    if (!imageUrl) {
+      return res.status(502).json({ error: 'OpenAI did not return an image' })
+    }
 
     res.json({
       data: {
@@ -863,16 +805,8 @@ app.post('/api/generate-article-image', requireAdminAuth, async (req, res) => {
       },
     })
   } catch (error) {
-    console.error('Image generation failed, using placeholder:', error)
-    res.json({
-      data: {
-        imageUrl: buildPlaceholderImage(
-          typeof req.body.prompt === 'string' ? req.body.prompt : 'AIRAB Money image',
-          req.body.imageType === 'inline' ? 'inline' : 'hero',
-        ),
-        fallback: true,
-      },
-    })
+    console.error('Image generation failed:', error)
+    res.status(502).json({ error: 'Image generation failed' })
   }
 })
 
